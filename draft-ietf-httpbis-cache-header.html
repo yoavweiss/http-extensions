@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>The Cache-Status HTTP Response Header Field</title><script>
+function anchorRewrite() {
+  map = { };
+  if (window.location.hash.length >= 1) {
+    var fragid = window.location.hash.substr(1);
+    if (fragid) {
+      if (! document.getElementById(fragid)) {
+        var prefix = "rfc.";
+        var mapped = map[fragid];
+        if (mapped) {
+          window.location.hash = mapped;
+        } else if (fragid.indexOf("section-") == 0) {
+          window.location.hash = prefix + "section." + fragid.substring(8);
+        } else if (fragid.indexOf("appendix-") == 0) {
+          window.location.hash = prefix + "section." + fragid.substring(9);
+        } else if (fragid.indexOf("s-") == 0) {
+          var postfix = fragid.substring(2);
+          if (postfix.startsWith("abstract")) {
+            window.location.hash = prefix + postfix;
+          } else if (postfix.startsWith("note-")) {
+            window.location.hash = prefix + "note." + postfix.substring(5);
+          } else {
+            window.location.hash = prefix + "section." + postfix;
+          }
+        } else if (fragid.indexOf("p-") == 0) {
+          var r = fragid.substring(2);
+          var p = r.indexOf("-");
+          if (p >= 0) {
+            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
+          }
+        }
+      }
+    }  
+  }
+}
+window.addEventListener('hashchange', anchorRewrite);
+window.addEventListener('DOMContentLoaded', anchorRewrite);
+</script><!--Specified as xml2rfc-ext-css-contents--><style>
+body {
+  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  color: #333;
+  font-size-adjust: 0.5;
+  line-height: 24px;
+  margin: 75px auto;
+  max-width: 624px;
+  padding: 0 5px;
+}
+
+.title, .filename, h1, h2, h3, h4, h5 {
+  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  font-size-adjust: 0.5;
+  font-weight: bold;
+  color: #333;
+  line-height: 100%;
+  margin: 1.2em 0 0.3em;
+}
+.title, #rfc\.title h1 { font-size: 32px; }
+h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
+h3, section h4, h4, section h5 { font-size: 16px; }
+h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
+  color: #333;
+}
+
+table {
+  margin-left: 0em;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+  vertical-align: top;
+}
+tr:nth-child(2n+1) > td,
+tr:nth-child(2n+1) > th {
+  background-color: #f9f9f9;
+}
+td.reference {
+  max-width: 200px;
+  border-top: none;
+  padding-right: 1em;
+}
+.right {
+  text-align: right;
+}
+
+
+table.header, table#rfc\.headerblock {
+  width: 100%;
+}
+table.header td, table#rfc\.headerblock td {
+  border: none;
+  background-color: transparent;
+  color: black;
+  padding: 0;
+}
+.filename {
+  display: block;
+  color: rgb(119, 119, 119);
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 100%;
+  margin: 10px 0 32px;
+}
+#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+samp, tt, code, pre, span.tt {
+  font-size: 13.5px;
+  font-family: Consolas, monospace;
+  font-size-adjust: none;
+}
+pre {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  padding: 5px;
+  margin: 5px;
+}
+.figure, caption {
+  font-style: italic;
+  margin: 0 1.5em;
+  text-align: left;
+}
+
+address {
+  margin: 16px 2px;
+  line-height: 20px;
+}
+.vcard {
+  font-style: normal;
+}
+.vcardline {
+  display: block;
+}
+.vcardline .fn, address b {
+  font-weight: normal;
+}
+.vcardline .hidden {
+  display: none;
+}
+
+dl {
+  margin-left: 1em;
+}
+dl.dl-horizontal: {
+  margin-left: 0;
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.nohang > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .5em;
+}
+dl.compact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+ul.empty {
+  list-style-type: none;
+}
+ul.empty li {
+  margin-top: .5em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+hr.noprint {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #2a6496;
+}
+a[href]:hover {
+  background-color: #eee;
+}
+
+p, ol, ul, li {
+  padding: 0;
+}
+p {
+  margin: 0.5em 0;
+}
+ol, ul {
+  margin: 0.2em 0 0.2em 2em;
+}
+li {
+  margin: 0.2em 0;
+}
+address {
+  font-style: normal;
+}
+
+ul.toc ul {
+  margin: 0 0 0 2em;
+}
+ul.toc li {
+  list-style: none;
+  margin: 0;
+}
+
+@media screen and (min-width: 924px) {
+  body {
+    padding-right: 350px;
+  }
+  body>ul.toc, body>#rfc\.toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 500px);
+    width: 300px;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body>#rfc\.toc {
+    top: 55px;
+  }
+  body>ul.toc {
+    top: 100px;
+  }
+
+  ul.toc {
+    margin: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  ul.toc ul {
+    margin-left: 1.2em;
+  }
+}</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="License" href="#rfc.copyrightnotice"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 The Cache-Status HTTP Response Header Field" href="#rfc.section.2"><link rel="Chapter" title="3 Examples" href="#rfc.section.3"><link rel="Chapter" title="4 Defining New Proxy-Status Parameters" href="#rfc.section.4"><link rel="Chapter" title="5 IANA Considerations" href="#rfc.section.5"><link rel="Chapter" title="6 Security Considerations" href="#rfc.section.6"><link rel="Chapter" title="7 References" href="#rfc.section.7"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.1327, 2020/09/24 11:13:36, XSLT vendor: libxslt http://xmlsoft.org/XSLT/, via: https://github.com/cabo/kramdown-rfc2629 version 1.3.10"><meta name="keywords" content="Internet-Draft"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Nottingham, M."><meta name="dcterms.issued" content="2020-10-05"><meta name="dcterms.abstract" content="To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP’s current caching model."><meta name="description" content="To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP’s current caching model."></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">HTTP Working Group</td><td class="right">M. Nottingham</td></tr><tr><td class="left">Internet-Draft</td><td class="right">Fastly</td></tr><tr><td class="left">Intended status: Standards Track</td><td class="right">October 5, 2020</td></tr><tr><td class="left">Expires: April 8, 2021</td><td class="right"></td></tr></tbody></table><div id="rfc.title"><h1>The Cache-Status HTTP Response Header Field</h1><div class="filename"><a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-cache-header" class="smpl">draft-ietf-httpbis-cache-header-latest</a></div></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP’s current caching model.</p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Note to Readers</a></h2><div id="rfc.note.1.p.1"><p><em>RFC EDITOR: please remove this section before publication</em></p></div><div id="rfc.note.1.p.2"><p>Discussion of this draft takes place on the HTTP working group mailing list (ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.</p></div><div id="rfc.note.1.p.3"><p>Working Group information can be found at <a href="https://httpwg.org/">https://httpwg.org/</a>; source code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/cache-header">https://github.com/httpwg/http-extensions/labels/cache-header</a>.</p></div></section><section id="rfc.status"><h2><a href="#rfc.status">Status of this Memo</a></h2><div id="rfc.boilerplate.1.p.1"><p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p></div><div id="rfc.boilerplate.1.p.2"><p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p></div><div id="rfc.boilerplate.1.p.3"><p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as “work in progress”.</p></div><div id="rfc.boilerplate.1.p.4"><p>This Internet-Draft will expire on April 8, 2021.</p></div></section><section id="rfc.copyrightnotice"><h2><a href="#rfc.copyrightnotice">Copyright Notice</a></h2><div id="rfc.boilerplate.2.p.1"><p>Copyright (c) 2020 IETF Trust and the persons identified as the document authors. All rights reserved.</p></div><div id="rfc.boilerplate.2.p.2"><p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>   <a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>   <a href="#notational-conventions">Notational Conventions</a></li></ul></li><li><a href="#rfc.section.2">2.</a>   <a href="#field">The Cache-Status HTTP Response Header Field</a><ul><li><a href="#rfc.section.2.1">2.1.</a>   <a href="#the-hit-parameter">The hit parameter</a></li><li><a href="#rfc.section.2.2">2.2.</a>   <a href="#the-fwd-parameter">The fwd parameter</a></li><li><a href="#rfc.section.2.3">2.3.</a>   <a href="#the-fwd-status-parameter">The fwd-status parameter</a></li><li><a href="#rfc.section.2.4">2.4.</a>   <a href="#the-ttl-parameter">The ttl parameter</a></li><li><a href="#rfc.section.2.5">2.5.</a>   <a href="#the-stored-parameter">The stored parameter</a></li><li><a href="#rfc.section.2.6">2.6.</a>   <a href="#the-collapsed-parameter">The collapsed parameter</a></li><li><a href="#rfc.section.2.7">2.7.</a>   <a href="#the-key-parameter">The key parameter</a></li><li><a href="#rfc.section.2.8">2.8.</a>   <a href="#the-detail-parameter">The detail parameter</a></li></ul></li><li><a href="#rfc.section.3">3.</a>   <a href="#examples">Examples</a></li><li><a href="#rfc.section.4">4.</a>   <a href="#register">Defining New Proxy-Status Parameters</a></li><li><a href="#rfc.section.5">5.</a>   <a href="#iana-considerations">IANA Considerations</a></li><li><a href="#rfc.section.6">6.</a>   <a href="#security-considerations">Security Considerations</a></li><li><a href="#rfc.section.7">7.</a>   <a href="#rfc.references">References</a><ul><li><a href="#rfc.section.7.1">7.1.</a>   <a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.7.2">7.2.</a>   <a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.authors">Author's Address</a></li></ul></nav><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> <a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1"><p>To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. Unfortunately, the semantics of these headers are often unclear, and both the semantics and syntax used vary greatly between implementations.</p></div><div id="rfc.section.1.p.2"><p>This specification defines a single, new HTTP response header field, “Cache-Status” for this purpose.</p></div><section id="notational-conventions"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a> <a href="#notational-conventions">Notational Conventions</a></h3><div id="rfc.section.1.1.p.1"><p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in BCP 14 <a href="#RFC2119"><cite title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</cite></a> <a href="#RFC8174"><cite title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">[RFC8174]</cite></a> when, and only when, they appear in all capitals, as shown here.</p></div><div id="rfc.section.1.1.p.2"><p>This document uses ABNF as defined in <a href="#RFC5234"><cite title="Augmented BNF for Syntax Specifications: ABNF">[RFC5234]</cite></a>, along with the “%s” extension for case sensitivity defined in <a href="#RFC7405"><cite title="Case-Sensitive String Support in ABNF">[RFC7405]</cite></a>.</p></div></section></section><section id="field"><h2 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#field">The Cache-Status HTTP Response Header Field</a></h2><div id="rfc.section.2.p.1"><p>The Cache-Status HTTP response header indicates caches’ handling of the request corresponding to the response it occurs within.</p></div><div id="rfc.section.2.p.2" class="avoidbreakafter"><p>Its value is a List <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>:</p></div><div id="rfc.figure.u.1"><div><pre class="inline">
+Cache-Status   = sf-list
+</pre></div></div><div id="rfc.section.2.p.3"><p>Each member of the list represents a cache that has handled the request. The first member of the list represents the cache closest to the origin server, and the last member of the list represents the cache closest to the client (possibly including the user agent’s cache itself, if it chooses to append a value).</p></div><div id="rfc.section.2.p.4"><p>Caches determine when it is appropriate to add the Cache-Status header field to a response. Some might add it to all responses, whereas others might only do so when specifically configured to, or when the request contains a header that activates a debugging mode.</p></div><div id="rfc.section.2.p.5"><p>When adding a value to the Cache-Status header field, caches SHOULD preserve the existing contents of the header field, to allow debugging of the entire chain of caches handling the request.</p></div><div id="rfc.section.2.p.6"><p>Each list member identifies the cache that inserted that value, and MUST be a String or Token. Depending on the deployment, this might be a product or service name (e.g., ExampleCache or “Example CDN”), a hostname (“cache-3.example.com”), and IP address, or a generated string.</p></div><div id="rfc.section.2.p.7"><p>Each member of the list can also have parameters that describe that cache’s handling of the request. While all of these parameters are OPTIONAL, caches are encouraged to provide as much information as possible.</p></div><div id="rfc.section.2.p.8" class="avoidbreakafter"><p>This specification defines these parameters:</p></div><div id="rfc.figure.u.2"><div><pre class="inline">
+hit          = sf-boolean
+fwd          = sf-token
+fwd-status   = sf-integer
+ttl          = sf-integer
+stored       = sf-boolean
+collapsed    = sf-boolean
+key          = sf-string
+detail       = sf-token / sf-string
+</pre></div></div><section id="the-hit-parameter"><h3 id="rfc.section.2.1"><a href="#rfc.section.2.1">2.1.</a> <a href="#the-hit-parameter">The hit parameter</a></h3><div id="rfc.section.2.1.p.1"><p>“hit”, when true, indicates that the request was satisfied by the cache; i.e., it did not go forward, and the response was obtained from the cache. A response that originally was produced by the origin but was modified by the cache (for example, a 304 or 206 status code) is still considered a hit.</p></div><div id="rfc.section.2.1.p.2"><p>“hit” and “fwd” are exclusive; only one of them should appear on each list member.</p></div></section><section id="the-fwd-parameter"><h3 id="rfc.section.2.2"><a href="#rfc.section.2.2">2.2.</a> <a href="#the-fwd-parameter">The fwd parameter</a></h3><div id="rfc.section.2.2.p.1"><p>“fwd” indicates that the request went forward towards the origin, and why.</p></div><div id="rfc.section.2.2.p.2" class="avoidbreakafter"><p>The following values are defined to explain why the request went forward:</p></div><div id="rfc.section.2.2.p.3"><ul><li>uri-miss - The cache did not contain any responses that matched the request URI</li><li>vary-miss - The cache contained a response that matched the request URI, but could not select a response based upon this request’s headers and stored Vary headers.</li><li>miss - The cache did not contain any responses that could be used to satisfy this request (to be used when an implementation cannot distinguish between uri-miss and vary-miss)</li><li>stale - The cache was able to select a response for the request, but it was stale</li><li>request - The cache was able to select a fresh response for the request, but client request headers (e.g., Cache-Control request directives) did not allow its use</li><li>bypass - The cache was configured to not handle this request</li></ul></div></section><section id="the-fwd-status-parameter"><h3 id="rfc.section.2.3"><a href="#rfc.section.2.3">2.3.</a> <a href="#the-fwd-status-parameter">The fwd-status parameter</a></h3><div id="rfc.section.2.3.p.1"><p>“fwd-status” indicates what status code the next hop server returned in response to the request. Only meaningful when “fwd” is present; if “fwd-status” is not present but “fwd” is, it defaults to the status code sent in the response.</p></div><div id="rfc.section.2.3.p.2"><p>This parameter is useful to distinguish cases when the next hop server sends a 304 Not Modified response to a conditional request, or a 206 Partial Response because of a range request.</p></div></section><section id="the-ttl-parameter"><h3 id="rfc.section.2.4"><a href="#rfc.section.2.4">2.4.</a> <a href="#the-ttl-parameter">The ttl parameter</a></h3><div id="rfc.section.2.4.p.1"><p>“ttl” indicates the response’s remaining freshness lifetime as calculated by the cache, as an integer number of seconds, measured when the response is sent by the cache. This includes freshness assigned by the cache; e.g., through heuristics, local configuration, or other factors. May be negative, to indicate staleness.</p></div></section><section id="the-stored-parameter"><h3 id="rfc.section.2.5"><a href="#rfc.section.2.5">2.5.</a> <a href="#the-stored-parameter">The stored parameter</a></h3><div id="rfc.section.2.5.p.1"><p>“stored” indicates whether the cache stored the response; a true value indicates that it did. Only meaningful when fwd is present.</p></div></section><section id="the-collapsed-parameter"><h3 id="rfc.section.2.6"><a href="#rfc.section.2.6">2.6.</a> <a href="#the-collapsed-parameter">The collapsed parameter</a></h3><div id="rfc.section.2.6.p.1"><p>“collapsed” indicates whether this request was collapsed together with one or more other forward requests; if true, the response was successfully reused; if not, a new request had to be made. If not present, the request was not collapsed with others. Only meaningful when fwd is present.</p></div></section><section id="the-key-parameter"><h3 id="rfc.section.2.7"><a href="#rfc.section.2.7">2.7.</a> <a href="#the-key-parameter">The key parameter</a></h3><div id="rfc.section.2.7.p.1"><p>“key” conveys a representation of the cache key used for the response. Note that this may be implementation-specific.</p></div></section><section id="the-detail-parameter"><h3 id="rfc.section.2.8"><a href="#rfc.section.2.8">2.8.</a> <a href="#the-detail-parameter">The detail parameter</a></h3><div id="rfc.section.2.8.p.1"><p>“detail” allows implementations to convey additional information not captured in other parameters; for example, implementation-specific states, or other caching-related metrics.</p></div><div id="rfc.section.2.8.p.2" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.3"><div><pre class="text">
+Cache-Status: ExampleCache; hit; detail=MEMORY
+</pre></div></div><div id="rfc.section.2.8.p.3"><p>The semantics of a detail parameter are always specific to the cache that sent it; even if a member of details from another cache shares the same name, it might not mean the same thing.</p></div><div id="rfc.section.2.8.p.4"><p>This parameter is intentionally limited. If an implementation needs to convey additional information, they are encouraged to register extension parameters (see <a href="#register" title="Defining New Proxy-Status Parameters">Section 4</a>) or define another header field.</p></div></section></section><section id="examples"><h2 id="rfc.section.3"><a href="#rfc.section.3">3.</a> <a href="#examples">Examples</a></h2><div id="rfc.section.3.p.1" class="avoidbreakafter"><p>The most minimal cache hit:</p></div><div id="rfc.figure.u.4"><div><pre class="text">
+Cache-Status: ExampleCache; hit
+</pre></div></div><div id="rfc.section.3.p.2" class="avoidbreakafter"><p>… but a polite cache will give some more information, e.g.:</p></div><div id="rfc.figure.u.5"><div><pre class="text">
+Cache-Status: ExampleCache; hit; ttl=376
+</pre></div></div><div id="rfc.section.3.p.3" class="avoidbreakafter"><p>A stale hit just has negative freshness:</p></div><div id="rfc.figure.u.6"><div><pre class="text">
+Cache-Status: ExampleCache; hit; ttl=-412
+</pre></div></div><div id="rfc.section.3.p.4" class="avoidbreakafter"><p>Whereas a complete miss is:</p></div><div id="rfc.figure.u.7"><div><pre class="text">
+Cache-Status: ExampleCache; fwd=uri-miss
+</pre></div></div><div id="rfc.section.3.p.5" class="avoidbreakafter"><p>A miss that successfully validated on the back-end server:</p></div><div id="rfc.figure.u.8"><div><pre class="text">
+Cache-Status: ExampleCache; fwd=stale; fwd-status=304
+</pre></div></div><div id="rfc.section.3.p.6" class="avoidbreakafter"><p>A miss that was collapsed with another request:</p></div><div id="rfc.figure.u.9"><div><pre class="text">
+Cache-Status: ExampleCache; fwd=uri-miss; collapsed
+</pre></div></div><div id="rfc.section.3.p.7" class="avoidbreakafter"><p>A miss that the cache attempted to collapse, but couldn’t:</p></div><div id="rfc.figure.u.10"><div><pre class="text">
+Cache-Status: ExampleCache; fwd=uri-miss; collapsed=?0
+</pre></div></div><div id="rfc.section.3.p.8" class="avoidbreakafter"><p>Going through two layers of caching, both of which were hits, and the second collapsed with other requests:</p></div><div id="rfc.figure.u.11"><div><pre class="text">
+Cache-Status: OriginCache; hit; ttl=1100; collapsed,
+              "CDN Company Here"; hit; ttl=545
+</pre></div></div></section><section id="register"><h2 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#register">Defining New Proxy-Status Parameters</a></h2><div id="rfc.section.4.p.1"><p>New Cache-Status Parameters can be defined by registering them in the HTTP Cache-Status Parameters registry.</p></div><div id="rfc.section.4.p.2"><p>Registration requests are reviewed and approved by a Designated Expert, as per <a href="#RFC8126"><cite title="Guidelines for Writing an IANA Considerations Section in RFCs">[RFC8126]</cite></a>, Section 4.5. A specification document is appreciated, but not required.</p></div><div id="rfc.section.4.p.3" class="avoidbreakafter"><p>The Expert(s) should consider the following factors when evaluating requests:</p></div><div id="rfc.section.4.p.4"><ul><li>Community feedback</li><li>If the value is sufficiently well-defined</li><li>Generic parameters are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the parameter’s name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).</li></ul></div><div id="rfc.section.4.p.5" class="avoidbreakafter"><p>Registration requests should use the following template:</p></div><div id="rfc.section.4.p.6"><ul><li>Name: [a name for the Cache-Status Parameter that matches key]</li><li>Description: [a description of the parameter semantics and value]</li><li>Reference: [to a specification defining this parameter]</li></ul></div><div id="rfc.section.4.p.7"><p>See the registry at <a href="https://iana.org/assignments/http-cache-status">https://iana.org/assignments/http-cache-status</a> for details on where to send registration requests.</p></div></section><section id="iana-considerations"><h2 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#iana-considerations">IANA Considerations</a></h2><div id="rfc.section.5.p.1"><p>Upon publication, please create the HTTP Cache-Status Parameters registry at <a href="https://iana.org/assignments/http-cache-status">https://iana.org/assignments/http-cache-status</a> and populate it with the types defined in <a href="#field" title="The Cache-Status HTTP Response Header Field">Section 2</a>; see <a href="#register" title="Defining New Proxy-Status Parameters">Section 4</a> for its associated procedures.</p></div></section><section id="security-considerations"><h2 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#security-considerations">Security Considerations</a></h2><div id="rfc.section.6.p.1"><p>Attackers can use the information in Cache-Status to probe the behaviour of the cache (and other components), and infer the activity of those using the cache. The Cache-Status header field may not create these risks on its own, but can assist attackers in exploiting them.</p></div><div id="rfc.section.6.p.2"><p>For example, knowing if a cache has stored a response can help an attacker execute a timing attack on sensitive data. Exposing the cache key can help an attacker understand modifications to the cache key, which may assist cache poisoning attacks. See <a href="#ENTANGLE"><cite title="Web Cache Entanglement: Novel Pathways to Poisoning">[ENTANGLE]</cite></a> for details.</p></div><div id="rfc.section.6.p.3"><p>The underlying risks can be mitigated with a variety of techniques (e.g., use of encryption and authentication; avoiding the inclusion of attacker-controlled data in the cache key), depending on their exact nature.</p></div><div id="rfc.section.6.p.4"><p>To avoid assisting such attacks, the Cache-Status header field can be omitted, only sent when the client is authorized to receive it, or only send sensitive information (e.g., the key parameter) when the client is authorized.</p></div></section><section id="rfc.references"><h2 id="rfc.section.7"><a href="#rfc.section.7">7.</a> References</h2><section><div id="rfc.references.1"><h3 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> Normative References</h3><dl class="reference"><dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt><dd>Nottingham, M. and P. Kamp, “<a href="https://tools.ietf.org/html/draft-ietf-httpbis-header-structure-19">Structured Field Values for HTTP</a>”, Internet-Draft draft-ietf-httpbis-header-structure-19 (<a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-header-structure">work in progress</a>), June 2020.</dd><dt id="RFC2119">[RFC2119]</dt><dd>Bradner, S., “<a href="https://www.rfc-editor.org/rfc/rfc2119.html">Key words for use in RFCs to Indicate Requirement Levels</a>”, BCP 14, RFC 2119, <a href="https://dx.doi.org/10.17487/RFC2119">DOI 10.17487/RFC2119</a>, March 1997, &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.</dd><dt id="RFC5234">[RFC5234]</dt><dd>Crocker, D., Ed. and P. Overell, “<a href="https://www.rfc-editor.org/rfc/rfc5234.html">Augmented BNF for Syntax Specifications: ABNF</a>”, STD 68, RFC 5234, <a href="https://dx.doi.org/10.17487/RFC5234">DOI 10.17487/RFC5234</a>, January 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.</dd><dt id="RFC7405">[RFC7405]</dt><dd>Kyzivat, P., “<a href="https://www.rfc-editor.org/rfc/rfc7405.html">Case-Sensitive String Support in ABNF</a>”, RFC 7405, <a href="https://dx.doi.org/10.17487/RFC7405">DOI 10.17487/RFC7405</a>, December 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7405">https://www.rfc-editor.org/info/rfc7405</a>&gt;.</dd><dt id="RFC8126">[RFC8126]</dt><dd>Cotton, M., Leiba, B., and T. Narten, “<a href="https://www.rfc-editor.org/rfc/rfc8126.html">Guidelines for Writing an IANA Considerations Section in RFCs</a>”, BCP 26, RFC 8126, <a href="https://dx.doi.org/10.17487/RFC8126">DOI 10.17487/RFC8126</a>, June 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;.</dd><dt id="RFC8174">[RFC8174]</dt><dd>Leiba, B., “<a href="https://www.rfc-editor.org/rfc/rfc8174.html">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>”, BCP 14, RFC 8174, <a href="https://dx.doi.org/10.17487/RFC8174">DOI 10.17487/RFC8174</a>, May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> Informative References</h3><dl class="reference"><dt id="ENTANGLE">[ENTANGLE]</dt><dd>Kettle, J., “<a href="https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf">Web Cache Entanglement: Novel Pathways to Poisoning</a>”, n.d., &lt;<a href="https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf">https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf</a>&gt;.</dd></dl></div></section></section><section id="rfc.authors" class="avoidbreakinside"><h2><a href="#rfc.authors">Author's Address</a></h2><address><b>Mark Nottingham</b><br>Fastly<br>made in<br>Prahran, VIC<br>Australia<br>EMail: <a href="mailto:mnot@mnot.net">mnot@mnot.net</a><br>URI: <a href="https://www.mnot.net/">https://www.mnot.net/</a></address></section></body></html>

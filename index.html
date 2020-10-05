@@ -1,15 +1,425 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HTTP Extension Drafts</title>
+    <title>yoavweiss/http-extensions master preview</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <style type="text/css">/*<![CDATA[*/
+      body { font-family: "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif; }
+      h1, h2, td { font-family: "Helvetica Neue","Roboto Condensed","Open Sans",Helvetica,Calibri,sans-serif; }
+      h1 { font-size: 20px; } h2 { font-size: 16px; }
+      table { margin: 5px 10px; border-collapse: collapse; }
+      th, td { font-weight: normal; text-align: left; padding: 2px 5px; }
+      a:link { color: #000; } a:visited { color: #00a; }
+    /*]]>*/</style>
   </head>
   <body>
-    <h1>HTTP Extension Drafts</h1>
-    <ul>
-      <li><a href="alt-svc.html">alt-svc</a> (<a href="alt-svc.txt">txt</a>)</li>
-      <li>...aka <a href="draft-ietf-httpbis-alt-svc.html">draft-ietf-httpbis-alt-svc</a> (<a href="draft-ietf-httpbis-alt-svc.txt">txt</a>)</li>
-      <li><a href="encryption.html">encryption</a> (<a href="encryption.txt">txt</a>)</li>
-      <li>...aka <a href="draft-ietf-httpbis-http2-encryption.html">draft-ietf-httpbis-http2-encryption</a> (<a href="draft-ietf-httpbis-http2-encryption.txt">txt</a>)</li>
-    </ul>
+    <h1>Editor's drafts for master branch of <a href="https://github.com/yoavweiss/http-extensions">yoavweiss/http-extensions</a></h1>
+    <p>View <a href="issues.html">saved issues</a>,
+      or the latest GitHub <a href="https://github.com/yoavweiss/http-extensions/issues">issues</a>
+      and <a href="https://github.com/yoavweiss/http-extensions/pulls">pull requests</a>.</p>
+    <table id="branch-master">
+      <tr>
+        <th>alt-svc</th>
+        <td><a href="./alt-svc.html"
+           class="html alt-svc">html</a></td>
+        <td><a href="./alt-svc.txt"
+           class="txt alt-svc">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/alt-svc.txt&amp;url2=https://yoavweiss.github.io/http-extensions/alt-svc.txt" class="diff alt-svc">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>auth-info</th>
+        <td><a href="./auth-info.html"
+           class="html auth-info">html</a></td>
+        <td><a href="./auth-info.txt"
+           class="txt auth-info">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/auth-info.txt&amp;url2=https://yoavweiss.github.io/http-extensions/auth-info.txt" class="diff auth-info">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>bcp56bis</th>
+        <td><a href="./bcp56bis.html"
+           class="html bcp56bis">html</a></td>
+        <td><a href="./bcp56bis.txt"
+           class="txt bcp56bis">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/bcp56bis.txt&amp;url2=https://yoavweiss.github.io/http-extensions/bcp56bis.txt" class="diff bcp56bis">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>cache-digest</th>
+        <td><a href="./cache-digest.html"
+           class="html cache-digest">html</a></td>
+        <td><a href="./cache-digest.txt"
+           class="txt cache-digest">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/cache-digest.txt&amp;url2=https://yoavweiss.github.io/http-extensions/cache-digest.txt" class="diff cache-digest">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>cache-header</th>
+        <td><a href="./cache-header.html"
+           class="html cache-header">html</a></td>
+        <td><a href="./cache-header.txt"
+           class="txt cache-header">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/cache-header.txt&amp;url2=https://yoavweiss.github.io/http-extensions/cache-header.txt" class="diff cache-header">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>cice</th>
+        <td><a href="./cice.html"
+           class="html cice">html</a></td>
+        <td><a href="./cice.txt"
+           class="txt cice">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/cice.txt&amp;url2=https://yoavweiss.github.io/http-extensions/cice.txt" class="diff cice">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>client-hints</th>
+        <td><a href="./client-hints.html"
+           class="html client-hints">html</a></td>
+        <td><a href="./client-hints.txt"
+           class="txt client-hints">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/client-hints.txt&amp;url2=https://yoavweiss.github.io/http-extensions/client-hints.txt" class="diff client-hints">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>cookie-alone</th>
+        <td><a href="./cookie-alone.html"
+           class="html cookie-alone">html</a></td>
+        <td><a href="./cookie-alone.txt"
+           class="txt cookie-alone">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/cookie-alone.txt&amp;url2=https://yoavweiss.github.io/http-extensions/cookie-alone.txt" class="diff cookie-alone">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>cookie-prefixes</th>
+        <td><a href="./cookie-prefixes.html"
+           class="html cookie-prefixes">html</a></td>
+        <td><a href="./cookie-prefixes.txt"
+           class="txt cookie-prefixes">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/cookie-prefixes.txt&amp;url2=https://yoavweiss.github.io/http-extensions/cookie-prefixes.txt" class="diff cookie-prefixes">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>cookie-same-site</th>
+        <td><a href="./cookie-same-site.html"
+           class="html cookie-same-site">html</a></td>
+        <td><a href="./cookie-same-site.txt"
+           class="txt cookie-same-site">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/cookie-same-site.txt&amp;url2=https://yoavweiss.github.io/http-extensions/cookie-same-site.txt" class="diff cookie-same-site">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>digest-headers</th>
+        <td><a href="./digest-headers.html"
+           class="html digest-headers">html</a></td>
+        <td><a href="./digest-headers.txt"
+           class="txt digest-headers">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/digest-headers.txt&amp;url2=https://yoavweiss.github.io/http-extensions/digest-headers.txt" class="diff digest-headers">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-bcp56bis</th>
+        <td><a href="./draft-ietf-httpbis-bcp56bis.html"
+           class="html draft-ietf-httpbis-bcp56bis">html</a></td>
+        <td><a href="./draft-ietf-httpbis-bcp56bis.txt"
+           class="txt draft-ietf-httpbis-bcp56bis">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-bcp56bis.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-bcp56bis.txt" class="diff draft-ietf-httpbis-bcp56bis">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-cache-header</th>
+        <td><a href="./draft-ietf-httpbis-cache-header.html"
+           class="html draft-ietf-httpbis-cache-header">html</a></td>
+        <td><a href="./draft-ietf-httpbis-cache-header.txt"
+           class="txt draft-ietf-httpbis-cache-header">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-cache-header.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-cache-header.txt" class="diff draft-ietf-httpbis-cache-header">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-client-hints</th>
+        <td><a href="./draft-ietf-httpbis-client-hints.html"
+           class="html draft-ietf-httpbis-client-hints">html</a></td>
+        <td><a href="./draft-ietf-httpbis-client-hints.txt"
+           class="txt draft-ietf-httpbis-client-hints">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-client-hints.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-client-hints.txt" class="diff draft-ietf-httpbis-client-hints">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-digest-headers</th>
+        <td><a href="./draft-ietf-httpbis-digest-headers.html"
+           class="html draft-ietf-httpbis-digest-headers">html</a></td>
+        <td><a href="./draft-ietf-httpbis-digest-headers.txt"
+           class="txt draft-ietf-httpbis-digest-headers">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-digest-headers.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-digest-headers.txt" class="diff draft-ietf-httpbis-digest-headers">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-expect-ct</th>
+        <td><a href="./draft-ietf-httpbis-expect-ct.html"
+           class="html draft-ietf-httpbis-expect-ct">html</a></td>
+        <td><a href="./draft-ietf-httpbis-expect-ct.txt"
+           class="txt draft-ietf-httpbis-expect-ct">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-expect-ct.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-expect-ct.txt" class="diff draft-ietf-httpbis-expect-ct">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-header-structure</th>
+        <td><a href="./draft-ietf-httpbis-header-structure.html"
+           class="html draft-ietf-httpbis-header-structure">html</a></td>
+        <td><a href="./draft-ietf-httpbis-header-structure.txt"
+           class="txt draft-ietf-httpbis-header-structure">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-header-structure.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-header-structure.txt" class="diff draft-ietf-httpbis-header-structure">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-message-signatures</th>
+        <td><a href="./draft-ietf-httpbis-message-signatures.html"
+           class="html draft-ietf-httpbis-message-signatures">html</a></td>
+        <td><a href="./draft-ietf-httpbis-message-signatures.txt"
+           class="txt draft-ietf-httpbis-message-signatures">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-message-signatures.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-message-signatures.txt" class="diff draft-ietf-httpbis-message-signatures">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-priority</th>
+        <td><a href="./draft-ietf-httpbis-priority.html"
+           class="html draft-ietf-httpbis-priority">html</a></td>
+        <td><a href="./draft-ietf-httpbis-priority.txt"
+           class="txt draft-ietf-httpbis-priority">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-priority.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-priority.txt" class="diff draft-ietf-httpbis-priority">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-proxy-status</th>
+        <td><a href="./draft-ietf-httpbis-proxy-status.html"
+           class="html draft-ietf-httpbis-proxy-status">html</a></td>
+        <td><a href="./draft-ietf-httpbis-proxy-status.txt"
+           class="txt draft-ietf-httpbis-proxy-status">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-proxy-status.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-proxy-status.txt" class="diff draft-ietf-httpbis-proxy-status">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-rfc6265bis</th>
+        <td><a href="./draft-ietf-httpbis-rfc6265bis.html"
+           class="html draft-ietf-httpbis-rfc6265bis">html</a></td>
+        <td><a href="./draft-ietf-httpbis-rfc6265bis.txt"
+           class="txt draft-ietf-httpbis-rfc6265bis">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-rfc6265bis.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-rfc6265bis.txt" class="diff draft-ietf-httpbis-rfc6265bis">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>draft-ietf-httpbis-variants</th>
+        <td><a href="./draft-ietf-httpbis-variants.html"
+           class="html draft-ietf-httpbis-variants">html</a></td>
+        <td><a href="./draft-ietf-httpbis-variants.txt"
+           class="txt draft-ietf-httpbis-variants">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/draft-ietf-httpbis-variants.txt&amp;url2=https://yoavweiss.github.io/http-extensions/draft-ietf-httpbis-variants.txt" class="diff draft-ietf-httpbis-variants">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>early-hints</th>
+        <td><a href="./early-hints.html"
+           class="html early-hints">html</a></td>
+        <td><a href="./early-hints.txt"
+           class="txt early-hints">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/early-hints.txt&amp;url2=https://yoavweiss.github.io/http-extensions/early-hints.txt" class="diff early-hints">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>encryption-encoding</th>
+        <td><a href="./encryption-encoding.html"
+           class="html encryption-encoding">html</a></td>
+        <td><a href="./encryption-encoding.txt"
+           class="txt encryption-encoding">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/encryption-encoding.txt&amp;url2=https://yoavweiss.github.io/http-extensions/encryption-encoding.txt" class="diff encryption-encoding">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>expect-ct</th>
+        <td><a href="./expect-ct.html"
+           class="html expect-ct">html</a></td>
+        <td><a href="./expect-ct.txt"
+           class="txt expect-ct">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/expect-ct.txt&amp;url2=https://yoavweiss.github.io/http-extensions/expect-ct.txt" class="diff expect-ct">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>header-structure</th>
+        <td><a href="./header-structure.html"
+           class="html header-structure">html</a></td>
+        <td><a href="./header-structure.txt"
+           class="txt header-structure">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/header-structure.txt&amp;url2=https://yoavweiss.github.io/http-extensions/header-structure.txt" class="diff header-structure">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>immutable</th>
+        <td><a href="./immutable.html"
+           class="html immutable">html</a></td>
+        <td><a href="./immutable.txt"
+           class="txt immutable">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/immutable.txt&amp;url2=https://yoavweiss.github.io/http-extensions/immutable.txt" class="diff immutable">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>jfv</th>
+        <td><a href="./jfv.html"
+           class="html jfv">html</a></td>
+        <td><a href="./jfv.txt"
+           class="txt jfv">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/jfv.txt&amp;url2=https://yoavweiss.github.io/http-extensions/jfv.txt" class="diff jfv">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>key</th>
+        <td><a href="./key.html"
+           class="html key">html</a></td>
+        <td><a href="./key.txt"
+           class="txt key">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/key.txt&amp;url2=https://yoavweiss.github.io/http-extensions/key.txt" class="diff key">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>legally-restricted-status</th>
+        <td><a href="./legally-restricted-status.html"
+           class="html legally-restricted-status">html</a></td>
+        <td><a href="./legally-restricted-status.txt"
+           class="txt legally-restricted-status">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/legally-restricted-status.txt&amp;url2=https://yoavweiss.github.io/http-extensions/legally-restricted-status.txt" class="diff legally-restricted-status">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>message-signatures</th>
+        <td><a href="./message-signatures.html"
+           class="html message-signatures">html</a></td>
+        <td><a href="./message-signatures.txt"
+           class="txt message-signatures">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/message-signatures.txt&amp;url2=https://yoavweiss.github.io/http-extensions/message-signatures.txt" class="diff message-signatures">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>opsec</th>
+        <td><a href="./opsec.html"
+           class="html opsec">html</a></td>
+        <td><a href="./opsec.txt"
+           class="txt opsec">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/opsec.txt&amp;url2=https://yoavweiss.github.io/http-extensions/opsec.txt" class="diff opsec">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>origin-frame</th>
+        <td><a href="./origin-frame.html"
+           class="html origin-frame">html</a></td>
+        <td><a href="./origin-frame.txt"
+           class="txt origin-frame">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/origin-frame.txt&amp;url2=https://yoavweiss.github.io/http-extensions/origin-frame.txt" class="diff origin-frame">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>priority</th>
+        <td><a href="./priority.html"
+           class="html priority">html</a></td>
+        <td><a href="./priority.txt"
+           class="txt priority">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/priority.txt&amp;url2=https://yoavweiss.github.io/http-extensions/priority.txt" class="diff priority">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>proxy-status</th>
+        <td><a href="./proxy-status.html"
+           class="html proxy-status">html</a></td>
+        <td><a href="./proxy-status.txt"
+           class="txt proxy-status">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/proxy-status.txt&amp;url2=https://yoavweiss.github.io/http-extensions/proxy-status.txt" class="diff proxy-status">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>rand-access-live</th>
+        <td><a href="./rand-access-live.html"
+           class="html rand-access-live">html</a></td>
+        <td><a href="./rand-access-live.txt"
+           class="txt rand-access-live">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/rand-access-live.txt&amp;url2=https://yoavweiss.github.io/http-extensions/rand-access-live.txt" class="diff rand-access-live">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>replay</th>
+        <td><a href="./replay.html"
+           class="html replay">html</a></td>
+        <td><a href="./replay.txt"
+           class="txt replay">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/replay.txt&amp;url2=https://yoavweiss.github.io/http-extensions/replay.txt" class="diff replay">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>rfc5987bis</th>
+        <td><a href="./rfc5987bis.html"
+           class="html rfc5987bis">html</a></td>
+        <td><a href="./rfc5987bis.txt"
+           class="txt rfc5987bis">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/rfc5987bis.txt&amp;url2=https://yoavweiss.github.io/http-extensions/rfc5987bis.txt" class="diff rfc5987bis">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>rfc6265bis</th>
+        <td><a href="./rfc6265bis.html"
+           class="html rfc6265bis">html</a></td>
+        <td><a href="./rfc6265bis.txt"
+           class="txt rfc6265bis">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/rfc6265bis.txt&amp;url2=https://yoavweiss.github.io/http-extensions/rfc6265bis.txt" class="diff rfc6265bis">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>rfc7238bis</th>
+        <td><a href="./rfc7238bis.html"
+           class="html rfc7238bis">html</a></td>
+        <td><a href="./rfc7238bis.txt"
+           class="txt rfc7238bis">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/rfc7238bis.txt&amp;url2=https://yoavweiss.github.io/http-extensions/rfc7238bis.txt" class="diff rfc7238bis">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>tunnel-protocol</th>
+        <td><a href="./tunnel-protocol.html"
+           class="html tunnel-protocol">html</a></td>
+        <td><a href="./tunnel-protocol.txt"
+           class="txt tunnel-protocol">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/tunnel-protocol.txt&amp;url2=https://yoavweiss.github.io/http-extensions/tunnel-protocol.txt" class="diff tunnel-protocol">
+          diff with last submission</a></td>
+      </tr>
+      <tr>
+        <th>variants</th>
+        <td><a href="./variants.html"
+           class="html variants">html</a></td>
+        <td><a href="./variants.txt"
+           class="txt variants">plain text</a></td>
+        <td><a href="https://tools.ietf.org/rfcdiff?url1=https://tools.ietf.org/id/variants.txt&amp;url2=https://yoavweiss.github.io/http-extensions/variants.txt" class="diff variants">
+          diff with last submission</a></td>
+      </tr>
+    </table>
+    <script>
+// @licstart
+//  Any copyright is dedicated to the Public Domain.
+//  http://creativecommons.org/publicdomain/zero/1.0/
+// @licend
+window.onload = function() {
+  var referrer_branch = 'master';
+  // e.g., "https://github.com/user/repo/tree/master"
+  var chunks = document.referrer.split("/");
+  if (chunks[2] === 'github.com' && chunks[5] === 'tree') {
+    referrer_branch = chunks[6];
+  }
+  let branch = document.querySelector('#branch-' + referrer_branch);
+  let h = document.location.hash.substring(1);
+  if (h === 'show') {
+    document.location.hash = '#' + branch.id;
+  } else if (branch && h.startsWith('go')) {
+    let e = branch.querySelector(h.substring(2));
+    if (e && e.href) {
+      document.location = e.href;
+    }
+  }
+};
+    </script>
   </body>
 </html>

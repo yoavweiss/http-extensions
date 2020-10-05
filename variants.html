@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>HTTP Representation Variants</title><script>
+function anchorRewrite() {
+  map = { };
+  if (window.location.hash.length >= 1) {
+    var fragid = window.location.hash.substr(1);
+    if (fragid) {
+      if (! document.getElementById(fragid)) {
+        var prefix = "rfc.";
+        var mapped = map[fragid];
+        if (mapped) {
+          window.location.hash = mapped;
+        } else if (fragid.indexOf("section-") == 0) {
+          window.location.hash = prefix + "section." + fragid.substring(8);
+        } else if (fragid.indexOf("appendix-") == 0) {
+          window.location.hash = prefix + "section." + fragid.substring(9);
+        } else if (fragid.indexOf("s-") == 0) {
+          var postfix = fragid.substring(2);
+          if (postfix.startsWith("abstract")) {
+            window.location.hash = prefix + postfix;
+          } else if (postfix.startsWith("note-")) {
+            window.location.hash = prefix + "note." + postfix.substring(5);
+          } else {
+            window.location.hash = prefix + "section." + postfix;
+          }
+        } else if (fragid.indexOf("p-") == 0) {
+          var r = fragid.substring(2);
+          var p = r.indexOf("-");
+          if (p >= 0) {
+            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
+          }
+        }
+      }
+    }  
+  }
+}
+window.addEventListener('hashchange', anchorRewrite);
+window.addEventListener('DOMContentLoaded', anchorRewrite);
+</script><!--Specified as xml2rfc-ext-css-contents--><style>
+body {
+  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  color: #333;
+  font-size-adjust: 0.5;
+  line-height: 24px;
+  margin: 75px auto;
+  max-width: 624px;
+  padding: 0 5px;
+}
+
+.title, .filename, h1, h2, h3, h4, h5 {
+  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  font-size-adjust: 0.5;
+  font-weight: bold;
+  color: #333;
+  line-height: 100%;
+  margin: 1.2em 0 0.3em;
+}
+.title, #rfc\.title h1 { font-size: 32px; }
+h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
+h3, section h4, h4, section h5 { font-size: 16px; }
+h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
+  color: #333;
+}
+
+table {
+  margin-left: 0em;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+  vertical-align: top;
+}
+tr:nth-child(2n+1) > td,
+tr:nth-child(2n+1) > th {
+  background-color: #f9f9f9;
+}
+td.reference {
+  max-width: 200px;
+  border-top: none;
+  padding-right: 1em;
+}
+.right {
+  text-align: right;
+}
+
+
+table.header, table#rfc\.headerblock {
+  width: 100%;
+}
+table.header td, table#rfc\.headerblock td {
+  border: none;
+  background-color: transparent;
+  color: black;
+  padding: 0;
+}
+.filename {
+  display: block;
+  color: rgb(119, 119, 119);
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 100%;
+  margin: 10px 0 32px;
+}
+#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+samp, tt, code, pre, span.tt {
+  font-size: 13.5px;
+  font-family: Consolas, monospace;
+  font-size-adjust: none;
+}
+pre {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  padding: 5px;
+  margin: 5px;
+}
+.figure, caption {
+  font-style: italic;
+  margin: 0 1.5em;
+  text-align: left;
+}
+
+address {
+  margin: 16px 2px;
+  line-height: 20px;
+}
+.vcard {
+  font-style: normal;
+}
+.vcardline {
+  display: block;
+}
+.vcardline .fn, address b {
+  font-weight: normal;
+}
+.vcardline .hidden {
+  display: none;
+}
+
+dl {
+  margin-left: 1em;
+}
+dl.dl-horizontal: {
+  margin-left: 0;
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.nohang > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .5em;
+}
+dl.compact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+ul.empty {
+  list-style-type: none;
+}
+ul.empty li {
+  margin-top: .5em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+hr.noprint {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #2a6496;
+}
+a[href]:hover {
+  background-color: #eee;
+}
+
+p, ol, ul, li {
+  padding: 0;
+}
+p {
+  margin: 0.5em 0;
+}
+ol, ul {
+  margin: 0.2em 0 0.2em 2em;
+}
+li {
+  margin: 0.2em 0;
+}
+address {
+  font-style: normal;
+}
+
+ul.toc ul {
+  margin: 0 0 0 2em;
+}
+ul.toc li {
+  list-style: none;
+  margin: 0;
+}
+
+@media screen and (min-width: 924px) {
+  body {
+    padding-right: 350px;
+  }
+  body>ul.toc, body>#rfc\.toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 500px);
+    width: 300px;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body>#rfc\.toc {
+    top: 55px;
+  }
+  body>ul.toc {
+    top: 100px;
+  }
+
+  ul.toc {
+    margin: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  ul.toc ul {
+    margin-left: 1.2em;
+  }
+}</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="License" href="#rfc.copyrightnotice"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 The “Variants” HTTP Header Field" href="#rfc.section.2"><link rel="Chapter" title="3 The “Variant-Key” HTTP Header Field" href="#rfc.section.3"><link rel="Chapter" title="4 Cache Behaviour" href="#rfc.section.4"><link rel="Chapter" title="5 Origin Server Behaviour" href="#rfc.section.5"><link rel="Chapter" title="6 Defining Content Negotiation Using Variants" href="#rfc.section.6"><link rel="Chapter" title="7 IANA Considerations" href="#rfc.section.7"><link rel="Chapter" title="8 Security Considerations" href="#rfc.section.8"><link rel="Chapter" title="9 References" href="#rfc.section.9"><link rel="Appendix" title="A Variants for Existing Content Negotiation Mechanisms" href="#rfc.section.A"><link rel="Appendix" title="Acknowledgements" href="#rfc.section.unnumbered-1"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.1327, 2020/09/24 11:13:36, XSLT vendor: libxslt http://xmlsoft.org/XSLT/, via: https://github.com/cabo/kramdown-rfc2629 version 1.3.10"><meta name="keywords" content="content negotiation"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Nottingham, M."><meta name="dcterms.issued" content="2020-10-05"><meta name="dcterms.abstract" content="This specification introduces an alternative way to select a HTTP response from a cache based upon its request headers, using the HTTP “Variants” and “Variant-Key” response header fields. Its aim is to make HTTP proactive content negotiation more cache-friendly."><meta name="description" content="This specification introduces an alternative way to select a HTTP response from a cache based upon its request headers, using the HTTP “Variants” and “Variant-Key” response header fields. Its aim is to make HTTP proactive content negotiation more cache-friendly."></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">HTTP Working Group</td><td class="right">M. Nottingham</td></tr><tr><td class="left">Internet-Draft</td><td class="right">Fastly</td></tr><tr><td class="left">Updates: <a href="#RFC7234">7234</a> (if approved)</td><td class="right">October 5, 2020</td></tr><tr><td class="left">Intended status: Standards Track</td><td class="right"></td></tr><tr><td class="left">Expires: April 8, 2021</td><td class="right"></td></tr></tbody></table><div id="rfc.title"><h1>HTTP Representation Variants</h1><div class="filename"><a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-variants" class="smpl">draft-ietf-httpbis-variants-latest</a></div></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>This specification introduces an alternative way to select a HTTP response from a cache based upon its request headers, using the HTTP “Variants” and “Variant-Key” response header fields. Its aim is to make HTTP proactive content negotiation more cache-friendly.</p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Note to Readers</a></h2><div id="rfc.note.1.p.1"><p><em>RFC EDITOR: please remove this section before publication</em></p></div><div id="rfc.note.1.p.2"><p>Discussion of this draft takes place on the HTTP working group mailing list (ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.</p></div><div id="rfc.note.1.p.3"><p>Working Group information can be found at <a href="https://httpwg.github.io/">https://httpwg.github.io/</a>; source code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/variants">https://github.com/httpwg/http-extensions/labels/variants</a>.</p></div><div id="rfc.note.1.p.4"><p>There is a prototype implementation of the algorithms herein at <a href="https://github.com/mnot/variants-toy">https://github.com/mnot/variants-toy</a>.</p></div></section><section id="rfc.status"><h2><a href="#rfc.status">Status of this Memo</a></h2><div id="rfc.boilerplate.1.p.1"><p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p></div><div id="rfc.boilerplate.1.p.2"><p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p></div><div id="rfc.boilerplate.1.p.3"><p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as “work in progress”.</p></div><div id="rfc.boilerplate.1.p.4"><p>This Internet-Draft will expire on April 8, 2021.</p></div></section><section id="rfc.copyrightnotice"><h2><a href="#rfc.copyrightnotice">Copyright Notice</a></h2><div id="rfc.boilerplate.2.p.1"><p>Copyright (c) 2020 IETF Trust and the persons identified as the document authors. All rights reserved.</p></div><div id="rfc.boilerplate.2.p.2"><p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>   <a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>   <a href="#notational-conventions">Notational Conventions</a></li></ul></li><li><a href="#rfc.section.2">2.</a>   <a href="#variants">The “Variants” HTTP Header Field</a><ul><li><a href="#rfc.section.2.1">2.1.</a>   <a href="#vary">Relationship to Vary</a></li></ul></li><li><a href="#rfc.section.3">3.</a>   <a href="#variant-key">The “Variant-Key” HTTP Header Field</a></li><li><a href="#rfc.section.4">4.</a>   <a href="#cache">Cache Behaviour</a><ul><li><a href="#rfc.section.4.1">4.1.</a>   <a href="#find">Compute Possible Keys</a></li><li><a href="#rfc.section.4.2">4.2.</a>   <a href="#check_vary">Check Vary</a></li><li><a href="#rfc.section.4.3">4.3.</a>   <a href="#example-of-cache-behaviour">Example of Cache Behaviour</a><ul><li><a href="#rfc.section.4.3.1">4.3.1.</a>   <a href="#a-variant-missing-from-the-cache">A Variant Missing From the Cache</a></li><li><a href="#rfc.section.4.3.2">4.3.2.</a>   <a href="#variants-that-dont-overlap-the-clients-request">Variants That Don’t Overlap the Client’s Request</a></li></ul></li></ul></li><li><a href="#rfc.section.5">5.</a>   <a href="#origin">Origin Server Behaviour</a><ul><li><a href="#rfc.section.5.1">5.1.</a>   <a href="#examples">Examples</a><ul><li><a href="#rfc.section.5.1.1">5.1.1.</a>   <a href="#single-variant">Single Variant</a></li><li><a href="#rfc.section.5.1.2">5.1.2.</a>   <a href="#multiple-variants">Multiple Variants</a></li><li><a href="#rfc.section.5.1.3">5.1.3.</a>   <a href="#partial">Partial Coverage</a></li></ul></li></ul></li><li><a href="#rfc.section.6">6.</a>   <a href="#define">Defining Content Negotiation Using Variants</a></li><li><a href="#rfc.section.7">7.</a>   <a href="#iana-considerations">IANA Considerations</a></li><li><a href="#rfc.section.8">8.</a>   <a href="#security-considerations">Security Considerations</a></li><li><a href="#rfc.section.9">9.</a>   <a href="#rfc.references">References</a><ul><li><a href="#rfc.section.9.1">9.1.</a>   <a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.9.2">9.2.</a>   <a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.section.A">Appendix A.</a>   <a href="#backports">Variants for Existing Content Negotiation Mechanisms</a><ul><li><a href="#rfc.section.A.1">A.1.</a>   <a href="#content-type">Accept</a></li><li><a href="#rfc.section.A.2">A.2.</a>   <a href="#content-encoding">Accept-Encoding</a></li><li><a href="#rfc.section.A.3">A.3.</a>   <a href="#content-language">Accept-Language</a></li><li><a href="#rfc.section.A.4">A.4.</a>   <a href="#cookie">Cookie</a></li></ul></li><li><a href="#acknowledgements">Acknowledgements</a></li><li><a href="#rfc.authors">Author's Address</a></li></ul></nav><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> <a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1"><p>HTTP proactive content negotiation (<a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>, Section 3.4.1) is seeing renewed interest, both for existing request headers like Accept-Language and for newer ones (for example, see <a href="#I-D.ietf-httpbis-client-hints"><cite title="HTTP Client Hints">[I-D.ietf-httpbis-client-hints]</cite></a>).</p></div><div id="rfc.section.1.p.2"><p>Successfully reusing negotiated responses that have been stored in a HTTP cache requires establishment of a secondary cache key (<a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, Section 4.1). Currently, the Vary header (<a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>, Section 7.1.4) does this by nominating a set of request headers. Their values collectively form the secondary cache key for a given response.</p></div><div id="rfc.section.1.p.3"><p>HTTP’s caching model allows a certain amount of latitude in normalising those request header field values, so as to increase the chances of a cache hit while still respecting the semantics of that header. However, normalisation is not formally defined, leading to infrequent implementation in cache, and divergence of behaviours when it is.</p></div><div id="rfc.section.1.p.4"><p>Even when the headers’ semantics are understood, a cache does not know enough about the possible alternative representations available on the origin server to make an appropriate decision.</p></div><div id="rfc.section.1.p.5" class="avoidbreakafter"><p>For example, if a cache has stored the following request/response pair:</p></div><div id="rfc.figure.u.1"><div><pre class="text">
+GET /foo HTTP/1.1
+Host: www.example.com
+Accept-Language: en;q=0.5, fr;q=1.0
+
+</pre></div></div><div id="rfc.figure.u.2"><div><pre class="text">
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Language: en
+Vary: Accept-Language
+Transfer-Encoding: chunked
+
+[English content]
+</pre></div></div><div id="rfc.section.1.p.6"><p>Provided that the cache has full knowledge of the semantics of Accept-Language and Content-Language, it will know that an English representation is available and might be able to infer that a French representation is not available. But, it does not know (for example) whether a Japanese representation is available without making another request, incurring possibly unnecessary latency.</p></div><div id="rfc.section.1.p.7"><p>This specification introduces the HTTP Variants response header field (<a href="#variants" title="The “Variants” HTTP Header Field">Section 2</a>) to enumerate the available variant representations on the origin server, to provide clients and caches with enough information to properly satisfy requests – either by selecting a response from cache or by forwarding the request towards the origin – by following the algorithm defined in <a href="#cache" title="Cache Behaviour">Section 4</a>.</p></div><div id="rfc.section.1.p.8"><p>Its companion Variant-Key response header field (<a href="#variant-key" title="The “Variant-Key” HTTP Header Field">Section 3</a>) indicates the applicable key(s) that the response is associated with, so that it can be reliably reused in the future. Effectively, it allows the specification of a request header field to define how it affects the secondary cache key.</p></div><div id="rfc.section.1.p.9" class="avoidbreakafter"><p>When this specification is in use, the example above might become:</p></div><div id="rfc.figure.u.3"><div><pre class="text">
+GET /foo HTTP/1.1
+Host: www.example.com
+Accept-Language: en;q=0.5, fr;q=1.0
+
+</pre></div></div><div id="rfc.figure.u.4"><div><pre class="text">
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Language: en
+Vary: Accept-Language
+Variants: Accept-Language;de;en;jp
+Variant-Key: en
+Transfer-Encoding: chunked
+
+[English content]
+</pre></div></div><div id="rfc.section.1.p.10"><p>Proactive content negotiation mechanisms that wish to be used with Variants need to define how to do so explicitly; see <a href="#define" title="Defining Content Negotiation Using Variants">Section 6</a>. As a result, it is best suited for negotiation over request headers that are well-understood.</p></div><div id="rfc.section.1.p.11"><p>Variants also works best when content negotiation takes place over a constrained set of representations; since each variant needs to be listed in the header field, it is ill-suited for open-ended sets of representations.</p></div><div id="rfc.section.1.p.12"><p>Variants can be seen as a simpler version of the Alternates header field introduced by <a href="#RFC2295"><cite title="Transparent Content Negotiation in HTTP">[RFC2295]</cite></a>; unlike that mechanism, Variants does not require specification of each combination of attributes, and does not assume that each combination has a unique URL.</p></div><section id="notational-conventions"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a> <a href="#notational-conventions">Notational Conventions</a></h3><div id="rfc.section.1.1.p.1"><p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in BCP 14 <a href="#RFC2119"><cite title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</cite></a> <a href="#RFC8174"><cite title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">[RFC8174]</cite></a> when, and only when, they appear in all capitals, as shown here.</p></div><div id="rfc.section.1.1.p.2"><p>This specification uses the Augmented Backus-Naur Form (ABNF) notation of <a href="#RFC5234"><cite title="Augmented BNF for Syntax Specifications: ABNF">[RFC5234]</cite></a> but relies on Structured Headers from <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a> for parsing.</p></div><div id="rfc.section.1.1.p.3"><p>Additionally, it uses the “field-name” rule from <a href="#RFC7230"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing">[RFC7230]</cite></a>, “type”, “subtype”, “content-coding” and “language-range” from <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>, and “cookie-name” from <a href="#RFC6265"><cite title="HTTP State Management Mechanism">[RFC6265]</cite></a>.</p></div></section></section><section id="variants"><h2 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#variants">The “Variants” HTTP Header Field</a></h2><div id="rfc.section.2.p.1"><p>The Variants HTTP response header field indicates what representations are available for a given resource at the time that the response is produced, by enumerating the request header fields that it varies on, along with a representation of the values that are available for each.</p></div><div id="rfc.section.2.p.2" class="avoidbreakafter"><p>Variants is a Structured Header Dictionary (Section 3.2 of <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>). Its ABNF is:</p></div><div id="rfc.figure.u.5"><div><pre class="inline">
+Variants        = sh-dict
+</pre></div></div><div id="rfc.section.2.p.3"><p>Each member-name represents the field-name of a request header that is part of the secondary cache key; each member-value is an inner-list of strings or tokens that convey representations of potential values for that header field, hereafter referred to as “available-values”.</p></div><div id="rfc.section.2.p.4"><p>If Structured Header parsing fails or a member’s value does not have the structure outlined above, the client MUST treat the representation as having no Variants header field.</p></div><div id="rfc.section.2.p.5"><p>Note that an available-value that is a token is interpreted as a string containing the same characters, and vice versa.</p></div><div id="rfc.section.2.p.6" class="avoidbreakafter"><p>So, given this example header field:</p></div><div id="rfc.figure.u.6"><div><pre class="text">
+Variants: Accept-Encoding=(gzip)
+</pre></div></div><div id="rfc.section.2.p.7"><p>a recipient can infer that the only content-coding available for that resource is “gzip” (along with the “identity” non-encoding; see <a href="#content-encoding" title="Accept-Encoding">Appendix A.2</a>).</p></div><div id="rfc.section.2.p.8" class="avoidbreakafter"><p>Given:</p></div><div id="rfc.figure.u.7"><div><pre class="text">
+Variants: accept-encoding=()
+</pre></div></div><div id="rfc.section.2.p.9"><p>a recipient can infer that no content-codings (beyond identity) are supported. Note that as always, field-name is case-insensitive.</p></div><div id="rfc.section.2.p.10" class="avoidbreakafter"><p>A more complex example:</p></div><div id="rfc.figure.u.8"><div><pre class="text">
+Variants: Accept-Encoding=(gzip br), Accept-Language=(en fr)
+</pre></div></div><div id="rfc.section.2.p.11" class="avoidbreakafter"><p>Here, recipients can infer that two content-codings in addition to “identity” are available, as well as two content languages. Note that, as with all Structured Header dictionaries, they might occur in the same header field or separately, like this:</p></div><div id="rfc.figure.u.9"><div><pre class="text">
+Variants: Accept-Encoding=(gzip brotli)
+Variants: Accept-Language=(en fr)
+</pre></div></div><div id="rfc.section.2.p.12"><p>The ordering of available-values is significant, as it might be used by the header’s algorithm for selecting a response (in this example, the first language is the default; see <a href="#content-language" title="Accept-Language">Appendix A.3</a>).</p></div><div id="rfc.section.2.p.13"><p>The ordering of the request header fields themselves indicates descending application of preferences; in the example above, a cache that has all of the possible permutations stored will honour the client’s preferences for Accept-Encoding before honouring Accept-Language.</p></div><div id="rfc.section.2.p.14"><p>Origin servers SHOULD consistently send Variant header fields on all cacheable (as per <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, Section 3) responses for a resource, since its absence will trigger caches to fall back to Vary processing.</p></div><div id="rfc.section.2.p.15"><p>Likewise, servers MUST send the Variant-Key response header field when sending Variants, since its absence means that the stored response will not be reused when this specification is implemented.</p></div><div id="rfc.section.2.p.16"><p><em>RFC EDITOR: Please remove the next paragraph before publication.</em></p></div><div id="rfc.section.2.p.17"><p>Implementations of drafts of this specification MUST implement an HTTP header field named “Variants-##” instead of the “Variants” header field specified by the final RFC, with “##” replaced by the draft number being implemented. For example, implementations of draft-ietf-httpbis-variants-05 would implement “Variants-05”.</p></div><section id="vary"><h3 id="rfc.section.2.1"><a href="#rfc.section.2.1">2.1.</a> <a href="#vary">Relationship to Vary</a></h3><div id="rfc.section.2.1.p.1"><p>This specification updates <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a> to allow caches that implement it to ignore request header fields in the Vary header for the purposes of secondary cache key calculation (<a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, Section 4.1) when their semantics are implemented as per this specification and their corresponding response header field is listed in Variants.</p></div><div id="rfc.section.2.1.p.2"><p>If any member of the Vary header does not have a corresponding variant that is understood by the implementation, it is still subject to the requirements there.</p></div><div id="rfc.section.2.1.p.3"><p>See <a href="#partial" title="Partial Coverage">Section 5.1.3</a> for an example.</p></div><div id="rfc.section.2.1.p.4"><p>In practice, implementation of Vary varies considerably. As a result, cache efficiency might drop considerably when Variants does not contain all of the headers referenced by Vary, because some implementations might choose to disable Variants processing when this is the case.</p></div></section></section><section id="variant-key"><h2 id="rfc.section.3"><a href="#rfc.section.3">3.</a> <a href="#variant-key">The “Variant-Key” HTTP Header Field</a></h2><div id="rfc.section.3.p.1"><p>The Variant-Key HTTP response header field identifies one or more sets of available-values that identify the secondary cache key(s) that the response it occurs within are associated with.</p></div><div id="rfc.section.3.p.2" class="avoidbreakafter"><p>Variant-Key is a Structured Header List (Section 3.1 of <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>) whose members are inner-lists of strings or tokens. Its ABNF is:</p></div><div id="rfc.figure.u.10"><div><pre class="inline">
+Variant-Key      = sh-list
+</pre></div></div><div id="rfc.section.3.p.3"><p>Each member MUST be an inner-list, and MUST itself have the same number of members as there are members of the representation’s Variants header field. If not, the client MUST treat the representation as having no Variant-Key header field.</p></div><div id="rfc.section.3.p.4"><p>Each member identifies a list of available-values corresponding to the header field-names in the Variants header field, thereby identifying a secondary cache key that can be used with this response. These available-values do not need to explicitly appear in the Variants header field; they can be interpreted by the algorithm specific to processing that field. For example, Accept-Encoding defines an implicit “identity” available-value (<a href="#content-encoding" title="Accept-Encoding">Appendix A.2</a>).</p></div><div id="rfc.section.3.p.5"><p>Each inner-list member is treated as identifying an available-value for the corresponding variant-axis’ field-name. Any list-member that is a token is interpreted as a string containing the same characters.</p></div><div id="rfc.section.3.p.6" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.11"><div><pre class="text">
+Variants: Accept-Encoding=(gzip br), Accept-Language=(en fr)
+Variant-Key: (gzip fr)
+</pre></div></div><div id="rfc.section.3.p.7"><p>This header pair indicates that the representation has a “gzip” content-coding and “fr” content-language.</p></div><div id="rfc.section.3.p.8" class="avoidbreakafter"><p>If the response can be used to satisfy more than one request, they can be listed in additional members. For example:</p></div><div id="rfc.figure.u.12"><div><pre class="text">
+Variants: Accept-Encoding=(gzip br), Accept-Language=(en fr)
+Variant-Key: (gzip fr), ("identity" fr)
+</pre></div></div><div id="rfc.section.3.p.9"><p>indicates that this response can be used for requests whose Accept-Encoding algorithm selects “gzip” or “identity”, as long as the Accept-Language algorithm selects “fr” – perhaps because there is no gzip-compressed French representation.</p></div><div id="rfc.section.3.p.10" class="avoidbreakafter"><p>When more than one Variant-Key value is in a response, the first one present MUST correspond to the request that caused that response to be generated. For example:</p></div><div id="rfc.figure.u.13"><div><pre class="text">
+Variants: Accept-Encoding=(gzip br), Accept-Language=(en fr)
+Variant-Key: (gzip fr), (identity fr), (br fr oops)
+</pre></div></div><div id="rfc.section.3.p.11"><p>is treated as if the Variant-Key header were completely absent, which will tend to disable caching for the representation that contains it.</p></div><div id="rfc.section.3.p.12"><p>Note that in</p></div><div id="rfc.figure.u.14"><div><pre class="text">
+Variant-Key: (gzip  fr)
+Variant-Key: ("gzip " fr)
+</pre></div></div><div id="rfc.section.3.p.13"><p>The whitespace after “gzip” in the first header field value is excluded by the parsing algorithm, but the whitespace in the second header field value is included by the string parsing algorithm. This will likely cause the second header field value to fail to match client requests.</p></div><div id="rfc.section.3.p.14"><p><em>RFC EDITOR: Please remove the next paragraph before publication.</em></p></div><div id="rfc.section.3.p.15"><p>Implementations of drafts of this specification MUST implement an HTTP header field named “Variant-Key-##” instead of the “Variant-Key” header field specified by the final RFC, with “##” replaced by the draft number being implemented. For example, implementations of draft-ietf-httpbis-variants-05 would implement “Variant-Key-05”.</p></div></section><section id="cache"><h2 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#cache">Cache Behaviour</a></h2><div id="rfc.section.4.p.1"><p>Caches that implement the Variants header field and the relevant semantics of the field-names it contains can use that knowledge to either select an appropriate stored representation, or forward the request if no appropriate representation is stored.</p></div><div id="rfc.section.4.p.2" class="avoidbreakafter"><p>They do so by running this algorithm (or its functional equivalent) upon receiving a request:</p></div><div id="rfc.section.4.p.3" class="avoidbreakafter"><p>Given incoming-request (a mapping of field-names to field-values, after being combined as allowed by Section 3.2.2 of <a href="#RFC7230"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing">[RFC7230]</cite></a>), and stored-responses (a list of stored responses suitable for reuse as defined in Section 4 of <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, excepting the requirement to calculate a secondary cache key):</p></div><div id="rfc.section.4.p.4"><ol><li>If stored-responses is empty, return an empty list.</li><li>Order stored-responses by the “Date” header field, most recent to least recent.</li><li>Let sorted-variants be an empty list.</li><li>If the freshest member of stored-responses (as per <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, Section 4.2) has one or more “Variants” header field(s) that successfully parse according to <a href="#variants" title="The “Variants” HTTP Header Field">Section 2</a>: <ol><li>Select one member of stored-responses with a “Variants” header field-value(s) that successfully parses according to <a href="#variants" title="The “Variants” HTTP Header Field">Section 2</a> and let variants-header be this parsed value. This SHOULD be the most recent response, but MAY be from an older one as long as it is still fresh.</li><li>For each variant-axis in variants-header: <ol><li>If variant-axis’ field-name corresponds to the request header field identified by a content negotiation mechanism that the implementation supports: <ol><li>Let request-value be the field-value associated with field-name in incoming-request, or null if field-name is not in incoming-request.</li><li>Let sorted-values be the result of running the algorithm defined by the content negotiation mechanism with request-value and variant-axis’ available-values.</li><li>Append sorted-values to sorted-variants.</li></ol></li></ol> At this point, sorted-variants will be a list of lists, each member of the top-level list corresponding to a variant-axis in the Variants header field-value, containing zero or more items indicating available-values that are acceptable to the client, in order of preference, greatest to least.</li></ol></li><li>Return result of running Compute Possible Keys (<a href="#find" title="Compute Possible Keys">Section 4.1</a>) on sorted-variants, an empty list and an empty list.</li></ol></div><div id="rfc.section.4.p.5"><p>This returns a list of lists of strings suitable for comparing to the parsed Variant-Keys (<a href="#variant-key" title="The “Variant-Key” HTTP Header Field">Section 3</a>) that represent possible responses on the server that can be used to satisfy the request, in preference order, provided that their secondary cache key (after removing the headers covered by Variants) matches. <a href="#check_vary" title="Check Vary">Section 4.2</a> illustrates one way to do this.</p></div><section id="find"><h3 id="rfc.section.4.1"><a href="#rfc.section.4.1">4.1.</a> <a href="#find">Compute Possible Keys</a></h3><div id="rfc.section.4.1.p.1"><p>This algorithm computes the cross-product of the elements of key-facets.</p></div><div id="rfc.section.4.1.p.2" class="avoidbreakafter"><p>Given key-facets (a list of lists of strings), and key-stub (a list of strings representing a partial key), and possible-keys (a list of lists of strings):</p></div><div id="rfc.section.4.1.p.3"><ol><li>Let values be the first member of key-facets.</li><li>Let remaining-facets be a copy of all of the members of key-facets except the first.</li><li>For each value in values: <ol><li>Let this-key be a copy of key-stub.</li><li>Append value to this-key.</li><li>If remaining-facets is empty, append this-key to possible-keys.</li><li>Otherwise, run Compute Possible Keys on remaining-facets, this-key and possible-keys.</li></ol></li><li>Return possible-keys.</li></ol></div></section><section id="check_vary"><h3 id="rfc.section.4.2"><a href="#rfc.section.4.2">4.2.</a> <a href="#check_vary">Check Vary</a></h3><div id="rfc.section.4.2.p.1"><p>This algorithm is an example of how an implementation can meet the requirement to apply the members of the Vary header field that are not covered by Variants.</p></div><div id="rfc.section.4.2.p.2" class="avoidbreakafter"><p>Given incoming-request (a mapping of field-names to field-values, after being combined as allowed by Section 3.2.2 of <a href="#RFC7230"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing">[RFC7230]</cite></a>), and stored-response (a stored response):</p></div><div id="rfc.section.4.2.p.3"><ol><li>Let filtered-vary be the field-value(s) of stored-response’s “Vary” header field.</li><li>Let processed-variants be a list containing the request header fields that identify the content negotiation mechanisms supported by the implementation.</li><li>Remove any member of filtered-vary that is a case-insensitive match for a member of processed-variants.</li><li>If the secondary cache key (as calculated in <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, Section 4.1) for stored_response matches incoming-request, using filtered-vary for the value of the “Vary” response header, return True.</li><li>Return False.</li></ol></div><div id="rfc.section.4.2.p.4"><p>This returns a Boolean that indicates whether stored-response can be used to satisfy the request.</p></div><div id="rfc.section.4.2.p.5"><p>Note that implementation of the Vary header field varies in practice, and the algorithm above illustrates only one way to apply it. It is equally viable to forward the request if there is a request header listed in Vary but not Variants.</p></div></section><section id="example-of-cache-behaviour"><h3 id="rfc.section.4.3"><a href="#rfc.section.4.3">4.3.</a> <a href="#example-of-cache-behaviour">Example of Cache Behaviour</a></h3><div id="rfc.section.4.3.p.1" class="avoidbreakafter"><p>For example, if the selected variants-header was:</p></div><div id="rfc.figure.u.15"><div><pre class="text">
+Variants: Accept-Language=(en fr de), Accept-Encoding=(gzip br)
+</pre></div></div><div id="rfc.section.4.3.p.2" class="avoidbreakafter"><p>and the request contained the headers:</p></div><div id="rfc.figure.u.16"><div><pre class="text">
+Accept-Language: fr;q=1.0, en;q=0.1
+Accept-Encoding: gzip
+</pre></div></div><div id="rfc.section.4.3.p.3" class="avoidbreakafter"><p>Then the sorted-variants would be:</p></div><div id="rfc.figure.u.17"><div><pre class="text">
+[
+  ["fr", "en"]         // prefers French, will accept English
+  ["gzip", "identity"] // prefers gzip encoding, will accept identity
+]
+</pre></div></div><div id="rfc.section.4.3.p.4" class="avoidbreakafter"><p>Which means that the result of the <a href="#cache" title="Cache Behaviour">Cache Behaviour</a> algorithm would be:</p></div><div id="rfc.figure.u.18"><div><pre class="text">
+[
+  ["fr", "gzip"],
+  ["fr", "identity"],
+  ["en", "gzip"],
+  ["en", "identity"]
+]
+</pre></div></div><div id="rfc.section.4.3.p.5" class="avoidbreakafter"><p>Representing a first preference of a French, gzip’d response. Thus, if a cache has a response with:</p></div><div id="rfc.figure.u.19"><div><pre class="text">
+Variant-Key: (fr gzip)
+</pre></div></div><div id="rfc.section.4.3.p.6"><p>it could be used to satisfy the first preference. If not, responses corresponding to the other keys could be returned, or the request could be forwarded towards the origin.</p></div><section id="a-variant-missing-from-the-cache"><h4 id="rfc.section.4.3.1"><a href="#rfc.section.4.3.1">4.3.1.</a> <a href="#a-variant-missing-from-the-cache">A Variant Missing From the Cache</a></h4><div id="rfc.section.4.3.1.p.1" class="avoidbreakafter"><p>If the selected variants-header was:</p></div><div id="rfc.figure.u.20"><div><pre class="text">
+Variants: Accept-Language=(en fr de)
+</pre></div></div><div id="rfc.section.4.3.1.p.2" class="avoidbreakafter"><p>And a request comes in with the following headers:</p></div><div id="rfc.figure.u.21"><div><pre class="text">
+Accept-Language: de;q=1.0, es;q=0.8
+</pre></div></div><div id="rfc.section.4.3.1.p.3" class="avoidbreakafter"><p>Then sorted-variants in <a href="#cache" title="Cache Behaviour">Cache Behaviour</a> is:</p></div><div id="rfc.figure.u.22"><div><pre class="text">
+[
+  ["de"]         // prefers German; will not accept English
+]
+</pre></div></div><div id="rfc.section.4.3.1.p.4" class="avoidbreakafter"><p>If the cache contains responses with the following Variant-Keys:</p></div><div id="rfc.figure.u.23"><div><pre class="text">
+Variant-Key: (fr)
+Variant-Key: (en)
+</pre></div></div><div id="rfc.section.4.3.1.p.5"><p>Then the cache needs to forward the request to the origin server, since Variants indicates that “de” is available, and that is acceptable to the client.</p></div></section><section id="variants-that-dont-overlap-the-clients-request"><h4 id="rfc.section.4.3.2"><a href="#rfc.section.4.3.2">4.3.2.</a> <a href="#variants-that-dont-overlap-the-clients-request">Variants That Don’t Overlap the Client’s Request</a></h4><div id="rfc.section.4.3.2.p.1" class="avoidbreakafter"><p>If the selected variants-header was:</p></div><div id="rfc.figure.u.24"><div><pre class="text">
+Variants: Accept-Language=(en fr de)
+</pre></div></div><div id="rfc.section.4.3.2.p.2" class="avoidbreakafter"><p>And a request comes in with the following headers:</p></div><div id="rfc.figure.u.25"><div><pre class="text">
+Accept-Language: es;q=1.0, ja;q=0.8
+</pre></div></div><div id="rfc.section.4.3.2.p.3" class="avoidbreakafter"><p>Then sorted-variants in <a href="#cache" title="Cache Behaviour">Cache Behaviour</a> are:</p></div><div id="rfc.figure.u.26"><div><pre class="text">
+[
+  ["en"]
+]
+</pre></div></div><div id="rfc.section.4.3.2.p.4"><p>This allows the cache to return a “Variant-Key: en” response even though it’s not in the set the client prefers.</p></div></section></section></section><section id="origin"><h2 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#origin">Origin Server Behaviour</a></h2><div id="rfc.section.5.p.1"><p>Origin servers that wish to take advantage of Variants will need to generate both the Variants (<a href="#variants" title="The “Variants” HTTP Header Field">Section 2</a>) and Variant-Key (<a href="#variant-key" title="The “Variant-Key” HTTP Header Field">Section 3</a>) header fields in all cacheable responses for a given resource. If either is omitted and the response is stored, it will have the effect of disabling caching for that resource until it is no longer stored (e.g., it expires, or is evicted).</p></div><div id="rfc.section.5.p.2"><p>Likewise, origin servers will need to assure that the members of both header field values are in the same order and have the same length, since discrepancies will cause caches to avoid using the responses they occur in.</p></div><div id="rfc.section.5.p.3"><p>The value of the Variants header should be relatively stable for a given resource over time; when it changes, it can have the effect of invalidating previously stored responses.</p></div><div id="rfc.section.5.p.4"><p>As per <a href="#vary" title="Relationship to Vary">Section 2.1</a>, the Vary header is required to be set appropriately when Variants is in use, so that caches that do not implement this specification still operate correctly.</p></div><div id="rfc.section.5.p.5"><p>Origin servers are advised to carefully consider which content negotiation mechanisms to enumerate in Variants; if a mechanism is not supported by a receiving cache, it will “downgrade” to Vary handling, which can negatively impact cache efficiency.</p></div><section id="examples"><h3 id="rfc.section.5.1"><a href="#rfc.section.5.1">5.1.</a> <a href="#examples">Examples</a></h3><div id="rfc.section.5.1.p.1"><p>The operation of Variants is illustrated by the examples below.</p></div><section id="single-variant"><h4 id="rfc.section.5.1.1"><a href="#rfc.section.5.1.1">5.1.1.</a> <a href="#single-variant">Single Variant</a></h4><div id="rfc.section.5.1.1.p.1" class="avoidbreakafter"><p>Given a request/response pair:</p></div><div id="rfc.figure.u.27"><div><pre class="text">
+GET /clancy HTTP/1.1
+Host: www.example.com
+Accept-Language: en;q=1.0, fr;q=0.5
+
+</pre></div></div><div id="rfc.figure.u.28"><div><pre class="text">
+HTTP/1.1 200 OK
+Content-Type: image/gif
+Content-Language: en
+Cache-Control: max-age=3600
+Variants: Accept-Language=(en de)
+Variant-Key: (en)
+Vary: Accept-Language
+Transfer-Encoding: chunked
+</pre></div></div><div id="rfc.section.5.1.1.p.2"><p>Upon receipt of this response, the cache knows that two representations of this resource are available, one with a language of “en”, and another whose language is “de”.</p></div><div id="rfc.section.5.1.1.p.3"><p>Subsequent requests (while this response is fresh) will cause the cache to either reuse this response or forward the request, depending on what the selection algorithm determines.</p></div><div id="rfc.section.5.1.1.p.4"><p>So, if a request with “en” in Accept-Language is received and its q-value indicates that it is acceptable, the stored response is used. A request that indicates that “de” is acceptable will be forwarded to the origin, thereby populating the cache. A cache receiving a request that indicates both languages are acceptable will use the q-value to make a determination of what response to return.</p></div><div id="rfc.section.5.1.1.p.5"><p>A cache receiving a request that does not list either language as acceptable (or does not contain an Accept-Language at all) will return the “en” representation (possibly fetching it from the origin), since it is listed first in the Variants list.</p></div><div id="rfc.section.5.1.1.p.6"><p>Note that Accept-Language is listed in Vary, to assure backwards-compatibility with caches that do not support Variants.</p></div></section><section id="multiple-variants"><h4 id="rfc.section.5.1.2"><a href="#rfc.section.5.1.2">5.1.2.</a> <a href="#multiple-variants">Multiple Variants</a></h4><div id="rfc.section.5.1.2.p.1" class="avoidbreakafter"><p>A more complicated request/response pair:</p></div><div id="rfc.figure.u.29"><div><pre class="text">
+GET /murray HTTP/1.1
+Host: www.example.net
+Accept-Language: en;q=1.0, fr;q=0.5
+Accept-Encoding: gzip, br
+
+</pre></div></div><div id="rfc.figure.u.30"><div><pre class="text">
+HTTP/1.1 200 OK
+Content-Type: image/gif
+Content-Language: en
+Content-Encoding: br
+Variants: Accept-Language=(en jp de)
+Variants: Accept-Encoding=(br gzip)
+Variant-Key: (en br)
+Vary: Accept-Language, Accept-Encoding
+Transfer-Encoding: chunked
+</pre></div></div><div id="rfc.section.5.1.2.p.2"><p>Here, the cache knows that there are two axes that the response varies upon; language and encoding. Thus, there are a total of nine possible representations for the resource (including the identity encoding), and the cache needs to consider the selection algorithms for both axes.</p></div><div id="rfc.section.5.1.2.p.3"><p>Upon a subsequent request, if both selection algorithms return a stored representation, it can be served from cache; otherwise, the request will need to be forwarded to origin.</p></div></section><section id="partial"><h4 id="rfc.section.5.1.3"><a href="#rfc.section.5.1.3">5.1.3.</a> <a href="#partial">Partial Coverage</a></h4><div id="rfc.section.5.1.3.p.1" class="avoidbreakafter"><p>Now, consider the previous example, but where only one of the Vary’d axes (encoding) is listed in Variants:</p></div><div id="rfc.figure.u.31"><div><pre class="text">
+GET /bar HTTP/1.1
+Host: www.example.net
+Accept-Language: en;q=1.0, fr;q=0.5
+Accept-Encoding: gzip, br
+
+</pre></div></div><div id="rfc.figure.u.32"><div><pre class="text">
+HTTP/1.1 200 OK
+Content-Type: image/gif
+Content-Language: en
+Content-Encoding: br
+Variants: Accept-Encoding=(br gzip)
+Variant-Key: (br)
+Vary: Accept-Language, Accept-Encoding
+Transfer-Encoding: chunked
+</pre></div></div><div id="rfc.section.5.1.3.p.2"><p>Here, the cache will need to calculate a secondary cache key as per <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>, Section 4.1 – but considering only Accept-Language to be in its field-value – and then continue processing Variants for the set of stored responses that the algorithm described there selects.</p></div></section></section></section><section id="define"><h2 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#define">Defining Content Negotiation Using Variants</a></h2><div id="rfc.section.6.p.1" class="avoidbreakafter"><p>To be usable with Variants, proactive content negotiation mechanisms need to be specified to take advantage of it. Specifically, they:</p></div><div id="rfc.section.6.p.2"><ul><li>MUST define a request header field that advertises the clients preferences or capabilities. Often, its field-name will begin with “Accept-“, but this is not required.</li><li>MUST define the syntax of an available-value that will occur in Variants and Variant-Key.</li><li>MUST define an algorithm for selecting a result. It MUST return a list of available-values that are suitable for the request, in order of preference, given the value of the request header nominated above (or null if the request header is absent) and an available-values list from the Variants header. If the result is an empty list, it implies that the cache cannot satisfy the request.</li></ul></div><div id="rfc.section.6.p.3"><p><a href="#backports" title="Variants for Existing Content Negotiation Mechanisms">Appendix A</a> fulfils these requirements for some existing proactive content negotiation mechanisms in HTTP.</p></div></section><section id="iana-considerations"><h2 id="rfc.section.7"><a href="#rfc.section.7">7.</a> <a href="#iana-considerations">IANA Considerations</a></h2><div id="rfc.section.7.p.1" class="avoidbreakafter"><p>This specification registers the following entry in the Permanent Message Header Field Names registry established by <a href="#RFC3864"><cite title="Registration Procedures for Message Header Fields">[RFC3864]</cite></a>:</p></div><div id="rfc.section.7.p.2" class="avoidbreakafter"><ul><li>Header field name: Variants</li><li>Applicable protocol: http</li><li>Status: standard</li><li>Author/Change Controller: IETF</li><li>Specification document(s): [this document]</li><li>Related information:</li></ul></div><div id="rfc.section.7.p.3" class="avoidbreakafter"><p>This specification registers the following entry in the Permanent Message Header Field Names registry established by <a href="#RFC3864"><cite title="Registration Procedures for Message Header Fields">[RFC3864]</cite></a>:</p></div><div id="rfc.section.7.p.4" class="avoidbreakafter"><ul><li>Header field name: Variant-Key</li><li>Applicable protocol: http</li><li>Status: standard</li><li>Author/Change Controller: IETF</li><li>Specification document(s): [this document]</li><li>Related information:</li></ul></div></section><section id="security-considerations"><h2 id="rfc.section.8"><a href="#rfc.section.8">8.</a> <a href="#security-considerations">Security Considerations</a></h2><div id="rfc.section.8.p.1"><p>If the number or advertised characteristics of the representations available for a resource are considered sensitive, the Variants header by its nature will leak them.</p></div><div id="rfc.section.8.p.2"><p>Note that the Variants header is not a commitment to make representations of a certain nature available; the runtime behaviour of the server always overrides hints like Variants.</p></div></section><section id="rfc.references"><h2 id="rfc.section.9"><a href="#rfc.section.9">9.</a> References</h2><section><div id="rfc.references.1"><h3 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> Normative References</h3><dl class="reference"><dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt><dd>Nottingham, M. and P. Kamp, “<a href="https://tools.ietf.org/html/draft-ietf-httpbis-header-structure-19">Structured Field Values for HTTP</a>”, Internet-Draft draft-ietf-httpbis-header-structure-19 (<a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-header-structure">work in progress</a>), June 2020.</dd><dt id="RFC2119">[RFC2119]</dt><dd>Bradner, S., “<a href="https://www.rfc-editor.org/rfc/rfc2119.html">Key words for use in RFCs to Indicate Requirement Levels</a>”, BCP 14, RFC 2119, <a href="https://dx.doi.org/10.17487/RFC2119">DOI 10.17487/RFC2119</a>, March 1997, &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.</dd><dt id="RFC4647">[RFC4647]</dt><dd>Phillips, A. and M. Davis, “<a href="https://www.rfc-editor.org/rfc/rfc4647.html">Matching of Language Tags</a>”, BCP 47, RFC 4647, <a href="https://dx.doi.org/10.17487/RFC4647">DOI 10.17487/RFC4647</a>, September 2006, &lt;<a href="https://www.rfc-editor.org/info/rfc4647">https://www.rfc-editor.org/info/rfc4647</a>&gt;.</dd><dt id="RFC5234">[RFC5234]</dt><dd>Crocker, D., Ed. and P. Overell, “<a href="https://www.rfc-editor.org/rfc/rfc5234.html">Augmented BNF for Syntax Specifications: ABNF</a>”, STD 68, RFC 5234, <a href="https://dx.doi.org/10.17487/RFC5234">DOI 10.17487/RFC5234</a>, January 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.</dd><dt id="RFC6265">[RFC6265]</dt><dd>Barth, A., “<a href="https://www.rfc-editor.org/rfc/rfc6265.html">HTTP State Management Mechanism</a>”, RFC 6265, <a href="https://dx.doi.org/10.17487/RFC6265">DOI 10.17487/RFC6265</a>, April 2011, &lt;<a href="https://www.rfc-editor.org/info/rfc6265">https://www.rfc-editor.org/info/rfc6265</a>&gt;.</dd><dt id="RFC7230">[RFC7230]</dt><dd>Fielding, R., Ed. and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7230.html">Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing</a>”, RFC 7230, <a href="https://dx.doi.org/10.17487/RFC7230">DOI 10.17487/RFC7230</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7230">https://www.rfc-editor.org/info/rfc7230</a>&gt;.</dd><dt id="RFC7231">[RFC7231]</dt><dd>Fielding, R., Ed. and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7231.html">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>”, RFC 7231, <a href="https://dx.doi.org/10.17487/RFC7231">DOI 10.17487/RFC7231</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7231">https://www.rfc-editor.org/info/rfc7231</a>&gt;.</dd><dt id="RFC7234">[RFC7234]</dt><dd>Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7234.html">Hypertext Transfer Protocol (HTTP/1.1): Caching</a>”, RFC 7234, <a href="https://dx.doi.org/10.17487/RFC7234">DOI 10.17487/RFC7234</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7234">https://www.rfc-editor.org/info/rfc7234</a>&gt;.</dd><dt id="RFC8174">[RFC8174]</dt><dd>Leiba, B., “<a href="https://www.rfc-editor.org/rfc/rfc8174.html">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>”, BCP 14, RFC 8174, <a href="https://dx.doi.org/10.17487/RFC8174">DOI 10.17487/RFC8174</a>, May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> Informative References</h3><dl class="reference"><dt id="I-D.ietf-httpbis-client-hints">[I-D.ietf-httpbis-client-hints]</dt><dd>Grigorik, I. and Y. Weiss, “<a href="https://tools.ietf.org/html/draft-ietf-httpbis-client-hints-15">HTTP Client Hints</a>”, Internet-Draft draft-ietf-httpbis-client-hints-15 (<a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-client-hints">work in progress</a>), July 2020.</dd><dt id="RFC2295">[RFC2295]</dt><dd>Holtman, K. and A. Mutz, “<a href="https://www.rfc-editor.org/rfc/rfc2295.html">Transparent Content Negotiation in HTTP</a>”, RFC 2295, <a href="https://dx.doi.org/10.17487/RFC2295">DOI 10.17487/RFC2295</a>, March 1998, &lt;<a href="https://www.rfc-editor.org/info/rfc2295">https://www.rfc-editor.org/info/rfc2295</a>&gt;.</dd><dt id="RFC3864">[RFC3864]</dt><dd>Klyne, G., Nottingham, M., and J. Mogul, “<a href="https://www.rfc-editor.org/rfc/rfc3864.html">Registration Procedures for Message Header Fields</a>”, BCP 90, RFC 3864, <a href="https://dx.doi.org/10.17487/RFC3864">DOI 10.17487/RFC3864</a>, September 2004, &lt;<a href="https://www.rfc-editor.org/info/rfc3864">https://www.rfc-editor.org/info/rfc3864</a>&gt;.</dd></dl></div></section></section><section id="backports"><h2 id="rfc.section.A" class="np"><a href="#rfc.section.A">Appendix A.</a> <a href="#backports">Variants for Existing Content Negotiation Mechanisms</a></h2><div id="rfc.section.A.p.1"><p>This appendix defines the required information to use existing proactive content negotiation mechanisms (as defined in <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>, Section 5.3) with the Variants header field.</p></div><section id="content-type"><h3 id="rfc.section.A.1"><a href="#rfc.section.A.1">A.1.</a> <a href="#content-type">Accept</a></h3><div id="rfc.section.A.1.p.1"><p>This section defines variant handling for the Accept request header (section 5.3.2 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>).</p></div><div id="rfc.section.A.1.p.2" class="avoidbreakafter"><p>The syntax of an available-value for Accept is:</p></div><div id="rfc.figure.u.33"><div><pre class="inline">
+accept-available-value = type "/" subtype
+</pre></div></div><div id="rfc.section.A.1.p.3" class="avoidbreakafter"><p>To perform content negotiation for Accept given a request-value and available-values:</p></div><div id="rfc.section.A.1.p.4"><ol><li>Let preferred-available be an empty list.</li><li>Let preferred-types be a list of the types in the request-value (or the empty list if request-value is null), ordered by their weight, highest to lowest, as per Section 5.3.2 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a> (omitting any coding with a weight of 0). If a type lacks an explicit weight, an implementation MAY assign one.</li><li>For each preferred-type in preferred-types: <ol><li>If any member of available-values matches preferred-type, using the media-range matching mechanism specified in Section 5.3.2 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a> (which is case-insensitive), append those members of available-values to preferred-available (preserving the precedence order implied by the media ranges’ specificity).</li></ol></li><li>If preferred-available is empty, append the first member of available-values to preferred-available. This makes the first available-value the default when none of the client’s preferences are available.</li><li>Return preferred-available.</li></ol></div><div id="rfc.section.A.1.p.5"><p>Note that this algorithm explicitly ignores extension parameters on media types (e.g., “charset”).</p></div></section><section id="content-encoding"><h3 id="rfc.section.A.2"><a href="#rfc.section.A.2">A.2.</a> <a href="#content-encoding">Accept-Encoding</a></h3><div id="rfc.section.A.2.p.1"><p>This section defines variant handling for the Accept-Encoding request header (section 5.3.4 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>).</p></div><div id="rfc.section.A.2.p.2" class="avoidbreakafter"><p>The syntax of an available-value for Accept-Encoding is:</p></div><div id="rfc.figure.u.34"><div><pre class="inline">
+accept-encoding-available-value = content-coding / "identity"
+</pre></div></div><div id="rfc.section.A.2.p.3" class="avoidbreakafter"><p>To perform content negotiation for Accept-Encoding given a request-value and available-values:</p></div><div id="rfc.section.A.2.p.4"><ol><li>Let preferred-available be an empty list.</li><li>Let preferred-codings be a list of the codings in the request-value (or the empty list if request-value is null), ordered by their weight, highest to lowest, as per Section 5.3.1 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a> (omitting any coding with a weight of 0). If a coding lacks an explicit weight, an implementation MAY assign one.</li><li>If “identity” is not a member of preferred-codings, append “identity”.</li><li>Append “identity” to available-values.</li><li>For each preferred-coding in preferred-codings: <ol><li>If there is a case-insensitive, character-for-character match for preferred-coding in available-values, append that member of available-values to preferred-available.</li></ol></li><li>Return preferred-available.</li></ol></div><div id="rfc.section.A.2.p.5"><p>Note that the unencoded variant needs to have a Variant-Key header field with a value of “identity” (as defined in Section 5.3.4 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>).</p></div></section><section id="content-language"><h3 id="rfc.section.A.3"><a href="#rfc.section.A.3">A.3.</a> <a href="#content-language">Accept-Language</a></h3><div id="rfc.section.A.3.p.1"><p>This section defines variant handling for the Accept-Language request header (section 5.3.5 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>).</p></div><div id="rfc.section.A.3.p.2" class="avoidbreakafter"><p>The syntax of an available-value for Accept-Language is:</p></div><div id="rfc.figure.u.35"><div><pre class="inline">
+accept-encoding-available-value = language-range
+</pre></div></div><div id="rfc.section.A.3.p.3" class="avoidbreakafter"><p>To perform content negotiation for Accept-Language given a request-value and available-values:</p></div><div id="rfc.section.A.3.p.4"><ol><li>Let preferred-available be an empty list.</li><li>Let preferred-langs be a list of the language-ranges in the request-value (or the empty list if request-value is null), ordered by their weight, highest to lowest, as per Section 5.3.1 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a> (omitting any language-range with a weight of 0). If a language-range lacks a weight, an implementation MAY assign one.</li><li>For each preferred-lang in preferred-langs: <ol><li>If any member of available-values matches preferred-lang, using either the Basic or Extended Filtering scheme defined in Section 3.3 of <a href="#RFC4647"><cite title="Matching of Language Tags">[RFC4647]</cite></a>, append those members of available-values to preferred-available (preserving their order).</li></ol></li><li>If preferred-available is empty, append the first member of available-values to preferred-available. This makes the first available-value the default when none of the client’s preferences are available.</li><li>Return preferred-available.</li></ol></div></section><section id="cookie"><h3 id="rfc.section.A.4"><a href="#rfc.section.A.4">A.4.</a> <a href="#cookie">Cookie</a></h3><div id="rfc.section.A.4.p.1"><p>This section defines variant handling for the Cookie request header (<a href="#RFC6265"><cite title="HTTP State Management Mechanism">[RFC6265]</cite></a>).</p></div><div id="rfc.section.A.4.p.2" class="avoidbreakafter"><p>This syntax of an available-value for Cookie is:</p></div><div id="rfc.figure.u.36"><div><pre class="inline">
+cookie-available-value = cookie-name
+</pre></div></div><div id="rfc.section.A.4.p.3" class="avoidbreakafter"><p>To perform content negotiation for Cookie given a request-value and available-values:</p></div><div id="rfc.section.A.4.p.4"><ol><li>Let cookies-available be an empty list.</li><li>For each available-value of available-values: <ol><li>Parse request-value as a Cookie header field <a href="#RFC6265"><cite title="HTTP State Management Mechanism">[RFC6265]</cite></a> and let request-cookie-value be the cookie-value corresponding to a cookie with a cookie-name that matches available-value. If no match is found, continue to the next available-value.</li><li>append request-cookie-value to cookies-available.</li></ol></li><li>Return cookies-available.</li></ol></div><div id="rfc.section.A.4.p.5" class="avoidbreakafter"><p>A simple example is allowing a page designed for users that aren’t logged in (denoted by the <span class="tt">logged_in</span> cookie-name) to be cached:</p></div><div id="rfc.figure.u.37"><div><pre class="text">
+Variants: Cookie=(logged_in)
+Variant-Key: (0)
+Vary: Cookie
+</pre></div></div><div id="rfc.section.A.4.p.6"><p>Here, a cache that implements Variants will only use this response to satisfy requests with <span class="tt">Cookie: logged_in=0</span>. Caches that don’t implement Variants will vary the response on all Cookie headers.</p></div><div id="rfc.section.A.4.p.7" class="avoidbreakafter"><p>Or, consider this example:</p></div><div id="rfc.figure.u.38"><div><pre class="text">
+Variants: Cookie=(user_priority)
+Variant-Key: (silver), ("bronze")
+Vary: Cookie
+</pre></div></div><div id="rfc.section.A.4.p.8"><p>Here, the <span class="tt">user_priority</span> cookie-name allows requests from “gold” users to be separated from “silver” and “bronze” ones; this response is only served to the latter two.</p></div><div id="rfc.section.A.4.p.9" class="avoidbreakafter"><p>It is possible to target a response to a single user; for example:</p></div><div id="rfc.figure.u.39"><div><pre class="text">
+Variants: Cookie=(user_id)
+Variant-Key: (some_person)
+Vary: Cookie
+</pre></div></div><div id="rfc.section.A.4.p.10"><p>Here, only the “some_person” <span class="tt">user_id</span> will have this response served to them again.</p></div><div id="rfc.section.A.4.p.11" class="avoidbreakafter"><p>Note that if more than one cookie-name serves as a cache key, they’ll need to be listed in separate Variants members, like this:</p></div><div id="rfc.figure.u.40"><div><pre class="text">
+Variants: Cookie=(user_priority), Cookie=(user_region)
+Variant-Key: (gold europe)
+Vary: Cookie
+</pre></div></div></section></section><section id="acknowledgements"><h2 id="rfc.section.unnumbered-1"><a href="#acknowledgements">Acknowledgements</a></h2><div id="rfc.section.unnumbered-1.p.1"><p>This protocol is conceptually similar to, but simpler than, Transparent Content Negotiation <a href="#RFC2295"><cite title="Transparent Content Negotiation in HTTP">[RFC2295]</cite></a>. Thanks to its authors for their inspiration.</p></div><div id="rfc.section.unnumbered-1.p.2"><p>It is also a generalisation of a Fastly VCL feature designed by Rogier ‘DocWilco’ Mulhuijzen.</p></div><div id="rfc.section.unnumbered-1.p.3"><p>Thanks to Hooman Beheshti, Ilya Grigorik, Leif Hedstrom, and Jeffrey Yasskin for their review and input.</p></div></section><section id="rfc.authors" class="avoidbreakinside"><h2><a href="#rfc.authors">Author's Address</a></h2><address><b>Mark Nottingham</b><br>Fastly<br>made in<br>Prahran, VIC<br>Australia<br>EMail: <a href="mailto:mnot@mnot.net">mnot@mnot.net</a><br>URI: <a href="https://www.mnot.net/">https://www.mnot.net/</a></address></section></body></html>
