@@ -1,0 +1,49 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2020-10-06T00:35:36.116593+00:00",
+  "repo": "yoavweiss/http-extensions",
+  "labels": [
+    {
+      "name": "bug",
+      "description": null,
+      "color": "ee0701"
+    },
+    {
+      "name": "duplicate",
+      "description": null,
+      "color": "cccccc"
+    },
+    {
+      "name": "enhancement",
+      "description": null,
+      "color": "84b6eb"
+    },
+    {
+      "name": "help wanted",
+      "description": null,
+      "color": "33aa3f"
+    },
+    {
+      "name": "good first issue",
+      "description": null,
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": null,
+      "color": "e6e6e6"
+    },
+    {
+      "name": "question",
+      "description": null,
+      "color": "cc317c"
+    },
+    {
+      "name": "wontfix",
+      "description": null,
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": []
+}
