@@ -1,254 +1,1027 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>The Cache-Status HTTP Response Header Field</title><script>
-function anchorRewrite() {
-  map = { };
-  if (window.location.hash.length >= 1) {
-    var fragid = window.location.hash.substr(1);
-    if (fragid) {
-      if (! document.getElementById(fragid)) {
-        var prefix = "rfc.";
-        var mapped = map[fragid];
-        if (mapped) {
-          window.location.hash = mapped;
-        } else if (fragid.indexOf("section-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(8);
-        } else if (fragid.indexOf("appendix-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(9);
-        } else if (fragid.indexOf("s-") == 0) {
-          var postfix = fragid.substring(2);
-          if (postfix.startsWith("abstract")) {
-            window.location.hash = prefix + postfix;
-          } else if (postfix.startsWith("note-")) {
-            window.location.hash = prefix + "note." + postfix.substring(5);
-          } else {
-            window.location.hash = prefix + "section." + postfix;
-          }
-        } else if (fragid.indexOf("p-") == 0) {
-          var r = fragid.substring(2);
-          var p = r.indexOf("-");
-          if (p >= 0) {
-            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
-          }
-        }
-      }
-    }  
-  }
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>The Cache-Status HTTP Response Header Field</title>
+<meta content="Mark Nottingham" name="author">
+<meta content="
+       To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP's current caching model. 
+    " name="description">
+<meta content="xml2rfc 3.2.1" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-ietf-httpbis-cache-header" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.2.1
+    Python 3.8.5
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.4.0
+    html5lib 1.1
+    intervaltree 3.0.2
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.5.0
+    pycountry 19.8.18
+    pyflakes 2.1.1
+    PyYAML 5.3.1
+    requests 2.22.0
+    setuptools 45.2.0
+    six 1.14.0
+-->
+<link href="draft-ietf-httpbis-cache-header.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --small-font-size: 14.5px;
 }
-window.addEventListener('hashchange', anchorRewrite);
-window.addEventListener('DOMContentLoaded', anchorRewrite);
-</script><!--Specified as xml2rfc-ext-css-contents--><style>
 body {
-  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  color: #333;
-  font-size-adjust: 0.5;
-  line-height: 24px;
+  max-width: 600px;
   margin: 75px auto;
-  max-width: 624px;
   padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
 }
 
-.title, .filename, h1, h2, h3, h4, h5 {
-  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  font-size-adjust: 0.5;
-  font-weight: bold;
-  color: #333;
-  line-height: 100%;
-  margin: 1.2em 0 0.3em;
-}
-.title, #rfc\.title h1 { font-size: 32px; }
-h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
-h3, section h4, h4, section h5 { font-size: 16px; }
-h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
-  color: #333;
-}
-
-table {
-  margin-left: 0em;
-  border-collapse: collapse;
-}
-th {
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-td {
-  border-top: 1px solid #ddd;
-  vertical-align: top;
-}
-tr:nth-child(2n+1) > td,
-tr:nth-child(2n+1) > th {
-  background-color: #f9f9f9;
-}
-td.reference {
-  max-width: 200px;
-  border-top: none;
-  padding-right: 1em;
-}
-.right {
-  text-align: right;
-}
-
-
-table.header, table#rfc\.headerblock {
-  width: 100%;
-}
-table.header td, table#rfc\.headerblock td {
-  border: none;
-  background-color: transparent;
-  color: black;
-  padding: 0;
-}
-.filename {
-  display: block;
-  color: rgb(119, 119, 119);
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 100%;
-  margin: 10px 0 32px;
-}
-#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
-  font-size: 20px;
-  line-height: 28px;
-}
-
-samp, tt, code, pre, span.tt {
-  font-size: 13.5px;
-  font-family: Consolas, monospace;
-  font-size-adjust: none;
-}
-pre {
-  background-color: #eee;
-  border: 1px solid #ddd;
-  overflow-x: auto;
-  padding: 5px;
-  margin: 5px;
-}
-.figure, caption {
-  font-style: italic;
-  margin: 0 1.5em;
-  text-align: left;
-}
-
-address {
-  margin: 16px 2px;
-  line-height: 20px;
-}
-.vcard {
-  font-style: normal;
-}
-.vcardline {
-  display: block;
-}
-.vcardline .fn, address b {
-  font-weight: normal;
-}
-.vcardline .hidden {
+.ears {
   display: none;
 }
 
-dl {
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 26px;
+}
+h4, h5, h6 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
   margin-left: 1em;
 }
-dl.dl-horizontal: {
-  margin-left: 0;
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
 }
 dl > dt {
   float: left;
   margin-right: 1em;
 }
-dl.nohang > dt {
-  float: none;
-}
 dl > dd {
-  margin-bottom: .5em;
+  margin-bottom: .8em;
+  min-height: 1.3em;
 }
-dl.compact > dd {
+dl.compact > dd, .dlCompact > dd {
   margin-bottom: 0em;
 }
 dl > dd > dl {
   margin-top: 0.5em;
   margin-bottom: 0em;
 }
-ul.empty {
-  list-style-type: none;
-}
-ul.empty li {
-  margin-top: .5em;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid #eee;
-}
-hr.noprint {
+dd.break {
   display: none;
 }
 
-a {
+/* links */
+a, a[href].selfRef:hover {
   text-decoration: none;
 }
+a[href].selfRef {
+  color: var(--text-color);
+}
 a[href] {
-  color: #2a6496;
+  color: var(--link-color);
 }
 a[href]:hover {
-  background-color: #eee;
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
 }
 
-p, ol, ul, li {
-  padding: 0;
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
 }
-p {
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
   margin: 0.5em 0;
 }
-ol, ul {
-  margin: 0.2em 0 0.2em 2em;
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
 }
-li {
-  margin: 0.2em 0;
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
 }
-address {
-  font-style: normal;
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
 }
 
-ul.toc ul {
-  margin: 0 0 0 2em;
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
 }
-ul.toc li {
-  list-style: none;
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
   margin: 0;
 }
 
-@media screen and (min-width: 924px) {
-  body {
-    padding-right: 350px;
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  visibility: hidden;
+  user-select: none;
+}
+a.pilcrow[href] { color: #ddd; }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media screen {
+  :hover > a.pilcrow {
+    visibility: visible;
   }
-  body>ul.toc, body>#rfc\.toc {
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
     position: fixed;
     bottom: 0;
     right: 0;
-    right: calc(50vw - 500px);
-    width: 300px;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
     z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
     overflow: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
-  body>#rfc\.toc {
-    top: 55px;
+  #toc nav > ul  {
+    margin-bottom: 2em;
   }
-  body>ul.toc {
-    top: 100px;
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
   }
 
-  ul.toc {
-    margin: 0 0 0 4px;
-    font-size: 12px;
-    line-height: 20px;
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
   }
-  ul.toc ul {
-    margin-left: 1.2em;
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
   }
-}</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="License" href="#rfc.copyrightnotice"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 The Cache-Status HTTP Response Header Field" href="#rfc.section.2"><link rel="Chapter" title="3 Examples" href="#rfc.section.3"><link rel="Chapter" title="4 Defining New Proxy-Status Parameters" href="#rfc.section.4"><link rel="Chapter" title="5 IANA Considerations" href="#rfc.section.5"><link rel="Chapter" title="6 Security Considerations" href="#rfc.section.6"><link rel="Chapter" title="7 References" href="#rfc.section.7"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.1327, 2020/09/24 11:13:36, XSLT vendor: libxslt http://xmlsoft.org/XSLT/, via: https://github.com/cabo/kramdown-rfc2629 version 1.3.10"><meta name="keywords" content="Internet-Draft"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Nottingham, M."><meta name="dcterms.issued" content="2020-10-05"><meta name="dcterms.abstract" content="To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP’s current caching model."><meta name="description" content="To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP’s current caching model."></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">HTTP Working Group</td><td class="right">M. Nottingham</td></tr><tr><td class="left">Internet-Draft</td><td class="right">Fastly</td></tr><tr><td class="left">Intended status: Standards Track</td><td class="right">October 5, 2020</td></tr><tr><td class="left">Expires: April 8, 2021</td><td class="right"></td></tr></tbody></table><div id="rfc.title"><h1>The Cache-Status HTTP Response Header Field</h1><div class="filename"><a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-cache-header" class="smpl">draft-ietf-httpbis-cache-header-latest</a></div></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP’s current caching model.</p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Note to Readers</a></h2><div id="rfc.note.1.p.1"><p><em>RFC EDITOR: please remove this section before publication</em></p></div><div id="rfc.note.1.p.2"><p>Discussion of this draft takes place on the HTTP working group mailing list (ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.</p></div><div id="rfc.note.1.p.3"><p>Working Group information can be found at <a href="https://httpwg.org/">https://httpwg.org/</a>; source code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/cache-header">https://github.com/httpwg/http-extensions/labels/cache-header</a>.</p></div></section><section id="rfc.status"><h2><a href="#rfc.status">Status of this Memo</a></h2><div id="rfc.boilerplate.1.p.1"><p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p></div><div id="rfc.boilerplate.1.p.2"><p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p></div><div id="rfc.boilerplate.1.p.3"><p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as “work in progress”.</p></div><div id="rfc.boilerplate.1.p.4"><p>This Internet-Draft will expire on April 8, 2021.</p></div></section><section id="rfc.copyrightnotice"><h2><a href="#rfc.copyrightnotice">Copyright Notice</a></h2><div id="rfc.boilerplate.2.p.1"><p>Copyright (c) 2020 IETF Trust and the persons identified as the document authors. All rights reserved.</p></div><div id="rfc.boilerplate.2.p.2"><p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>   <a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>   <a href="#notational-conventions">Notational Conventions</a></li></ul></li><li><a href="#rfc.section.2">2.</a>   <a href="#field">The Cache-Status HTTP Response Header Field</a><ul><li><a href="#rfc.section.2.1">2.1.</a>   <a href="#the-hit-parameter">The hit parameter</a></li><li><a href="#rfc.section.2.2">2.2.</a>   <a href="#the-fwd-parameter">The fwd parameter</a></li><li><a href="#rfc.section.2.3">2.3.</a>   <a href="#the-fwd-status-parameter">The fwd-status parameter</a></li><li><a href="#rfc.section.2.4">2.4.</a>   <a href="#the-ttl-parameter">The ttl parameter</a></li><li><a href="#rfc.section.2.5">2.5.</a>   <a href="#the-stored-parameter">The stored parameter</a></li><li><a href="#rfc.section.2.6">2.6.</a>   <a href="#the-collapsed-parameter">The collapsed parameter</a></li><li><a href="#rfc.section.2.7">2.7.</a>   <a href="#the-key-parameter">The key parameter</a></li><li><a href="#rfc.section.2.8">2.8.</a>   <a href="#the-detail-parameter">The detail parameter</a></li></ul></li><li><a href="#rfc.section.3">3.</a>   <a href="#examples">Examples</a></li><li><a href="#rfc.section.4">4.</a>   <a href="#register">Defining New Proxy-Status Parameters</a></li><li><a href="#rfc.section.5">5.</a>   <a href="#iana-considerations">IANA Considerations</a></li><li><a href="#rfc.section.6">6.</a>   <a href="#security-considerations">Security Considerations</a></li><li><a href="#rfc.section.7">7.</a>   <a href="#rfc.references">References</a><ul><li><a href="#rfc.section.7.1">7.1.</a>   <a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.7.2">7.2.</a>   <a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.authors">Author's Address</a></li></ul></nav><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> <a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1"><p>To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. Unfortunately, the semantics of these headers are often unclear, and both the semantics and syntax used vary greatly between implementations.</p></div><div id="rfc.section.1.p.2"><p>This specification defines a single, new HTTP response header field, “Cache-Status” for this purpose.</p></div><section id="notational-conventions"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a> <a href="#notational-conventions">Notational Conventions</a></h3><div id="rfc.section.1.1.p.1"><p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in BCP 14 <a href="#RFC2119"><cite title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</cite></a> <a href="#RFC8174"><cite title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">[RFC8174]</cite></a> when, and only when, they appear in all capitals, as shown here.</p></div><div id="rfc.section.1.1.p.2"><p>This document uses ABNF as defined in <a href="#RFC5234"><cite title="Augmented BNF for Syntax Specifications: ABNF">[RFC5234]</cite></a>, along with the “%s” extension for case sensitivity defined in <a href="#RFC7405"><cite title="Case-Sensitive String Support in ABNF">[RFC7405]</cite></a>.</p></div></section></section><section id="field"><h2 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#field">The Cache-Status HTTP Response Header Field</a></h2><div id="rfc.section.2.p.1"><p>The Cache-Status HTTP response header indicates caches’ handling of the request corresponding to the response it occurs within.</p></div><div id="rfc.section.2.p.2" class="avoidbreakafter"><p>Its value is a List <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>:</p></div><div id="rfc.figure.u.1"><div><pre class="inline">
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">Cache-Status Header</td>
+<td class="right">November 2020</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Nottingham</td>
+<td class="center">Expires 6 May 2021</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HTTP</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-httpbis-cache-header</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2020-11-02" class="published">2 November 2020</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2021-05-06">6 May 2021</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">M. Nottingham</div>
+<div class="org">Fastly</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">The Cache-Status HTTP Response Header Field</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. This specification codifies that practice and updates it to align with HTTP's current caching model.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-note-to-readers">
+<a href="#name-note-to-readers" class="section-name selfRef">Note to Readers</a>
+      </h2>
+<p id="section-note.1-1"><em>RFC EDITOR: please remove this section before publication</em><a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this draft takes place on the HTTP working group mailing list
+(ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Working Group information can be found at <a href="https://httpwg.org/">https://httpwg.org/</a>; source
+code and issues list for this draft can be found at
+<a href="https://github.com/httpwg/http-extensions/labels/cache-header">https://github.com/httpwg/http-extensions/labels/cache-header</a>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 6 May 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2020 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-notational-conventions" class="xref">Notational Conventions</a><a href="#section-toc.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-the-cache-status-http-respo" class="xref">The Cache-Status HTTP Response Header Field</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-the-hit-parameter" class="xref">The hit parameter</a><a href="#section-toc.1-1.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-the-fwd-parameter" class="xref">The fwd parameter</a><a href="#section-toc.1-1.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-the-fwd-status-parameter" class="xref">The fwd-status parameter</a><a href="#section-toc.1-1.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-the-ttl-parameter" class="xref">The ttl parameter</a><a href="#section-toc.1-1.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.5">
+                <p id="section-toc.1-1.2.2.5.1"><a href="#section-2.5" class="xref">2.5</a>.  <a href="#name-the-stored-parameter" class="xref">The stored parameter</a><a href="#section-toc.1-1.2.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.6">
+                <p id="section-toc.1-1.2.2.6.1"><a href="#section-2.6" class="xref">2.6</a>.  <a href="#name-the-collapsed-parameter" class="xref">The collapsed parameter</a><a href="#section-toc.1-1.2.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.7">
+                <p id="section-toc.1-1.2.2.7.1"><a href="#section-2.7" class="xref">2.7</a>.  <a href="#name-the-key-parameter" class="xref">The key parameter</a><a href="#section-toc.1-1.2.2.7.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.2.2.8">
+                <p id="section-toc.1-1.2.2.8.1"><a href="#section-2.8" class="xref">2.8</a>.  <a href="#name-the-detail-parameter" class="xref">The detail parameter</a><a href="#section-toc.1-1.2.2.8.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-examples" class="xref">Examples</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-defining-new-proxy-status-p" class="xref">Defining New Proxy-Status Parameters</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.7.1" class="pilcrow">¶</a></p>
+<ul class="ulEmpty compact toc">
+<li class="ulEmpty compact toc" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="ulEmpty compact toc" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulEmpty compact toc" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a><a href="#section-toc.1-1.8.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">To aid debugging, HTTP caches often append header fields to a response explaining how they handled the request. Unfortunately, the semantics of these headers are often unclear, and both the semantics and syntax used vary greatly between implementations.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This specification defines a single, new HTTP response header field, "Cache-Status" for this purpose.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<div id="notational-conventions">
+<section id="section-1.1">
+        <h3 id="name-notational-conventions">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT",
+"RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they appear in all capitals, as
+shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">This document uses ABNF as defined in <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span>, along with the "%s" extension for case sensitivity defined in <span>[<a href="#RFC7405" class="xref">RFC7405</a>]</span>.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="field">
+<section id="section-2">
+      <h2 id="name-the-cache-status-http-respo">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-the-cache-status-http-respo" class="section-name selfRef">The Cache-Status HTTP Response Header Field</a>
+      </h2>
+<p id="section-2-1">The Cache-Status HTTP response header indicates caches' handling of the request corresponding to the response it occurs within.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">Its value is a List <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span>:<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-abnf" id="section-2-3">
+<pre>
 Cache-Status   = sf-list
-</pre></div></div><div id="rfc.section.2.p.3"><p>Each member of the list represents a cache that has handled the request. The first member of the list represents the cache closest to the origin server, and the last member of the list represents the cache closest to the client (possibly including the user agent’s cache itself, if it chooses to append a value).</p></div><div id="rfc.section.2.p.4"><p>Caches determine when it is appropriate to add the Cache-Status header field to a response. Some might add it to all responses, whereas others might only do so when specifically configured to, or when the request contains a header that activates a debugging mode.</p></div><div id="rfc.section.2.p.5"><p>When adding a value to the Cache-Status header field, caches SHOULD preserve the existing contents of the header field, to allow debugging of the entire chain of caches handling the request.</p></div><div id="rfc.section.2.p.6"><p>Each list member identifies the cache that inserted that value, and MUST be a String or Token. Depending on the deployment, this might be a product or service name (e.g., ExampleCache or “Example CDN”), a hostname (“cache-3.example.com”), and IP address, or a generated string.</p></div><div id="rfc.section.2.p.7"><p>Each member of the list can also have parameters that describe that cache’s handling of the request. While all of these parameters are OPTIONAL, caches are encouraged to provide as much information as possible.</p></div><div id="rfc.section.2.p.8" class="avoidbreakafter"><p>This specification defines these parameters:</p></div><div id="rfc.figure.u.2"><div><pre class="inline">
+</pre><a href="#section-2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2-4">Each member of the list represents a cache that has handled the request. The first member of the list represents the cache closest to the origin server, and the last member of the list represents the cache closest to the client (possibly including the user agent's cache itself, if it chooses to append a value).<a href="#section-2-4" class="pilcrow">¶</a></p>
+<p id="section-2-5">Caches determine when it is appropriate to add the Cache-Status header field to a response. Some might add it to all responses, whereas others might only do so when specifically configured to, or when the request contains a header that activates a debugging mode.<a href="#section-2-5" class="pilcrow">¶</a></p>
+<p id="section-2-6">When adding a value to the Cache-Status header field, caches SHOULD preserve the existing contents of the header field, to allow debugging of the entire chain of caches handling the request.<a href="#section-2-6" class="pilcrow">¶</a></p>
+<p id="section-2-7">Each list member identifies the cache that inserted that value, and MUST be a String or Token. Depending on the deployment, this might be a product or service name (e.g., ExampleCache or "Example CDN"), a hostname ("cache-3.example.com"), and IP address, or a generated string.<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">Each member of the list can also have parameters that describe that cache's handling of the request. While all of these parameters are OPTIONAL, caches are encouraged to provide as much information as possible.<a href="#section-2-8" class="pilcrow">¶</a></p>
+<p id="section-2-9">This specification defines these parameters:<a href="#section-2-9" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-abnf" id="section-2-10">
+<pre>
 hit          = sf-boolean
 fwd          = sf-token
 fwd-status   = sf-integer
@@ -257,23 +1030,280 @@ stored       = sf-boolean
 collapsed    = sf-boolean
 key          = sf-string
 detail       = sf-token / sf-string
-</pre></div></div><section id="the-hit-parameter"><h3 id="rfc.section.2.1"><a href="#rfc.section.2.1">2.1.</a> <a href="#the-hit-parameter">The hit parameter</a></h3><div id="rfc.section.2.1.p.1"><p>“hit”, when true, indicates that the request was satisfied by the cache; i.e., it did not go forward, and the response was obtained from the cache. A response that originally was produced by the origin but was modified by the cache (for example, a 304 or 206 status code) is still considered a hit.</p></div><div id="rfc.section.2.1.p.2"><p>“hit” and “fwd” are exclusive; only one of them should appear on each list member.</p></div></section><section id="the-fwd-parameter"><h3 id="rfc.section.2.2"><a href="#rfc.section.2.2">2.2.</a> <a href="#the-fwd-parameter">The fwd parameter</a></h3><div id="rfc.section.2.2.p.1"><p>“fwd” indicates that the request went forward towards the origin, and why.</p></div><div id="rfc.section.2.2.p.2" class="avoidbreakafter"><p>The following values are defined to explain why the request went forward:</p></div><div id="rfc.section.2.2.p.3"><ul><li>uri-miss - The cache did not contain any responses that matched the request URI</li><li>vary-miss - The cache contained a response that matched the request URI, but could not select a response based upon this request’s headers and stored Vary headers.</li><li>miss - The cache did not contain any responses that could be used to satisfy this request (to be used when an implementation cannot distinguish between uri-miss and vary-miss)</li><li>stale - The cache was able to select a response for the request, but it was stale</li><li>request - The cache was able to select a fresh response for the request, but client request headers (e.g., Cache-Control request directives) did not allow its use</li><li>bypass - The cache was configured to not handle this request</li></ul></div></section><section id="the-fwd-status-parameter"><h3 id="rfc.section.2.3"><a href="#rfc.section.2.3">2.3.</a> <a href="#the-fwd-status-parameter">The fwd-status parameter</a></h3><div id="rfc.section.2.3.p.1"><p>“fwd-status” indicates what status code the next hop server returned in response to the request. Only meaningful when “fwd” is present; if “fwd-status” is not present but “fwd” is, it defaults to the status code sent in the response.</p></div><div id="rfc.section.2.3.p.2"><p>This parameter is useful to distinguish cases when the next hop server sends a 304 Not Modified response to a conditional request, or a 206 Partial Response because of a range request.</p></div></section><section id="the-ttl-parameter"><h3 id="rfc.section.2.4"><a href="#rfc.section.2.4">2.4.</a> <a href="#the-ttl-parameter">The ttl parameter</a></h3><div id="rfc.section.2.4.p.1"><p>“ttl” indicates the response’s remaining freshness lifetime as calculated by the cache, as an integer number of seconds, measured when the response is sent by the cache. This includes freshness assigned by the cache; e.g., through heuristics, local configuration, or other factors. May be negative, to indicate staleness.</p></div></section><section id="the-stored-parameter"><h3 id="rfc.section.2.5"><a href="#rfc.section.2.5">2.5.</a> <a href="#the-stored-parameter">The stored parameter</a></h3><div id="rfc.section.2.5.p.1"><p>“stored” indicates whether the cache stored the response; a true value indicates that it did. Only meaningful when fwd is present.</p></div></section><section id="the-collapsed-parameter"><h3 id="rfc.section.2.6"><a href="#rfc.section.2.6">2.6.</a> <a href="#the-collapsed-parameter">The collapsed parameter</a></h3><div id="rfc.section.2.6.p.1"><p>“collapsed” indicates whether this request was collapsed together with one or more other forward requests; if true, the response was successfully reused; if not, a new request had to be made. If not present, the request was not collapsed with others. Only meaningful when fwd is present.</p></div></section><section id="the-key-parameter"><h3 id="rfc.section.2.7"><a href="#rfc.section.2.7">2.7.</a> <a href="#the-key-parameter">The key parameter</a></h3><div id="rfc.section.2.7.p.1"><p>“key” conveys a representation of the cache key used for the response. Note that this may be implementation-specific.</p></div></section><section id="the-detail-parameter"><h3 id="rfc.section.2.8"><a href="#rfc.section.2.8">2.8.</a> <a href="#the-detail-parameter">The detail parameter</a></h3><div id="rfc.section.2.8.p.1"><p>“detail” allows implementations to convey additional information not captured in other parameters; for example, implementation-specific states, or other caching-related metrics.</p></div><div id="rfc.section.2.8.p.2" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.3"><div><pre class="text">
+</pre><a href="#section-2-10" class="pilcrow">¶</a>
+</div>
+<div id="the-hit-parameter">
+<section id="section-2.1">
+        <h3 id="name-the-hit-parameter">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-the-hit-parameter" class="section-name selfRef">The hit parameter</a>
+        </h3>
+<p id="section-2.1-1">"hit", when true, indicates that the request was satisfied by the cache; i.e., it did not go forward, and the response was obtained from the cache. A response that originally was produced by the origin but was modified by the cache (for example, a 304 or 206 status code) is still considered a hit.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">"hit" and "fwd" are exclusive; only one of them should appear on each list member.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-fwd-parameter">
+<section id="section-2.2">
+        <h3 id="name-the-fwd-parameter">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-the-fwd-parameter" class="section-name selfRef">The fwd parameter</a>
+        </h3>
+<p id="section-2.2-1">"fwd" indicates that the request went forward towards the origin, and why.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">The following values are defined to explain why the request went forward:<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-3.1">uri-miss - The cache did not contain any responses that matched the request URI<a href="#section-2.2-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-3.2">vary-miss - The cache contained a response that matched the request URI, but could not select a response based upon this request's headers and stored Vary headers.<a href="#section-2.2-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-3.3">miss - The cache did not contain any responses that could be used to satisfy this request (to be used when an implementation cannot distinguish between uri-miss and vary-miss)<a href="#section-2.2-3.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-3.4">stale - The cache was able to select a response for the request, but it was stale<a href="#section-2.2-3.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-3.5">request - The cache was able to select a fresh response for the request, but client request headers (e.g., Cache-Control request directives) did not allow its use<a href="#section-2.2-3.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-3.6">bypass - The cache was configured to not handle this request<a href="#section-2.2-3.6" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="the-fwd-status-parameter">
+<section id="section-2.3">
+        <h3 id="name-the-fwd-status-parameter">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-the-fwd-status-parameter" class="section-name selfRef">The fwd-status parameter</a>
+        </h3>
+<p id="section-2.3-1">"fwd-status" indicates what status code the next hop server returned in response to the request. Only meaningful when "fwd" is present; if "fwd-status" is not present but "fwd" is, it defaults to the status code sent in the response.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">This parameter is useful to distinguish cases when the next hop server sends a 304 Not Modified response to a conditional request, or a 206 Partial Response because of a range request.<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-ttl-parameter">
+<section id="section-2.4">
+        <h3 id="name-the-ttl-parameter">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-the-ttl-parameter" class="section-name selfRef">The ttl parameter</a>
+        </h3>
+<p id="section-2.4-1">"ttl" indicates the response's remaining freshness lifetime as calculated by the cache, as an integer number of seconds, measured when the response is sent by the cache. This includes freshness assigned by the cache; e.g., through heuristics, local configuration, or other factors. May be negative, to indicate staleness.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-stored-parameter">
+<section id="section-2.5">
+        <h3 id="name-the-stored-parameter">
+<a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-the-stored-parameter" class="section-name selfRef">The stored parameter</a>
+        </h3>
+<p id="section-2.5-1">"stored" indicates whether the cache stored the response; a true value indicates that it did. Only meaningful when fwd is present.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-collapsed-parameter">
+<section id="section-2.6">
+        <h3 id="name-the-collapsed-parameter">
+<a href="#section-2.6" class="section-number selfRef">2.6. </a><a href="#name-the-collapsed-parameter" class="section-name selfRef">The collapsed parameter</a>
+        </h3>
+<p id="section-2.6-1">"collapsed" indicates whether this request was collapsed together with one or more other forward requests; if true, the response was successfully reused; if not, a new request had to be made. If not present, the request was not collapsed with others. Only meaningful when fwd is present.<a href="#section-2.6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-key-parameter">
+<section id="section-2.7">
+        <h3 id="name-the-key-parameter">
+<a href="#section-2.7" class="section-number selfRef">2.7. </a><a href="#name-the-key-parameter" class="section-name selfRef">The key parameter</a>
+        </h3>
+<p id="section-2.7-1">"key" conveys a representation of the cache key used for the response. Note that this may be implementation-specific.<a href="#section-2.7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-detail-parameter">
+<section id="section-2.8">
+        <h3 id="name-the-detail-parameter">
+<a href="#section-2.8" class="section-number selfRef">2.8. </a><a href="#name-the-detail-parameter" class="section-name selfRef">The detail parameter</a>
+        </h3>
+<p id="section-2.8-1">"detail" allows implementations to convey additional information not captured in other parameters; for example, implementation-specific states, or other caching-related metrics.<a href="#section-2.8-1" class="pilcrow">¶</a></p>
+<p id="section-2.8-2">For example:<a href="#section-2.8-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2.8-3">
+<pre>
 Cache-Status: ExampleCache; hit; detail=MEMORY
-</pre></div></div><div id="rfc.section.2.8.p.3"><p>The semantics of a detail parameter are always specific to the cache that sent it; even if a member of details from another cache shares the same name, it might not mean the same thing.</p></div><div id="rfc.section.2.8.p.4"><p>This parameter is intentionally limited. If an implementation needs to convey additional information, they are encouraged to register extension parameters (see <a href="#register" title="Defining New Proxy-Status Parameters">Section 4</a>) or define another header field.</p></div></section></section><section id="examples"><h2 id="rfc.section.3"><a href="#rfc.section.3">3.</a> <a href="#examples">Examples</a></h2><div id="rfc.section.3.p.1" class="avoidbreakafter"><p>The most minimal cache hit:</p></div><div id="rfc.figure.u.4"><div><pre class="text">
+</pre><a href="#section-2.8-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2.8-4">The semantics of a detail parameter are always specific to the cache that sent it; even if a member of details from another cache shares the same name, it might not mean the same thing.<a href="#section-2.8-4" class="pilcrow">¶</a></p>
+<p id="section-2.8-5">This parameter is intentionally limited. If an implementation needs to convey additional information, they are encouraged to register extension parameters (see <a href="#register" class="xref">Section 4</a>) or define another header field.<a href="#section-2.8-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="examples">
+<section id="section-3">
+      <h2 id="name-examples">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+      </h2>
+<p id="section-3-1">The most minimal cache hit:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-2">
+<pre>
 Cache-Status: ExampleCache; hit
-</pre></div></div><div id="rfc.section.3.p.2" class="avoidbreakafter"><p>… but a polite cache will give some more information, e.g.:</p></div><div id="rfc.figure.u.5"><div><pre class="text">
+</pre><a href="#section-3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3-3">... but a polite cache will give some more information, e.g.:<a href="#section-3-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-4">
+<pre>
 Cache-Status: ExampleCache; hit; ttl=376
-</pre></div></div><div id="rfc.section.3.p.3" class="avoidbreakafter"><p>A stale hit just has negative freshness:</p></div><div id="rfc.figure.u.6"><div><pre class="text">
+</pre><a href="#section-3-4" class="pilcrow">¶</a>
+</div>
+<p id="section-3-5">A stale hit just has negative freshness:<a href="#section-3-5" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-6">
+<pre>
 Cache-Status: ExampleCache; hit; ttl=-412
-</pre></div></div><div id="rfc.section.3.p.4" class="avoidbreakafter"><p>Whereas a complete miss is:</p></div><div id="rfc.figure.u.7"><div><pre class="text">
+</pre><a href="#section-3-6" class="pilcrow">¶</a>
+</div>
+<p id="section-3-7">Whereas a complete miss is:<a href="#section-3-7" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-8">
+<pre>
 Cache-Status: ExampleCache; fwd=uri-miss
-</pre></div></div><div id="rfc.section.3.p.5" class="avoidbreakafter"><p>A miss that successfully validated on the back-end server:</p></div><div id="rfc.figure.u.8"><div><pre class="text">
+</pre><a href="#section-3-8" class="pilcrow">¶</a>
+</div>
+<p id="section-3-9">A miss that successfully validated on the back-end server:<a href="#section-3-9" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-10">
+<pre>
 Cache-Status: ExampleCache; fwd=stale; fwd-status=304
-</pre></div></div><div id="rfc.section.3.p.6" class="avoidbreakafter"><p>A miss that was collapsed with another request:</p></div><div id="rfc.figure.u.9"><div><pre class="text">
+</pre><a href="#section-3-10" class="pilcrow">¶</a>
+</div>
+<p id="section-3-11">A miss that was collapsed with another request:<a href="#section-3-11" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-12">
+<pre>
 Cache-Status: ExampleCache; fwd=uri-miss; collapsed
-</pre></div></div><div id="rfc.section.3.p.7" class="avoidbreakafter"><p>A miss that the cache attempted to collapse, but couldn’t:</p></div><div id="rfc.figure.u.10"><div><pre class="text">
+</pre><a href="#section-3-12" class="pilcrow">¶</a>
+</div>
+<p id="section-3-13">A miss that the cache attempted to collapse, but couldn't:<a href="#section-3-13" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-14">
+<pre>
 Cache-Status: ExampleCache; fwd=uri-miss; collapsed=?0
-</pre></div></div><div id="rfc.section.3.p.8" class="avoidbreakafter"><p>Going through two layers of caching, both of which were hits, and the second collapsed with other requests:</p></div><div id="rfc.figure.u.11"><div><pre class="text">
+</pre><a href="#section-3-14" class="pilcrow">¶</a>
+</div>
+<p id="section-3-15">Going through two layers of caching, both of which were hits, and the second collapsed with other requests:<a href="#section-3-15" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3-16">
+<pre>
 Cache-Status: OriginCache; hit; ttl=1100; collapsed,
               "CDN Company Here"; hit; ttl=545
-</pre></div></div></section><section id="register"><h2 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#register">Defining New Proxy-Status Parameters</a></h2><div id="rfc.section.4.p.1"><p>New Cache-Status Parameters can be defined by registering them in the HTTP Cache-Status Parameters registry.</p></div><div id="rfc.section.4.p.2"><p>Registration requests are reviewed and approved by a Designated Expert, as per <a href="#RFC8126"><cite title="Guidelines for Writing an IANA Considerations Section in RFCs">[RFC8126]</cite></a>, Section 4.5. A specification document is appreciated, but not required.</p></div><div id="rfc.section.4.p.3" class="avoidbreakafter"><p>The Expert(s) should consider the following factors when evaluating requests:</p></div><div id="rfc.section.4.p.4"><ul><li>Community feedback</li><li>If the value is sufficiently well-defined</li><li>Generic parameters are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the parameter’s name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).</li></ul></div><div id="rfc.section.4.p.5" class="avoidbreakafter"><p>Registration requests should use the following template:</p></div><div id="rfc.section.4.p.6"><ul><li>Name: [a name for the Cache-Status Parameter that matches key]</li><li>Description: [a description of the parameter semantics and value]</li><li>Reference: [to a specification defining this parameter]</li></ul></div><div id="rfc.section.4.p.7"><p>See the registry at <a href="https://iana.org/assignments/http-cache-status">https://iana.org/assignments/http-cache-status</a> for details on where to send registration requests.</p></div></section><section id="iana-considerations"><h2 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#iana-considerations">IANA Considerations</a></h2><div id="rfc.section.5.p.1"><p>Upon publication, please create the HTTP Cache-Status Parameters registry at <a href="https://iana.org/assignments/http-cache-status">https://iana.org/assignments/http-cache-status</a> and populate it with the types defined in <a href="#field" title="The Cache-Status HTTP Response Header Field">Section 2</a>; see <a href="#register" title="Defining New Proxy-Status Parameters">Section 4</a> for its associated procedures.</p></div></section><section id="security-considerations"><h2 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#security-considerations">Security Considerations</a></h2><div id="rfc.section.6.p.1"><p>Attackers can use the information in Cache-Status to probe the behaviour of the cache (and other components), and infer the activity of those using the cache. The Cache-Status header field may not create these risks on its own, but can assist attackers in exploiting them.</p></div><div id="rfc.section.6.p.2"><p>For example, knowing if a cache has stored a response can help an attacker execute a timing attack on sensitive data. Exposing the cache key can help an attacker understand modifications to the cache key, which may assist cache poisoning attacks. See <a href="#ENTANGLE"><cite title="Web Cache Entanglement: Novel Pathways to Poisoning">[ENTANGLE]</cite></a> for details.</p></div><div id="rfc.section.6.p.3"><p>The underlying risks can be mitigated with a variety of techniques (e.g., use of encryption and authentication; avoiding the inclusion of attacker-controlled data in the cache key), depending on their exact nature.</p></div><div id="rfc.section.6.p.4"><p>To avoid assisting such attacks, the Cache-Status header field can be omitted, only sent when the client is authorized to receive it, or only send sensitive information (e.g., the key parameter) when the client is authorized.</p></div></section><section id="rfc.references"><h2 id="rfc.section.7"><a href="#rfc.section.7">7.</a> References</h2><section><div id="rfc.references.1"><h3 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> Normative References</h3><dl class="reference"><dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt><dd>Nottingham, M. and P. Kamp, “<a href="https://tools.ietf.org/html/draft-ietf-httpbis-header-structure-19">Structured Field Values for HTTP</a>”, Internet-Draft draft-ietf-httpbis-header-structure-19 (<a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-header-structure">work in progress</a>), June 2020.</dd><dt id="RFC2119">[RFC2119]</dt><dd>Bradner, S., “<a href="https://www.rfc-editor.org/rfc/rfc2119.html">Key words for use in RFCs to Indicate Requirement Levels</a>”, BCP 14, RFC 2119, <a href="https://dx.doi.org/10.17487/RFC2119">DOI 10.17487/RFC2119</a>, March 1997, &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.</dd><dt id="RFC5234">[RFC5234]</dt><dd>Crocker, D., Ed. and P. Overell, “<a href="https://www.rfc-editor.org/rfc/rfc5234.html">Augmented BNF for Syntax Specifications: ABNF</a>”, STD 68, RFC 5234, <a href="https://dx.doi.org/10.17487/RFC5234">DOI 10.17487/RFC5234</a>, January 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.</dd><dt id="RFC7405">[RFC7405]</dt><dd>Kyzivat, P., “<a href="https://www.rfc-editor.org/rfc/rfc7405.html">Case-Sensitive String Support in ABNF</a>”, RFC 7405, <a href="https://dx.doi.org/10.17487/RFC7405">DOI 10.17487/RFC7405</a>, December 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7405">https://www.rfc-editor.org/info/rfc7405</a>&gt;.</dd><dt id="RFC8126">[RFC8126]</dt><dd>Cotton, M., Leiba, B., and T. Narten, “<a href="https://www.rfc-editor.org/rfc/rfc8126.html">Guidelines for Writing an IANA Considerations Section in RFCs</a>”, BCP 26, RFC 8126, <a href="https://dx.doi.org/10.17487/RFC8126">DOI 10.17487/RFC8126</a>, June 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;.</dd><dt id="RFC8174">[RFC8174]</dt><dd>Leiba, B., “<a href="https://www.rfc-editor.org/rfc/rfc8174.html">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>”, BCP 14, RFC 8174, <a href="https://dx.doi.org/10.17487/RFC8174">DOI 10.17487/RFC8174</a>, May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> Informative References</h3><dl class="reference"><dt id="ENTANGLE">[ENTANGLE]</dt><dd>Kettle, J., “<a href="https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf">Web Cache Entanglement: Novel Pathways to Poisoning</a>”, n.d., &lt;<a href="https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf">https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf</a>&gt;.</dd></dl></div></section></section><section id="rfc.authors" class="avoidbreakinside"><h2><a href="#rfc.authors">Author's Address</a></h2><address><b>Mark Nottingham</b><br>Fastly<br>made in<br>Prahran, VIC<br>Australia<br>EMail: <a href="mailto:mnot@mnot.net">mnot@mnot.net</a><br>URI: <a href="https://www.mnot.net/">https://www.mnot.net/</a></address></section></body></html>
+</pre><a href="#section-3-16" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="register">
+<section id="section-4">
+      <h2 id="name-defining-new-proxy-status-p">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-defining-new-proxy-status-p" class="section-name selfRef">Defining New Proxy-Status Parameters</a>
+      </h2>
+<p id="section-4-1">New Cache-Status Parameters can be defined by registering them in the HTTP Cache-Status Parameters registry.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Registration requests are reviewed and approved by a Designated Expert, as per <span>[<a href="#RFC8126" class="xref">RFC8126</a>]</span>, Section 4.5. A specification document is appreciated, but not required.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">The Expert(s) should consider the following factors when evaluating requests:<a href="#section-4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-4.1">Community feedback<a href="#section-4-4.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-4-4.2">If the value is sufficiently well-defined<a href="#section-4-4.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-4-4.3">Generic parameters are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the parameter's name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).<a href="#section-4-4.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-4-5">Registration requests should use the following template:<a href="#section-4-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-6.1">Name: [a name for the Cache-Status Parameter that matches key]<a href="#section-4-6.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-4-6.2">Description: [a description of the parameter semantics and value]<a href="#section-4-6.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-4-6.3">Reference: [to a specification defining this parameter]<a href="#section-4-6.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-4-7">See the registry at <a href="https://iana.org/assignments/http-cache-status">https://iana.org/assignments/http-cache-status</a> for details on where to send registration requests.<a href="#section-4-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-5-1">Upon publication, please create the HTTP Cache-Status Parameters registry at <a href="https://iana.org/assignments/http-cache-status">https://iana.org/assignments/http-cache-status</a> and populate it with the types defined in <a href="#field" class="xref">Section 2</a>; see <a href="#register" class="xref">Section 4</a> for its associated procedures.<a href="#section-5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-6">
+      <h2 id="name-security-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-6-1">Attackers can use the information in Cache-Status to probe the behaviour of the cache (and other components), and infer the activity of those using the cache. The Cache-Status header field may not create these risks on its own, but can assist attackers in exploiting them.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">For example, knowing if a cache has stored a response can help an attacker execute a timing
+attack on sensitive data. Exposing the cache key can help an attacker understand modifications to the cache key, which may assist cache poisoning attacks. See <span>[<a href="#ENTANGLE" class="xref">ENTANGLE</a>]</span> for details.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">The underlying risks can be mitigated with a variety of techniques (e.g., use of encryption and authentication; avoiding the inclusion of attacker-controlled data in the cache key), depending on their exact nature.<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">To avoid assisting such attacks, the Cache-Status header field can be omitted, only sent when the client is authorized to receive it, or only send sensitive information (e.g., the key parameter) when the client is authorized.<a href="#section-6-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span><span class="refAuthor"> and P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-header-structure-19</span>, <time datetime="2020-06-03" class="refDate">3 June 2020</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-httpbis-header-structure-19.txt">http://www.ietf.org/internet-drafts/draft-ietf-httpbis-header-structure-19.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span><span class="refAuthor"> and P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7405">[RFC7405]</dt>
+        <dd>
+<span class="refAuthor">Kyzivat, P.</span>, <span class="refTitle">"Case-Sensitive String Support in ABNF"</span>, <span class="seriesInfo">RFC 7405</span>, <span class="seriesInfo">DOI 10.17487/RFC7405</span>, <time datetime="2014-12" class="refDate">December 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7405">https://www.rfc-editor.org/info/rfc7405</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+        <dd>
+<span class="refAuthor">Cotton, M.</span><span class="refAuthor">, Leiba, B.</span><span class="refAuthor">, and T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="ENTANGLE">[ENTANGLE]</dt>
+      <dd>
+<span class="refAuthor">Kettle, J.</span>, <span class="refTitle">"Web Cache Entanglement: Novel Pathways to Poisoning"</span>, <span>n.d.</span>, <span>&lt;<a href="https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf">https://i.blackhat.com/USA-20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-Pathways-To-Poisoning-wp.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="authors-addresses">
+<section id="section-appendix.a">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Mark Nottingham</span></div>
+<div dir="auto" class="left"><span class="org">Fastly</span></div>
+<div dir="auto" class="left"><span class="street-address">made in</span></div>
+<div dir="auto" class="left">
+<span class="locality">Prahran</span> <span class="region">VIC</span> </div>
+<div dir="auto" class="left"><span class="country-name">Australia</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mnot@mnot.net" class="email">mnot@mnot.net</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://www.mnot.net/" class="url">https://www.mnot.net/</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

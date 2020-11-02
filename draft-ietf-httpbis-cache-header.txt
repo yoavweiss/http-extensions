@@ -2,14 +2,14 @@
 
 
 
-HTTP Working Group                                         M. Nottingham
+HTTP                                                       M. Nottingham
 Internet-Draft                                                    Fastly
-Intended status: Standards Track                         October 5, 2020
-Expires: April 8, 2021
+Intended status: Standards Track                         2 November 2020
+Expires: 6 May 2021
 
 
               The Cache-Status HTTP Response Header Field
-                 draft-ietf-httpbis-cache-header-latest
+                    draft-ietf-httpbis-cache-header
 
 Abstract
 
@@ -24,11 +24,14 @@ Note to Readers
 
    Discussion of this draft takes place on the HTTP working group
    mailing list (ietf-http-wg@w3.org), which is archived at
-   https://lists.w3.org/Archives/Public/ietf-http-wg/ [1].
+   https://lists.w3.org/Archives/Public/ietf-http-wg/
+   (https://lists.w3.org/Archives/Public/ietf-http-wg/).
 
-   Working Group information can be found at https://httpwg.org/ [2];
-   source code and issues list for this draft can be found at
-   https://github.com/httpwg/http-extensions/labels/cache-header [3].
+   Working Group information can be found at https://httpwg.org/
+   (https://httpwg.org/); source code and issues list for this draft can
+   be found at https://github.com/httpwg/http-extensions/labels/cache-
+   header (https://github.com/httpwg/http-extensions/labels/cache-
+   header).
 
 Status of This Memo
 
@@ -45,17 +48,14 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 8, 2021.
+   This Internet-Draft will expire on 6 May 2021.
 
 
 
 
-
-
-
-Nottingham                Expires April 8, 2021                 [Page 1]
+Nottingham                 Expires 6 May 2021                   [Page 1]
 
-Internet-Draft             Cache-Status Header              October 2020
+Internet-Draft             Cache-Status Header             November 2020
 
 
 Copyright Notice
@@ -64,14 +64,13 @@ Copyright Notice
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
-   Provisions Relating to IETF Documents
-   (https://trustee.ietf.org/license-info) in effect on the date of
-   publication of this document.  Please review these documents
-   carefully, as they describe your rights and restrictions with respect
-   to this document.  Code Components extracted from this document must
-   include Simplified BSD License text as described in Section 4.e of
-   the Trust Legal Provisions and are provided without warranty as
-   described in the Simplified BSD License.
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
 
 Table of Contents
 
@@ -87,13 +86,12 @@ Table of Contents
      2.7.  The key parameter . . . . . . . . . . . . . . . . . . . .   5
      2.8.  The detail parameter  . . . . . . . . . . . . . . . . . .   5
    3.  Examples  . . . . . . . . . . . . . . . . . . . . . . . . . .   6
-   4.  Defining New Proxy-Status Parameters  . . . . . . . . . . . .   7
+   4.  Defining New Proxy-Status Parameters  . . . . . . . . . . . .   6
    5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
    6.  Security Considerations . . . . . . . . . . . . . . . . . . .   7
    7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
      7.1.  Normative References  . . . . . . . . . . . . . . . . . .   8
      7.2.  Informative References  . . . . . . . . . . . . . . . . .   9
-     7.3.  URIs  . . . . . . . . . . . . . . . . . . . . . . . . . .   9
    Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
@@ -109,9 +107,11 @@ Table of Contents
 
 
 
-Nottingham                Expires April 8, 2021                 [Page 2]
+
+
+Nottingham                 Expires 6 May 2021                   [Page 2]
 
-Internet-Draft             Cache-Status Header              October 2020
+Internet-Draft             Cache-Status Header             November 2020
 
 
 1.1.  Notational Conventions
@@ -165,9 +165,9 @@ Internet-Draft             Cache-Status Header              October 2020
 
 
 
-Nottingham                Expires April 8, 2021                 [Page 3]
+Nottingham                 Expires 6 May 2021                   [Page 3]
 
-Internet-Draft             Cache-Status Header              October 2020
+Internet-Draft             Cache-Status Header             November 2020
 
 
    hit          = sf-boolean
@@ -198,32 +198,32 @@ Internet-Draft             Cache-Status Header              October 2020
    The following values are defined to explain why the request went
    forward:
 
-   o  uri-miss - The cache did not contain any responses that matched
+   *  uri-miss - The cache did not contain any responses that matched
       the request URI
 
-   o  vary-miss - The cache contained a response that matched the
+   *  vary-miss - The cache contained a response that matched the
       request URI, but could not select a response based upon this
       request's headers and stored Vary headers.
 
-   o  miss - The cache did not contain any responses that could be used
+   *  miss - The cache did not contain any responses that could be used
       to satisfy this request (to be used when an implementation cannot
       distinguish between uri-miss and vary-miss)
 
-   o  stale - The cache was able to select a response for the request,
+   *  stale - The cache was able to select a response for the request,
       but it was stale
 
-   o  request - The cache was able to select a fresh response for the
+   *  request - The cache was able to select a fresh response for the
       request, but client request headers (e.g., Cache-Control request
       directives) did not allow its use
 
-   o  bypass - The cache was configured to not handle this request
+   *  bypass - The cache was configured to not handle this request
 
 
 
 
-Nottingham                Expires April 8, 2021                 [Page 4]
+Nottingham                 Expires 6 May 2021                   [Page 4]
 
-Internet-Draft             Cache-Status Header              October 2020
+Internet-Draft             Cache-Status Header             November 2020
 
 
 2.3.  The fwd-status parameter
@@ -277,9 +277,9 @@ Internet-Draft             Cache-Status Header              October 2020
 
 
 
-Nottingham                Expires April 8, 2021                 [Page 5]
+Nottingham                 Expires 6 May 2021                   [Page 5]
 
-Internet-Draft             Cache-Status Header              October 2020
+Internet-Draft             Cache-Status Header             November 2020
 
 
    The semantics of a detail parameter are always specific to the cache
@@ -326,22 +326,17 @@ Internet-Draft             Cache-Status Header              October 2020
    Cache-Status: OriginCache; hit; ttl=1100; collapsed,
                  "CDN Company Here"; hit; ttl=545
 
-
-
-
-
-
-
-
-Nottingham                Expires April 8, 2021                 [Page 6]
-
-Internet-Draft             Cache-Status Header              October 2020
-
-
 4.  Defining New Proxy-Status Parameters
 
    New Cache-Status Parameters can be defined by registering them in the
    HTTP Cache-Status Parameters registry.
+
+
+
+Nottingham                 Expires 6 May 2021                   [Page 6]
+
+Internet-Draft             Cache-Status Header             November 2020
+
 
    Registration requests are reviewed and approved by a Designated
    Expert, as per [RFC8126], Section 4.5.  A specification document is
@@ -350,11 +345,11 @@ Internet-Draft             Cache-Status Header              October 2020
    The Expert(s) should consider the following factors when evaluating
    requests:
 
-   o  Community feedback
+   *  Community feedback
 
-   o  If the value is sufficiently well-defined
+   *  If the value is sufficiently well-defined
 
-   o  Generic parameters are preferred over vendor-specific,
+   *  Generic parameters are preferred over vendor-specific,
       application-specific or deployment-specific values.  If a generic
       value cannot be agreed upon in the community, the parameter's name
       should be correspondingly specific (e.g., with a prefix that
@@ -362,21 +357,23 @@ Internet-Draft             Cache-Status Header              October 2020
 
    Registration requests should use the following template:
 
-   o  Name: [a name for the Cache-Status Parameter that matches key]
+   *  Name: [a name for the Cache-Status Parameter that matches key]
 
-   o  Description: [a description of the parameter semantics and value]
+   *  Description: [a description of the parameter semantics and value]
 
-   o  Reference: [to a specification defining this parameter]
+   *  Reference: [to a specification defining this parameter]
 
    See the registry at https://iana.org/assignments/http-cache-status
-   [4] for details on where to send registration requests.
+   (https://iana.org/assignments/http-cache-status) for details on where
+   to send registration requests.
 
 5.  IANA Considerations
 
    Upon publication, please create the HTTP Cache-Status Parameters
-   registry at https://iana.org/assignments/http-cache-status [5] and
-   populate it with the types defined in Section 2; see Section 4 for
-   its associated procedures.
+   registry at https://iana.org/assignments/http-cache-status
+   (https://iana.org/assignments/http-cache-status) and populate it with
+   the types defined in Section 2; see Section 4 for its associated
+   procedures.
 
 6.  Security Considerations
 
@@ -389,9 +386,12 @@ Internet-Draft             Cache-Status Header              October 2020
 
 
 
-Nottingham                Expires April 8, 2021                 [Page 7]
+
+
+
+Nottingham                 Expires 6 May 2021                   [Page 7]
 
-Internet-Draft             Cache-Status Header              October 2020
+Internet-Draft             Cache-Status Header             November 2020
 
 
    For example, knowing if a cache has stored a response can help an
@@ -416,8 +416,10 @@ Internet-Draft             Cache-Status Header              October 2020
 
    [I-D.ietf-httpbis-header-structure]
               Nottingham, M. and P. Kamp, "Structured Field Values for
-              HTTP", draft-ietf-httpbis-header-structure-19 (work in
-              progress), June 2020.
+              HTTP", Work in Progress, Internet-Draft, draft-ietf-
+              httpbis-header-structure-19, 3 June 2020,
+              <http://www.ietf.org/internet-drafts/draft-ietf-httpbis-
+              header-structure-19.txt>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -438,44 +440,33 @@ Internet-Draft             Cache-Status Header              October 2020
               RFC 8126, DOI 10.17487/RFC8126, June 2017,
               <https://www.rfc-editor.org/info/rfc8126>.
 
+
+
+
+
+
+Nottingham                 Expires 6 May 2021                   [Page 8]
+
+Internet-Draft             Cache-Status Header             November 2020
+
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
-
-
-
-Nottingham                Expires April 8, 2021                 [Page 8]
-
-Internet-Draft             Cache-Status Header              October 2020
-
-
 7.2.  Informative References
 
-   [ENTANGLE]
-              Kettle, J., "Web Cache Entanglement: Novel Pathways to
+   [ENTANGLE] Kettle, J., "Web Cache Entanglement: Novel Pathways to
               Poisoning", n.d., <https://i.blackhat.com/USA-
               20/Wednesday/us-20-Kettle-Web-Cache-Entanglement-Novel-
               Pathways-To-Poisoning-wp.pdf>.
-
-7.3.  URIs
-
-   [1] https://lists.w3.org/Archives/Public/ietf-http-wg/
-
-   [2] https://httpwg.org/
-
-   [3] https://github.com/httpwg/http-extensions/labels/cache-header
-
-   [4] https://iana.org/assignments/http-cache-status
-
-   [5] https://iana.org/assignments/http-cache-status
 
 Author's Address
 
    Mark Nottingham
    Fastly
    made in
-   Prahran, VIC
+   Prahran VIC
    Australia
 
    Email: mnot@mnot.net
@@ -501,4 +492,13 @@ Author's Address
 
 
 
-Nottingham                Expires April 8, 2021                 [Page 9]
+
+
+
+
+
+
+
+
+
+Nottingham                 Expires 6 May 2021                   [Page 9]

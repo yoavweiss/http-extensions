@@ -2,15 +2,15 @@
 
 
 
-HTTP Working Group                                         M. Nottingham
+HTTP                                                       M. Nottingham
 Internet-Draft                                                    Fastly
 Intended status: Standards Track                               P. Sikora
-Expires: April 8, 2021                                            Google
-                                                         October 5, 2020
+Expires: 6 May 2021                                               Google
+                                                         2 November 2020
 
 
               The Proxy-Status HTTP Response Header Field
-                 draft-ietf-httpbis-proxy-status-latest
+                    draft-ietf-httpbis-proxy-status
 
 Abstract
 
@@ -24,11 +24,14 @@ Note to Readers
 
    Discussion of this draft takes place on the HTTP working group
    mailing list (ietf-http-wg@w3.org), which is archived at
-   https://lists.w3.org/Archives/Public/ietf-http-wg/ [1].
+   https://lists.w3.org/Archives/Public/ietf-http-wg/
+   (https://lists.w3.org/Archives/Public/ietf-http-wg/).
 
-   Working Group information can be found at https://httpwg.org/ [2];
-   source code and issues list for this draft can be found at
-   https://github.com/httpwg/http-extensions/labels/proxy-status [3].
+   Working Group information can be found at https://httpwg.org/
+   (https://httpwg.org/); source code and issues list for this draft can
+   be found at https://github.com/httpwg/http-extensions/labels/proxy-
+   status (https://github.com/httpwg/http-extensions/labels/proxy-
+   status).
 
 Status of This Memo
 
@@ -45,17 +48,14 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 8, 2021.
+   This Internet-Draft will expire on 6 May 2021.
 
 
 
 
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 1]
+Nottingham & Sikora        Expires 6 May 2021                   [Page 1]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
 Copyright Notice
@@ -64,14 +64,13 @@ Copyright Notice
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
-   Provisions Relating to IETF Documents
-   (https://trustee.ietf.org/license-info) in effect on the date of
-   publication of this document.  Please review these documents
-   carefully, as they describe your rights and restrictions with respect
-   to this document.  Code Components extracted from this document must
-   include Simplified BSD License text as described in Section 4.e of
-   the Trust Legal Provisions and are provided without warranty as
-   described in the Simplified BSD License.
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
 
 Table of Contents
 
@@ -80,7 +79,7 @@ Table of Contents
    2.  The Proxy-Status HTTP Field . . . . . . . . . . . . . . . . .   4
      2.1.  Proxy-Status Parameters . . . . . . . . . . . . . . . . .   5
        2.1.1.  next-hop  . . . . . . . . . . . . . . . . . . . . . .   5
-       2.1.2.  next-protocol . . . . . . . . . . . . . . . . . . . .   5
+       2.1.2.  next-protocol . . . . . . . . . . . . . . . . . . . .   6
        2.1.3.  error . . . . . . . . . . . . . . . . . . . . . . . .   6
        2.1.4.  details . . . . . . . . . . . . . . . . . . . . . . .   7
      2.2.  Defining New Proxy-Status Parameters  . . . . . . . . . .   7
@@ -106,15 +105,15 @@ Table of Contents
        2.3.19. HTTP Response Header Block Too Large  . . . . . . . .  13
        2.3.20. HTTP Response Header Too Large  . . . . . . . . . . .  13
        2.3.21. HTTP Response Body Too Large  . . . . . . . . . . . .  13
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 2]
-
-Internet-Draft                Proxy-Status                  October 2020
-
-
        2.3.22. HTTP Response Transfer-Coding Error . . . . . . . . .  14
+
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 2]
+
+Internet-Draft                Proxy-Status                 November 2020
+
+
        2.3.23. HTTP Response Content-Coding Error  . . . . . . . . .  14
        2.3.24. HTTP Response Timeout . . . . . . . . . . . . . . . .  14
        2.3.25. HTTP Upgrade Failed . . . . . . . . . . . . . . . . .  14
@@ -129,8 +128,7 @@ Internet-Draft                Proxy-Status                  October 2020
    5.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  17
      5.1.  Normative References  . . . . . . . . . . . . . . . . . .  17
      5.2.  Informative References  . . . . . . . . . . . . . . . . .  18
-     5.3.  URIs  . . . . . . . . . . . . . . . . . . . . . . . . . .  18
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  19
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  18
 
 1.  Introduction
 
@@ -165,9 +163,11 @@ Internet-Draft                Proxy-Status                  October 2020
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                 [Page 3]
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 3]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
 1.1.  Notational Conventions
@@ -216,16 +216,18 @@ Internet-Draft                Proxy-Status                  October 2020
    configured to, or when the request contains a header that activates a
    debugging mode.
 
+
+
+
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 4]
+
+Internet-Draft                Proxy-Status                 November 2020
+
+
    The list members identify the intermediary that inserted the value,
    and MUST have a type of either sf-string or sf-token.  Depending on
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 4]
-
-Internet-Draft                Proxy-Status                  October 2020
-
-
    the deployment, this might be a product or service name (e.g.,
    ExampleProxy or "Example CDN"), a hostname ("proxy-3.example.com"),
    and IP address, or a generated string.
@@ -269,19 +271,21 @@ Internet-Draft                Proxy-Status                  October 2020
 
    Proxy-Status: cdn.example.org; next-hop=backend.example.org
 
+
+
+
+
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 5]
+
+Internet-Draft                Proxy-Status                 November 2020
+
+
 2.1.2.  next-protocol
 
    The "next-protocol" parameter's value indicates the ALPN protocol
    identifier [RFC7301] used by the intermediary to connect to the next
-
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 5]
-
-Internet-Draft                Proxy-Status                  October 2020
-
-
    hop.  This is only applicable when that connection was actually
    established.
 
@@ -325,18 +329,20 @@ Internet-Draft                Proxy-Status                  October 2020
    http_protocol_error) that can be used.  If they are not suitable,
    consider registering a new Proxy Error Type (see Section 2.4).
 
+
+
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 6]
+
+Internet-Draft                Proxy-Status                 November 2020
+
+
    Each Proxy Error Type has a Recommended HTTP Status Code.  When
    generating a HTTP response containing "error", its HTTP status code
    SHOULD be set to the Recommended HTTP Status Code.  However, there
    may be circumstances (e.g., for backwards compatibility with previous
    behaviours) when another status code might be used.
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 6]
-
-Internet-Draft                Proxy-Status                  October 2020
-
 
 2.1.4.  details
 
@@ -361,11 +367,11 @@ Internet-Draft                Proxy-Status                  October 2020
    The Expert(s) should consider the following factors when evaluating
    requests:
 
-   o  Community feedback
+   *  Community feedback
 
-   o  If the value is sufficiently well-defined
+   *  If the value is sufficiently well-defined
 
-   o  Generic parameters are preferred over vendor-specific,
+   *  Generic parameters are preferred over vendor-specific,
       application-specific or deployment-specific values.  If a generic
       value cannot be agreed upon in the community, the parameter's name
       should be correspondingly specific (e.g., with a prefix that
@@ -373,26 +379,24 @@ Internet-Draft                Proxy-Status                  October 2020
 
    Registration requests should use the following template:
 
-   o  Name: [a name for the Proxy-Status Parameter that matches key]
+   *  Name: [a name for the Proxy-Status Parameter that matches key]
 
-   o  Description: [a description of the parameter semantics and value]
+   *  Description: [a description of the parameter semantics and value]
 
-   o  Reference: [to a specification defining this parameter]
+   *  Reference: [to a specification defining this parameter]
+
+
+
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 7]
+
+Internet-Draft                Proxy-Status                 November 2020
+
 
    See the registry at https://iana.org/assignments/http-proxy-status
-   [4] for details on where to send registration requests.
-
-
-
-
-
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 7]
-
-Internet-Draft                Proxy-Status                  October 2020
-
+   (https://iana.org/assignments/http-proxy-status) for details on where
+   to send registration requests.
 
 2.3.  Proxy Error Types
 
@@ -401,468 +405,464 @@ Internet-Draft                Proxy-Status                  October 2020
 
 2.3.1.  DNS Timeout
 
-   o  Name: dns_timeout
+   *  Name: dns_timeout
 
-   o  Description: The intermediary encountered a timeout when trying to
+   *  Description: The intermediary encountered a timeout when trying to
       find an IP address for the next hop hostname.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 504
+   *  Recommended HTTP status code: 504
 
 2.3.2.  DNS Error
 
-   o  Name: dns_error
+   *  Name: dns_error
 
-   o  Description: The intermediary encountered a DNS error when trying
+   *  Description: The intermediary encountered a DNS error when trying
       to find an IP address for the next hop hostname.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  rcode: A sf-string conveying the DNS RCODE that indicates the
+      -  rcode: A sf-string conveying the DNS RCODE that indicates the
          error type.  See [RFC8499], Section 3.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.3.  Destination Not Found
 
-   o  Name: destination_not_found
+   *  Name: destination_not_found
 
-   o  Description: The intermediary cannot determine the appropriate
+   *  Description: The intermediary cannot determine the appropriate
       next hop to use for this request; for example, it may not be
       configured.  Note that this error is specific to gateways, which
       typically require specific configuration to identify the "backend"
       server; forward proxies use in-band information to identify the
       origin server.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 500
-
-
+   *  Recommended HTTP status code: 500
 
 
 
-
-
-Nottingham & Sikora       Expires April 8, 2021                 [Page 8]
+Nottingham & Sikora        Expires 6 May 2021                   [Page 8]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
 2.3.4.  Destination Unavailable
 
-   o  Name: destination_unavailable
+   *  Name: destination_unavailable
 
-   o  Description: The intermediary considers the next hop to be
+   *  Description: The intermediary considers the next hop to be
       unavailable; e.g., recent attempts to communicate with it may have
       failed, or a health check may indicate that it is down.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 503
+   *  Recommended HTTP status code: 503
 
 2.3.5.  Destination IP Prohibited
 
-   o  Name: destination_ip_prohibited
+   *  Name: destination_ip_prohibited
 
-   o  Description: The intermediary is configured to prohibit
+   *  Description: The intermediary is configured to prohibit
       connections to the next hop IP address.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.6.  Destination IP Unroutable
 
-   o  Name: destination_ip_unroutable
+   *  Name: destination_ip_unroutable
 
-   o  Description: The intermediary cannot find a route to the next hop
+   *  Description: The intermediary cannot find a route to the next hop
       IP address.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.7.  Connection Refused
 
-   o  Name: connection_refused
+   *  Name: connection_refused
 
-   o  Description: The intermediary's connection to the next hop was
+   *  Description: The intermediary's connection to the next hop was
       refused.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
-
-
+   *  Recommended HTTP status code: 502
 
 
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                 [Page 9]
+
+
+Nottingham & Sikora        Expires 6 May 2021                   [Page 9]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
 2.3.8.  Connection Terminated
 
-   o  Name: connection_terminated
+   *  Name: connection_terminated
 
-   o  Description: The intermediary's connection to the next hop was
+   *  Description: The intermediary's connection to the next hop was
       closed before any part of the response was received.  If some part
       was received, see http_response_incomplete.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.9.  Connection Timeout
 
-   o  Name: connection_timeout
+   *  Name: connection_timeout
 
-   o  Description: The intermediary's attempt to open a connection to
+   *  Description: The intermediary's attempt to open a connection to
       the next hop timed out.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 504
+   *  Recommended HTTP status code: 504
 
 2.3.10.  Connection Read Timeout
 
-   o  Name: connection_read_timeout
+   *  Name: connection_read_timeout
 
-   o  Description: The intermediary was expecting data on a connection
+   *  Description: The intermediary was expecting data on a connection
       (e.g., part of a response), but did not receive any new data in a
       configured time limit.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 504
+   *  Recommended HTTP status code: 504
 
 2.3.11.  Connection Write Timeout
 
-   o  Name: connection_write_timeout
+   *  Name: connection_write_timeout
 
-   o  Description: The intermediary was attempting to write data to a
+   *  Description: The intermediary was attempting to write data to a
       connection, but was not able to (e.g., because its buffers were
       full).
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 504
-
-
+   *  Recommended HTTP status code: 504
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 10]
+
+
+Nottingham & Sikora        Expires 6 May 2021                  [Page 10]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
 2.3.12.  Connection Limit Reached
 
-   o  Name: connnection_limit_reached
+   *  Name: connnection_limit_reached
 
-   o  Description: The intermediary is configured to limit the number of
+   *  Description: The intermediary is configured to limit the number of
       connections it has to the next hop, and that limit has been
       passed.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 503
+   *  Recommended HTTP status code: 503
 
 2.3.13.  TLS Protocol Error
 
-   o  Name: tls_protocol_error
+   *  Name: tls_protocol_error
 
-   o  Description: The intermediary encountered a TLS error when
+   *  Description: The intermediary encountered a TLS error when
       communicating with the next hop, either during handshake or
       afterwards.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
    Note that additional information about the error can be recorded in
    the details parameter (as is the case for all errors).
 
 2.3.14.  TLS Certificate Error
 
-   o  Name: tls_certificate_error
+   *  Name: tls_certificate_error
 
-   o  Description: The intermediary encountered an error when verifying
+   *  Description: The intermediary encountered an error when verifying
       the certificate presented by the next hop.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
    Note that additional information about the error can be recorded in
    the details parameter (as is the case for all errors).
 
 2.3.15.  TLS Alert Received
 
-   o  Name: tls_alert_received
+   *  Name: tls_alert_received
 
-   o  Description: The intermediary received a TLS alert from the next
+   *  Description: The intermediary received a TLS alert from the next
       hop.
 
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 11]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 11]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  alert_message: a sf-token containing the applicable description
+      -  alert_message: a sf-token containing the applicable description
          string from the TLS Alerts registry.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.16.  HTTP Request Error
 
-   o  Name: http_request_error
+   *  Name: http_request_error
 
-   o  Description: The intermediary is generating a client (4xx)
+   *  Description: The intermediary is generating a client (4xx)
       response on the origin's behalf.  Applicable status codes include
       (but are not limited to) 400, 403, 405, 406, 408, 411, 413, 414,
       415, 416, 417, 429.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  status_code: a sf-integer containing the generated status code.
+      -  status_code: a sf-integer containing the generated status code.
 
-      *  status_phrase: a sf-string containing the generated status
+      -  status_phrase: a sf-string containing the generated status
          phrase.
 
-   o  Recommended HTTP status code: The applicable 4xx status code
+   *  Recommended HTTP status code: The applicable 4xx status code
 
    This type helps distinguish between responses generated by
    intermediaries from those generated by the origin.
 
 2.3.17.  HTTP Request Denied
 
-   o  Name: http_request_denied
+   *  Name: http_request_denied
 
-   o  Description: The intermediary rejected the HTTP request based on
+   *  Description: The intermediary rejected the HTTP request based on
       its configuration and/or policy settings.  The request wasn't
       forwarded to the next hop.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 403
+   *  Recommended HTTP status code: 403
 
 2.3.18.  HTTP Incomplete Response
 
-   o  Name: http_response_incomplete
+   *  Name: http_response_incomplete
 
-   o  Description: The intermediary received an incomplete response to
+   *  Description: The intermediary received an incomplete response to
       the request from the next hop.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 12]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 12]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.19.  HTTP Response Header Block Too Large
 
-   o  Name: http_response_header_block_size
+   *  Name: http_response_header_block_size
 
-   o  Description: The intermediary received a response to the request
+   *  Description: The intermediary received a response to the request
       whose header block was considered too large.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  header_block_size: a sf-integer indicating how large the
+      -  header_block_size: a sf-integer indicating how large the
          headers received were.  Note that they might not be complete;
          i.e., the intermediary may have discarded or refused additional
          data.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.20.  HTTP Response Header Too Large
 
-   o  Name: http_response_header_size
+   *  Name: http_response_header_size
 
-   o  Description: The intermediary received a response to the request
+   *  Description: The intermediary received a response to the request
       containing an individual header line that was considered too
       large.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  header_name: a sf-string indicating the name of the header that
+      -  header_name: a sf-string indicating the name of the header that
          triggered the error.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.21.  HTTP Response Body Too Large
 
-   o  Name: http_response_body_size
+   *  Name: http_response_body_size
 
-   o  Description: The intermediary received a response to the request
+   *  Description: The intermediary received a response to the request
       whose body was considered too large.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  body_size: a sf-integer indicating how large the body received
+      -  body_size: a sf-integer indicating how large the body received
          was.  Note that it may not have been complete; i.e., the
          intermediary may have discarded or refused additional data.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 13]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 13]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
 2.3.22.  HTTP Response Transfer-Coding Error
 
-   o  Name: http_response_transfer_coding
+   *  Name: http_response_transfer_coding
 
-   o  Description: The intermediary encountered an error decoding the
+   *  Description: The intermediary encountered an error decoding the
       transfer-coding of the response.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  coding: a sf-token containing the specific coding that caused
+      -  coding: a sf-token containing the specific coding that caused
          the error.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.23.  HTTP Response Content-Coding Error
 
-   o  Name: http_response_content_coding
+   *  Name: http_response_content_coding
 
-   o  Description: The intermediary encountered an error decoding the
+   *  Description: The intermediary encountered an error decoding the
       content-coding of the response.
 
-   o  Extra Parameters:
+   *  Extra Parameters:
 
-      *  coding: a sf-token containing the specific coding that caused
+      -  coding: a sf-token containing the specific coding that caused
          the error.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.24.  HTTP Response Timeout
 
-   o  Name: http_response_timeout
+   *  Name: http_response_timeout
 
-   o  Description: The intermediary reached a configured time limit
+   *  Description: The intermediary reached a configured time limit
       waiting for the complete response.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 504
+   *  Recommended HTTP status code: 504
 
 2.3.25.  HTTP Upgrade Failed
 
-   o  Name: http_upgrade_failed
+   *  Name: http_upgrade_failed
 
-   o  Description: The HTTP Upgrade between the intermediary and the
+   *  Description: The HTTP Upgrade between the intermediary and the
       next hop failed.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 14]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 14]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.3.26.  HTTP Protocol Error
 
-   o  Name: http_protocol_error
+   *  Name: http_protocol_error
 
-   o  Description: The intermediary encountered a HTTP protocol error
+   *  Description: The intermediary encountered a HTTP protocol error
       when communicating with the next hop.  This error should only be
       used when a more specific one is not defined.
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
    Note that additional information about the error can be recorded in
    the details parameter (as is the case for all errors).
 
 2.3.27.  Proxy Internal Response
 
-   o  Name: proxy_internal_response
+   *  Name: proxy_internal_response
 
-   o  Description: The intermediary generated the response locally,
+   *  Description: The intermediary generated the response locally,
       without attempting to connect to the next hop (e.g. in response to
       a request to a debug endpoint terminated at the intermediary).
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code:
+   *  Recommended HTTP status code:
 
 2.3.28.  Proxy Internal Error
 
-   o  Name: proxy_internal_error
+   *  Name: proxy_internal_error
 
-   o  Description: The intermediary encountered an internal error
+   *  Description: The intermediary encountered an internal error
       unrelated to the origin.
 
-   o  Extra Parameters: None
+   *  Extra Parameters: None
 
-   o  Recommended HTTP status code: 500
+   *  Recommended HTTP status code: 500
 
    Note that additional information about the error can be recorded in
    the details parameter (as is the case for all errors).
 
 2.3.29.  Proxy Configuration Error
 
-   o  Name: proxy_configuration_error
+   *  Name: proxy_configuration_error
 
 
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 15]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 15]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
-   o  Description: The intermediary encountered an error regarding its
+   *  Description: The intermediary encountered an error regarding its
       configuration.
 
-   o  Extra Parameters: None
+   *  Extra Parameters: None
 
-   o  Recommended HTTP status code: 500
+   *  Recommended HTTP status code: 500
 
    Note that additional information about the error can be recorded in
    the details parameter (as is the case for all errors).
 
 2.3.30.  Proxy Loop Detected
 
-   o  Name: proxy_loop_detected
+   *  Name: proxy_loop_detected
 
-   o  Description: The intermediary tried to forward the request to
+   *  Description: The intermediary tried to forward the request to
       itself, or a loop has been detected using different means (e.g.
       [RFC8586]).
 
-   o  Extra Parameters: None.
+   *  Extra Parameters: None.
 
-   o  Recommended HTTP status code: 502
+   *  Recommended HTTP status code: 502
 
 2.4.  Defining New Proxy Error Types
 
@@ -876,11 +876,11 @@ Internet-Draft                Proxy-Status                  October 2020
    The Expert(s) should consider the following factors when evaluating
    requests:
 
-   o  Community feedback
+   *  Community feedback
 
-   o  If the value is sufficiently well-defined
+   *  If the value is sufficiently well-defined
 
-   o  Generic types are preferred over vendor-specific, application-
+   *  Generic types are preferred over vendor-specific, application-
       specific or deployment-specific values.  If a generic value cannot
       be agreed upon in the community, the types's name should be
       correspondingly specific (e.g., with a prefix that identifies the
@@ -888,36 +888,37 @@ Internet-Draft                Proxy-Status                  October 2020
 
    Registration requests should use the following template:
 
-   o  Name: [a name for the Proxy Error Type that matches sf-token]
+   *  Name: [a name for the Proxy Error Type that matches sf-token]
 
 
 
 
-Nottingham & Sikora       Expires April 8, 2021                [Page 16]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 16]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
-   o  Description: [a description of the conditions that generate the
+   *  Description: [a description of the conditions that generate the
       Proxy Error Type]
 
-   o  Extra Parameters: [zero or more optional parameters, along with
+   *  Extra Parameters: [zero or more optional parameters, along with
       their allowable type(s)]
 
-   o  Recommended HTTP status code: [the appropriate HTTP status code
+   *  Recommended HTTP status code: [the appropriate HTTP status code
       for this entry]
 
    See the registry at https://iana.org/assignments/http-proxy-status
-   [5] for details on where to send registration requests.
+   (https://iana.org/assignments/http-proxy-status) for details on where
+   to send registration requests.
 
 3.  IANA Considerations
 
    Upon publication, please create the HTTP Proxy-Status Parameters
    registry and the HTTP Proxy Error Types registry at
-   https://iana.org/assignments/http-proxy-statuses [6] and populate
-   them with the types defined in Section 2.1 and Section 2.3
-   respectively; see Section 2.2 and Section 2.4 for its associated
-   procedures.
+   https://iana.org/assignments/http-proxy-statuses
+   (https://iana.org/assignments/http-proxy-statuses) and populate them
+   with the types defined in Section 2.1 and Section 2.3 respectively;
+   see Section 2.2 and Section 2.4 for its associated procedures.
 
 4.  Security Considerations
 
@@ -940,18 +941,17 @@ Internet-Draft                Proxy-Status                  October 2020
 
    [I-D.ietf-httpbis-header-structure]
               Nottingham, M. and P. Kamp, "Structured Field Values for
-              HTTP", draft-ietf-httpbis-header-structure-19 (work in
-              progress), June 2020.
+              HTTP", Work in Progress, Internet-Draft, draft-ietf-
+              httpbis-header-structure-19, 3 June 2020,
+              <http://www.ietf.org/internet-drafts/draft-ietf-httpbis-
+              header-structure-19.txt>.
 
 
 
 
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                [Page 17]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 17]
 
-Internet-Draft                Proxy-Status                  October 2020
+Internet-Draft                Proxy-Status                 November 2020
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -984,38 +984,12 @@ Internet-Draft                Proxy-Status                  October 2020
               DOI 10.17487/RFC8586, April 2019,
               <https://www.rfc-editor.org/info/rfc8586>.
 
-5.3.  URIs
-
-   [1] https://lists.w3.org/Archives/Public/ietf-http-wg/
-
-   [2] https://httpwg.org/
-
-   [3] https://github.com/httpwg/http-extensions/labels/proxy-status
-
-   [4] https://iana.org/assignments/http-proxy-status
-
-   [5] https://iana.org/assignments/http-proxy-status
-
-   [6] https://iana.org/assignments/http-proxy-statuses
-
-
-
-
-
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                [Page 18]
-
-Internet-Draft                Proxy-Status                  October 2020
-
-
 Authors' Addresses
 
    Mark Nottingham
    Fastly
    made in
-   Prahran, VIC
+   Prahran VIC
    Australia
 
    Email: mnot@mnot.net
@@ -1031,34 +1005,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Nottingham & Sikora       Expires April 8, 2021                [Page 19]
+Nottingham & Sikora        Expires 6 May 2021                  [Page 18]

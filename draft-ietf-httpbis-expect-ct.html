@@ -1,266 +1,2251 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Expect-CT Extension for HTTP</title><script>
-function anchorRewrite() {
-  map = { };
-  if (window.location.hash.length >= 1) {
-    var fragid = window.location.hash.substr(1);
-    if (fragid) {
-      if (! document.getElementById(fragid)) {
-        var prefix = "rfc.";
-        var mapped = map[fragid];
-        if (mapped) {
-          window.location.hash = mapped;
-        } else if (fragid.indexOf("section-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(8);
-        } else if (fragid.indexOf("appendix-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(9);
-        } else if (fragid.indexOf("s-") == 0) {
-          var postfix = fragid.substring(2);
-          if (postfix.startsWith("abstract")) {
-            window.location.hash = prefix + postfix;
-          } else if (postfix.startsWith("note-")) {
-            window.location.hash = prefix + "note." + postfix.substring(5);
-          } else {
-            window.location.hash = prefix + "section." + postfix;
-          }
-        } else if (fragid.indexOf("p-") == 0) {
-          var r = fragid.substring(2);
-          var p = r.indexOf("-");
-          if (p >= 0) {
-            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
-          }
-        }
-      }
-    }  
-  }
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Expect-CT Extension for HTTP</title>
+<meta content="Emily Stark" name="author">
+<meta content="
+       This document defines a new HTTP header field named Expect-CT, which allows web
+host operators to instruct user agents to expect valid Signed Certificate
+Timestamps (SCTs) to be served on connections to these hosts. Expect-CT allows
+web host operators to discover misconfigurations in their Certificate
+Transparency deployments. Further, web host operaters can use Expect-CT to
+ensure that, if a UA which supports Expect-CT accepts a misissued certificate,
+that certificate will be discoverable in Certificate Transparency logs. 
+    " name="description">
+<meta content="xml2rfc 3.2.1" name="generator">
+<meta content="draft-ietf-httpbis-expect-ct" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.2.1
+    Python 3.8.5
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.4.0
+    html5lib 1.1
+    intervaltree 3.0.2
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.5.0
+    pycountry 19.8.18
+    pyflakes 2.1.1
+    PyYAML 5.3.1
+    requests 2.22.0
+    setuptools 45.2.0
+    six 1.14.0
+-->
+<link href="draft-ietf-httpbis-expect-ct.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --small-font-size: 14.5px;
 }
-window.addEventListener('hashchange', anchorRewrite);
-window.addEventListener('DOMContentLoaded', anchorRewrite);
-</script><!--Specified as xml2rfc-ext-css-contents--><style>
 body {
-  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  color: #333;
-  font-size-adjust: 0.5;
-  line-height: 24px;
+  max-width: 600px;
   margin: 75px auto;
-  max-width: 624px;
   padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
 }
 
-.title, .filename, h1, h2, h3, h4, h5 {
-  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  font-size-adjust: 0.5;
-  font-weight: bold;
-  color: #333;
-  line-height: 100%;
-  margin: 1.2em 0 0.3em;
-}
-.title, #rfc\.title h1 { font-size: 32px; }
-h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
-h3, section h4, h4, section h5 { font-size: 16px; }
-h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
-  color: #333;
-}
-
-table {
-  margin-left: 0em;
-  border-collapse: collapse;
-}
-th {
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-td {
-  border-top: 1px solid #ddd;
-  vertical-align: top;
-}
-tr:nth-child(2n+1) > td,
-tr:nth-child(2n+1) > th {
-  background-color: #f9f9f9;
-}
-td.reference {
-  max-width: 200px;
-  border-top: none;
-  padding-right: 1em;
-}
-.right {
-  text-align: right;
-}
-
-
-table.header, table#rfc\.headerblock {
-  width: 100%;
-}
-table.header td, table#rfc\.headerblock td {
-  border: none;
-  background-color: transparent;
-  color: black;
-  padding: 0;
-}
-.filename {
-  display: block;
-  color: rgb(119, 119, 119);
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 100%;
-  margin: 10px 0 32px;
-}
-#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
-  font-size: 20px;
-  line-height: 28px;
-}
-
-samp, tt, code, pre, span.tt {
-  font-size: 13.5px;
-  font-family: Consolas, monospace;
-  font-size-adjust: none;
-}
-pre {
-  background-color: #eee;
-  border: 1px solid #ddd;
-  overflow-x: auto;
-  padding: 5px;
-  margin: 5px;
-}
-.figure, caption {
-  font-style: italic;
-  margin: 0 1.5em;
-  text-align: left;
-}
-
-address {
-  margin: 16px 2px;
-  line-height: 20px;
-}
-.vcard {
-  font-style: normal;
-}
-.vcardline {
-  display: block;
-}
-.vcardline .fn, address b {
-  font-weight: normal;
-}
-.vcardline .hidden {
+.ears {
   display: none;
 }
 
-dl {
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 26px;
+}
+h4, h5, h6 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
   margin-left: 1em;
 }
-dl.dl-horizontal: {
-  margin-left: 0;
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
 }
 dl > dt {
   float: left;
   margin-right: 1em;
 }
-dl.nohang > dt {
-  float: none;
-}
 dl > dd {
-  margin-bottom: .5em;
+  margin-bottom: .8em;
+  min-height: 1.3em;
 }
-dl.compact > dd {
+dl.compact > dd, .dlCompact > dd {
   margin-bottom: 0em;
 }
 dl > dd > dl {
   margin-top: 0.5em;
   margin-bottom: 0em;
 }
-ul.empty {
-  list-style-type: none;
-}
-ul.empty li {
-  margin-top: .5em;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid #eee;
-}
-hr.noprint {
+dd.break {
   display: none;
 }
 
-a {
+/* links */
+a, a[href].selfRef:hover {
   text-decoration: none;
 }
+a[href].selfRef {
+  color: var(--text-color);
+}
 a[href] {
-  color: #2a6496;
+  color: var(--link-color);
 }
 a[href]:hover {
-  background-color: #eee;
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
 }
 
-p, ol, ul, li {
-  padding: 0;
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
 }
-p {
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
   margin: 0.5em 0;
 }
-ol, ul {
-  margin: 0.2em 0 0.2em 2em;
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
 }
-li {
-  margin: 0.2em 0;
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
 }
-address {
-  font-style: normal;
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
 }
 
-ul.toc ul {
-  margin: 0 0 0 2em;
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
 }
-ul.toc li {
-  list-style: none;
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
   margin: 0;
 }
 
-@media screen and (min-width: 924px) {
-  body {
-    padding-right: 350px;
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  visibility: hidden;
+  user-select: none;
+}
+a.pilcrow[href] { color: #ddd; }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media screen {
+  :hover > a.pilcrow {
+    visibility: visible;
   }
-  body>ul.toc, body>#rfc\.toc {
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
     position: fixed;
     bottom: 0;
     right: 0;
-    right: calc(50vw - 500px);
-    width: 300px;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
     z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
     overflow: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
-  body>#rfc\.toc {
-    top: 55px;
+  #toc nav > ul  {
+    margin-bottom: 2em;
   }
-  body>ul.toc {
-    top: 100px;
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
   }
 
-  ul.toc {
-    margin: 0 0 0 4px;
-    font-size: 12px;
-    line-height: 20px;
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
   }
-  ul.toc ul {
-    margin-left: 1.2em;
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
   }
-}</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="License" href="#rfc.copyrightnotice"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 Server and Client Behavior" href="#rfc.section.2"><link rel="Chapter" title="3 Reporting Expect-CT Failure" href="#rfc.section.3"><link rel="Chapter" title="4 Usability Considerations" href="#rfc.section.4"><link rel="Chapter" title="5 Authoring Considerations" href="#rfc.section.5"><link rel="Chapter" title="6 Privacy Considerations" href="#rfc.section.6"><link rel="Chapter" title="7 Security Considerations" href="#rfc.section.7"><link rel="Chapter" title="8 IANA Considerations" href="#rfc.section.8"><link rel="Chapter" title="9 References" href="#rfc.section.9"><link rel="Appendix" title="A Changes" href="#rfc.section.A"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.1327, 2020/09/24 11:13:36, XSLT vendor: libxslt http://xmlsoft.org/XSLT/, via: https://github.com/cabo/kramdown-rfc2629 version 1.3.10"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Stark, E."><meta name="dcterms.issued" content="2020-10-05"><meta name="dcterms.abstract" content="This document defines a new HTTP header field named Expect-CT, which allows web host operators to instruct user agents to expect valid Signed Certificate Timestamps (SCTs) to be served on connections to these hosts. Expect-CT allows web host operators to discover misconfigurations in their Certificate Transparency deployments. Further, web host operaters can use Expect-CT to ensure that, if a UA which supports Expect-CT accepts a misissued certificate, that certificate will be discoverable in Certificate Transparency logs."><meta name="description" content="This document defines a new HTTP header field named Expect-CT, which allows web host operators to instruct user agents to expect valid Signed Certificate Timestamps (SCTs) to be served on connections to these hosts. Expect-CT allows web host operators to discover misconfigurations in their Certificate Transparency deployments. Further, web host operaters can use Expect-CT to ensure that, if a UA which supports Expect-CT accepts a misissued certificate, that certificate will be discoverable in Certificate Transparency logs."></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">HTTP Working Group</td><td class="right">E. Stark</td></tr><tr><td class="left">Internet-Draft</td><td class="right">Google</td></tr><tr><td class="left">Intended status: Experimental</td><td class="right">October 5, 2020</td></tr><tr><td class="left">Expires: April 8, 2021</td><td class="right"></td></tr></tbody></table><div id="rfc.title"><h1>Expect-CT Extension for HTTP</h1><div class="filename"><a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-expect-ct" class="smpl">draft-ietf-httpbis-expect-ct-latest</a></div></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>This document defines a new HTTP header field named Expect-CT, which allows web host operators to instruct user agents to expect valid Signed Certificate Timestamps (SCTs) to be served on connections to these hosts. Expect-CT allows web host operators to discover misconfigurations in their Certificate Transparency deployments. Further, web host operaters can use Expect-CT to ensure that, if a UA which supports Expect-CT accepts a misissued certificate, that certificate will be discoverable in Certificate Transparency logs.</p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Note to Readers</a></h2><div id="rfc.note.1.p.1"><p>Discussion of this draft takes place on the HTTP working group mailing list (ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.</p></div><div id="rfc.note.1.p.2"><p>Working Group information can be found at <a href="http://httpwg.github.io/">http://httpwg.github.io/</a>; source code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/expect-ct">https://github.com/httpwg/http-extensions/labels/expect-ct</a>.</p></div></section><section id="rfc.status"><h2><a href="#rfc.status">Status of this Memo</a></h2><div id="rfc.boilerplate.1.p.1"><p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p></div><div id="rfc.boilerplate.1.p.2"><p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p></div><div id="rfc.boilerplate.1.p.3"><p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as “work in progress”.</p></div><div id="rfc.boilerplate.1.p.4"><p>This Internet-Draft will expire on April 8, 2021.</p></div></section><section id="rfc.copyrightnotice"><h2><a href="#rfc.copyrightnotice">Copyright Notice</a></h2><div id="rfc.boilerplate.2.p.1"><p>Copyright (c) 2020 IETF Trust and the persons identified as the document authors. All rights reserved.</p></div><div id="rfc.boilerplate.2.p.2"><p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>   <a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>   <a href="#requirements-language">Requirements Language</a></li><li><a href="#rfc.section.1.2">1.2.</a>   <a href="#terminology">Terminology</a></li></ul></li><li><a href="#rfc.section.2">2.</a>   <a href="#server-and-client-behavior">Server and Client Behavior</a><ul><li><a href="#rfc.section.2.1">2.1.</a>   <a href="#response-header-field-syntax">Response Header Field Syntax</a><ul><li><a href="#rfc.section.2.1.1">2.1.1.</a>   <a href="#the-report-uri-directive">The report-uri Directive</a></li><li><a href="#rfc.section.2.1.2">2.1.2.</a>   <a href="#the-enforce-directive">The enforce Directive</a></li><li><a href="#rfc.section.2.1.3">2.1.3.</a>   <a href="#the-max-age-directive">The max-age Directive</a></li><li><a href="#rfc.section.2.1.4">2.1.4.</a>   <a href="#examples">Examples</a></li></ul></li><li><a href="#rfc.section.2.2">2.2.</a>   <a href="#host-processing-model">Host Processing Model</a><ul><li><a href="#rfc.section.2.2.1">2.2.1.</a>   <a href="#http-over-secure-transport-request-type">HTTP-over-Secure-Transport Request Type</a></li><li><a href="#rfc.section.2.2.2">2.2.2.</a>   <a href="#http-request-type">HTTP Request Type</a></li></ul></li><li><a href="#rfc.section.2.3">2.3.</a>   <a href="#user-agent-processing-model">User Agent Processing Model</a><ul><li><a href="#rfc.section.2.3.1">2.3.1.</a>   <a href="#missing-or-malformed-expect-ct-header-fields">Missing or Malformed Expect-CT Header Fields</a></li><li><a href="#rfc.section.2.3.2">2.3.2.</a>   <a href="#expect-ct-header-field-processing">Expect-CT Header Field Processing</a></li><li><a href="#rfc.section.2.3.3">2.3.3.</a>   <a href="#header-field-processing-reporting">Reporting</a></li></ul></li><li><a href="#rfc.section.2.4">2.4.</a>   <a href="#expect-ct-compliance">Evaluating Expect-CT Connections for CT Compliance</a><ul><li><a href="#rfc.section.2.4.1">2.4.1.</a>   <a href="#skipping-ct-compliance-checks">Skipping CT compliance checks</a></li></ul></li></ul></li><li><a href="#rfc.section.3">3.</a>   <a href="#reporting-expect-ct-failure">Reporting Expect-CT Failure</a><ul><li><a href="#rfc.section.3.1">3.1.</a>   <a href="#generating-a-violation-report">Generating a violation report</a></li><li><a href="#rfc.section.3.2">3.2.</a>   <a href="#sending-report">Sending a violation report</a></li><li><a href="#rfc.section.3.3">3.3.</a>   <a href="#receiving-report">Receiving a violation report</a></li></ul></li><li><a href="#rfc.section.4">4.</a>   <a href="#usability-considerations">Usability Considerations</a></li><li><a href="#rfc.section.5">5.</a>   <a href="#authoring-considerations">Authoring Considerations</a></li><li><a href="#rfc.section.6">6.</a>   <a href="#privacy-considerations">Privacy Considerations</a></li><li><a href="#rfc.section.7">7.</a>   <a href="#security-considerations">Security Considerations</a><ul><li><a href="#rfc.section.7.1">7.1.</a>   <a href="#hostile-header-attacks">Hostile header attacks</a></li><li><a href="#rfc.section.7.2">7.2.</a>   <a href="#maximum-max-age">Maximum max-age</a></li><li><a href="#rfc.section.7.3">7.3.</a>   <a href="#amplification-attacks">Amplification attacks</a></li></ul></li><li><a href="#rfc.section.8">8.</a>   <a href="#iana-considerations">IANA Considerations</a><ul><li><a href="#rfc.section.8.1">8.1.</a>   <a href="#header-field-registry">Header Field Registry</a></li><li><a href="#rfc.section.8.2">8.2.</a>   <a href="#media-types-registry">Media Types Registry</a></li></ul></li><li><a href="#rfc.section.9">9.</a>   <a href="#rfc.references">References</a><ul><li><a href="#rfc.section.9.1">9.1.</a>   <a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.9.2">9.2.</a>   <a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.section.A">Appendix A.</a>   <a href="#changes">Changes</a><ul><li><a href="#rfc.section.A.1">A.1.</a>   <a href="#since-07">Since -07</a></li><li><a href="#rfc.section.A.2">A.2.</a>   <a href="#since-06">Since -06</a></li><li><a href="#rfc.section.A.3">A.3.</a>   <a href="#since-05">Since -05</a></li><li><a href="#rfc.section.A.4">A.4.</a>   <a href="#since-04">Since -04</a></li><li><a href="#rfc.section.A.5">A.5.</a>   <a href="#since-03">Since -03</a></li><li><a href="#rfc.section.A.6">A.6.</a>   <a href="#since-02">Since -02</a></li><li><a href="#rfc.section.A.7">A.7.</a>   <a href="#since-01">Since -01</a></li><li><a href="#rfc.section.A.8">A.8.</a>   <a href="#since-00">Since -00</a></li></ul></li><li><a href="#rfc.authors">Author's Address</a></li></ul><ul class="toc"><li>Figures<ul><li><a href="#rfc.figure.1">Figure 1: Syntax of the Expect-CT header field</a></li><li><a href="#rfc.figure.2">Figure 2: Syntax of the report-uri directive value</a></li><li><a href="#rfc.figure.3">Figure 3: Syntax of the max-age directive value</a></li><li><a href="#rfc.figure.4">Figure 4: Examples of valid Expect-CT response header fields</a></li></ul></li></ul></nav><hr class="noprint"><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> <a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1"><p>This document defines a new HTTP header field that enables UAs to identify web hosts that expect the presence of Signed Certificate Timestamps (SCTs) <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a> in subsequent Transport Layer Security (TLS) <a href="#RFC8446"><cite title="The Transport Layer Security (TLS) Protocol Version 1.3">[RFC8446]</cite></a> connections.</p></div><div id="rfc.section.1.p.2"><p>Web hosts that serve the Expect-CT HTTP header field are noted by the UA as Known Expect-CT Hosts. The UA evaluates each connection to a Known Expect-CT Host for compliance with the UA’s Certificate Transparency (CT) Policy. If the connection violates the CT Policy, the UA sends a report to a URI configured by the Expect-CT Host and/or fails the connection, depending on the configuration that the Expect-CT Host has chosen.</p></div><div id="rfc.section.1.p.3"><p>If misconfigured, Expect-CT can cause unwanted connection failures (for example, if a host deploys Expect-CT but then switches to a legitimate certificate that is not logged in Certificate Transparency logs, or if a web host operator believes their certificate to conform to all UAs’ CT policies but is mistaken). Web host operators are advised to deploy Expect-CT with precautions, by using the reporting feature and gradually increasing the time interval during which the UA regards the host as a Known Expect-CT Host. These precautions can help web host operators gain confidence that their Expect-CT deployment is not causing unwanted connection failures.</p></div><div id="rfc.section.1.p.4"><p>Expect-CT is a trust-on-first-use (TOFU) mechanism. The first time a UA connects to a host, it lacks the information necessary to require SCTs for the connection. Thus, the UA will not be able to detect and thwart an attack on the UA’s first connection to the host. Still, Expect-CT provides value by 1) allowing UAs to detect the use of unlogged certificates after the initial communication, and 2) allowing web hosts to be confident that UAs are only trusting publicly-auditable certificates.</p></div><div id="rfc.section.1.p.5"><p>Expect-CT is similar to HSTS <a href="#RFC6797"><cite title="HTTP Strict Transport Security (HSTS)">[RFC6797]</cite></a> and HPKP <a href="#RFC7469"><cite title="Public Key Pinning Extension for HTTP">[RFC7469]</cite></a>. HSTS allows web sites to declare themselves accessible only via secure connections, and HPKP allows web sites to declare their cryptographic identifies. Similarly, Expect-CT allows web sites to declare themselves accessible only via connections that are compliant with CT policy.</p></div><div id="rfc.section.1.p.6"><p>This Expect-CT specification is compatible with <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a> and <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>, but not with future versions of Certificate Transparency. Expect-CT header fields will be ignore from web hosts which use future versions of Certificate Transparency, unless a future version of this document specifies how they should be processed.</p></div><section id="requirements-language"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a> <a href="#requirements-language">Requirements Language</a></h3><div id="rfc.section.1.1.p.1"><p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in BCP 14 <a href="#RFC2119"><cite title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</cite></a> <a href="#RFC8174"><cite title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">[RFC8174]</cite></a> when, and only when, they appear in all capitals, as shown here.</p></div></section><section id="terminology"><h3 id="rfc.section.1.2"><a href="#rfc.section.1.2">1.2.</a> <a href="#terminology">Terminology</a></h3><div id="rfc.section.1.2.p.1"><p>Terminology is defined in this section.</p></div><div id="rfc.section.1.2.p.2"><ul><li>“Certificate Transparency Policy” is a policy defined by the UA concerning the number, sources, and delivery mechanisms of Signed Certificate Timestamps that are associated with TLS connections. The policy defines the properties of a connection that must be met in order for the UA to consider it CT-qualified.</li><li>“Certificate Transparency Qualified” describes a TLS connection for which the UA has determined that a sufficient quantity and quality of Signed Certificate Timestamps have been provided.</li><li>“CT-qualified” is an abbreviation for “Certificate Transparency Qualified”.</li><li>“CT Policy” is an abbreviation for “Certificate Transparency Policy”.</li><li>“Effective Expect-CT Date” is the time at which a UA observed a valid Expect-CT header field for a given host.</li><li>“Expect-CT Host” is a conformant host implementing the HTTP server aspects of Expect-CT. This means that an Expect-CT Host returns the “Expect-CT” HTTP response header field in its HTTP response messages sent over secure transport. The term “host” is equivalent to “server” in this specification.</li><li>“Known Expect-CT Host” is an Expect-CT Host that the UA has noted as such. See <a href="#noting-expect-ct" title="Noting Expect-CT">Section 2.3.2.1</a> for particulars.</li><li>UA is an acronym for “user agent”. For the purposes of this specification, a UA is an HTTP client application typically actively manipulated by a user <a href="#RFC7230"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing">[RFC7230]</cite></a>.</li><li>“Unknown Expect-CT Host” is an Expect-CT Host that the UA has not noted.</li></ul></div></section></section><hr class="noprint"><section id="server-and-client-behavior"><h2 id="rfc.section.2" class="np"><a href="#rfc.section.2">2.</a> <a href="#server-and-client-behavior">Server and Client Behavior</a></h2><section id="response-header-field-syntax"><h3 id="rfc.section.2.1"><a href="#rfc.section.2.1">2.1.</a> <a href="#response-header-field-syntax">Response Header Field Syntax</a></h3><div id="rfc.section.2.1.p.1"><p>The “Expect-CT” response header field is a new field defined in this specification. It is used by a server to indicate that UAs should evaluate connections to the host emitting the header field for CT compliance (<a href="#expect-ct-compliance" title="Evaluating Expect-CT Connections for CT Compliance">Section 2.4</a>).</p></div><div id="rfc.section.2.1.p.2"><p><a href="#expect-ct-syntax" title="Syntax of the Expect-CT header field">Figure 1</a> describes the syntax (Augmented Backus-Naur Form) of the header field, using the grammar defined in <a href="#RFC5234"><cite title="Augmented BNF for Syntax Specifications: ABNF">[RFC5234]</cite></a> and the rules defined in Section 3.2 of <a href="#RFC7230"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing">[RFC7230]</cite></a>. The “#” ABNF extension is specified in Section 7 of <a href="#RFC7230"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing">[RFC7230]</cite></a>.</p></div><div id="expect-ct-syntax"></div><div id="rfc.figure.1"><div><pre class="inline">
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">Expect-CT</td>
+<td class="right">November 2020</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Stark</td>
+<td class="center">Expires 6 May 2021</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HTTP</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-httpbis-expect-ct</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2020-11-02" class="published">2 November 2020</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Experimental</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2021-05-06">6 May 2021</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">E. Stark</div>
+<div class="org">Google</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Expect-CT Extension for HTTP</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines a new HTTP header field named Expect-CT, which allows web
+host operators to instruct user agents to expect valid Signed Certificate
+Timestamps (SCTs) to be served on connections to these hosts. Expect-CT allows
+web host operators to discover misconfigurations in their Certificate
+Transparency deployments. Further, web host operaters can use Expect-CT to
+ensure that, if a UA which supports Expect-CT accepts a misissued certificate,
+that certificate will be discoverable in Certificate Transparency logs.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-note-to-readers">
+<a href="#name-note-to-readers" class="section-name selfRef">Note to Readers</a>
+      </h2>
+<p id="section-note.1-1">Discussion of this draft takes place on the HTTP working group mailing list
+(ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Working Group information can be found at <a href="http://httpwg.github.io/">http://httpwg.github.io/</a>; source
+code and issues list for this draft can be found at
+<a href="https://github.com/httpwg/http-extensions/labels/expect-ct">https://github.com/httpwg/http-extensions/labels/expect-ct</a>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 6 May 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2020 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-requirements-language" class="xref">Requirements Language</a><a href="#section-toc.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="xref">1.2</a>.  <a href="#name-terminology" class="xref">Terminology</a><a href="#section-toc.1-1.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-server-and-client-behavior" class="xref">Server and Client Behavior</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-response-header-field-synta" class="xref">Response Header Field Syntax</a><a href="#section-toc.1-1.2.2.1.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.2.2.1.2.1">
+                    <p id="section-toc.1-1.2.2.1.2.1.1"><a href="#section-2.1.1" class="xref">2.1.1</a>.  <a href="#name-the-report-uri-directive" class="xref">The report-uri Directive</a><a href="#section-toc.1-1.2.2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.1.2.2">
+                    <p id="section-toc.1-1.2.2.1.2.2.1"><a href="#section-2.1.2" class="xref">2.1.2</a>.  <a href="#name-the-enforce-directive" class="xref">The enforce Directive</a><a href="#section-toc.1-1.2.2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.1.2.3">
+                    <p id="section-toc.1-1.2.2.1.2.3.1"><a href="#section-2.1.3" class="xref">2.1.3</a>.  <a href="#name-the-max-age-directive" class="xref">The max-age Directive</a><a href="#section-toc.1-1.2.2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.1.2.4">
+                    <p id="section-toc.1-1.2.2.1.2.4.1"><a href="#section-2.1.4" class="xref">2.1.4</a>.  <a href="#name-examples" class="xref">Examples</a><a href="#section-toc.1-1.2.2.1.2.4.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-host-processing-model" class="xref">Host Processing Model</a><a href="#section-toc.1-1.2.2.2.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.2.2.2.2.1">
+                    <p id="section-toc.1-1.2.2.2.2.1.1"><a href="#section-2.2.1" class="xref">2.2.1</a>.  <a href="#name-http-over-secure-transport-" class="xref">HTTP-over-Secure-Transport Request Type</a><a href="#section-toc.1-1.2.2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.2.2.2">
+                    <p id="section-toc.1-1.2.2.2.2.2.1"><a href="#section-2.2.2" class="xref">2.2.2</a>.  <a href="#name-http-request-type" class="xref">HTTP Request Type</a><a href="#section-toc.1-1.2.2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-user-agent-processing-model" class="xref">User Agent Processing Model</a><a href="#section-toc.1-1.2.2.3.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.2.2.3.2.1">
+                    <p id="section-toc.1-1.2.2.3.2.1.1"><a href="#section-2.3.1" class="xref">2.3.1</a>.  <a href="#name-missing-or-malformed-expect" class="xref">Missing or Malformed Expect-CT Header Fields</a><a href="#section-toc.1-1.2.2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.3.2.2">
+                    <p id="section-toc.1-1.2.2.3.2.2.1"><a href="#section-2.3.2" class="xref">2.3.2</a>.  <a href="#name-expect-ct-header-field-proc" class="xref">Expect-CT Header Field Processing</a><a href="#section-toc.1-1.2.2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.3.2.3">
+                    <p id="section-toc.1-1.2.2.3.2.3.1"><a href="#section-2.3.3" class="xref">2.3.3</a>.  <a href="#name-reporting" class="xref">Reporting</a><a href="#section-toc.1-1.2.2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-evaluating-expect-ct-connec" class="xref">Evaluating Expect-CT Connections for CT Compliance</a><a href="#section-toc.1-1.2.2.4.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.2.2.4.2.1">
+                    <p id="section-toc.1-1.2.2.4.2.1.1"><a href="#section-2.4.1" class="xref">2.4.1</a>.  <a href="#name-skipping-ct-compliance-chec" class="xref">Skipping CT compliance checks</a><a href="#section-toc.1-1.2.2.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-reporting-expect-ct-failure" class="xref">Reporting Expect-CT Failure</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-generating-a-violation-repo" class="xref">Generating a violation report</a><a href="#section-toc.1-1.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-sending-a-violation-report" class="xref">Sending a violation report</a><a href="#section-toc.1-1.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-receiving-a-violation-repor" class="xref">Receiving a violation report</a><a href="#section-toc.1-1.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-usability-considerations" class="xref">Usability Considerations</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-authoring-considerations" class="xref">Authoring Considerations</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-privacy-considerations" class="xref">Privacy Considerations</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.7.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-hostile-header-attacks" class="xref">Hostile header attacks</a><a href="#section-toc.1-1.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-maximum-max-age" class="xref">Maximum max-age</a><a href="#section-toc.1-1.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="xref">7.3</a>.  <a href="#name-amplification-attacks" class="xref">Amplification attacks</a><a href="#section-toc.1-1.7.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.8.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-header-field-registry" class="xref">Header Field Registry</a><a href="#section-toc.1-1.8.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-media-types-registry" class="xref">Media Types Registry</a><a href="#section-toc.1-1.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.9.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.9.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="xref">9.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.9.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-appendix.a" class="xref">Appendix A</a>.  <a href="#name-changes" class="xref">Changes</a><a href="#section-toc.1-1.10.1" class="pilcrow">¶</a></p>
+<ul class="toc compact ulEmpty">
+<li class="toc compact ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-a.1" class="xref">A.1</a>.  <a href="#name-since-07" class="xref">Since -07</a><a href="#section-toc.1-1.10.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-a.2" class="xref">A.2</a>.  <a href="#name-since-06" class="xref">Since -06</a><a href="#section-toc.1-1.10.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-a.3" class="xref">A.3</a>.  <a href="#name-since-05" class="xref">Since -05</a><a href="#section-toc.1-1.10.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.4">
+                <p id="section-toc.1-1.10.2.4.1"><a href="#section-a.4" class="xref">A.4</a>.  <a href="#name-since-04" class="xref">Since -04</a><a href="#section-toc.1-1.10.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.5">
+                <p id="section-toc.1-1.10.2.5.1"><a href="#section-a.5" class="xref">A.5</a>.  <a href="#name-since-03" class="xref">Since -03</a><a href="#section-toc.1-1.10.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.6">
+                <p id="section-toc.1-1.10.2.6.1"><a href="#section-a.6" class="xref">A.6</a>.  <a href="#name-since-02" class="xref">Since -02</a><a href="#section-toc.1-1.10.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.7">
+                <p id="section-toc.1-1.10.2.7.1"><a href="#section-a.7" class="xref">A.7</a>.  <a href="#name-since-01" class="xref">Since -01</a><a href="#section-toc.1-1.10.2.7.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="toc compact ulEmpty" id="section-toc.1-1.10.2.8">
+                <p id="section-toc.1-1.10.2.8.1"><a href="#section-a.8" class="xref">A.8</a>.  <a href="#name-since-00" class="xref">Since -00</a><a href="#section-toc.1-1.10.2.8.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="toc compact ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-appendix.b" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a><a href="#section-toc.1-1.11.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">This document defines a new HTTP header field that enables UAs to identify web hosts
+that expect the presence of Signed Certificate Timestamps (SCTs)
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span> in subsequent Transport Layer Security (TLS)
+<span>[<a href="#RFC8446" class="xref">RFC8446</a>]</span> connections.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Web hosts that serve the Expect-CT HTTP header field are noted by the UA as Known
+Expect-CT Hosts. The UA evaluates each connection to a Known Expect-CT Host for
+compliance with the UA's Certificate Transparency (CT) Policy. If the connection
+violates the CT Policy, the UA sends a report to a URI configured by the
+Expect-CT Host and/or fails the connection, depending on the configuration that
+the Expect-CT Host has chosen.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">If misconfigured, Expect-CT can cause unwanted connection failures (for example,
+if a host deploys Expect-CT but then switches to a legitimate certificate that
+is not logged in Certificate Transparency logs, or if a web host operator
+believes their certificate to conform to all UAs' CT policies but is
+mistaken). Web host operators are advised to deploy Expect-CT with precautions,
+by using the reporting feature and gradually increasing the time interval during
+which the UA regards the host as a Known Expect-CT Host. These precautions can
+help web host operators gain confidence that their Expect-CT deployment is not
+causing unwanted connection failures.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">Expect-CT is a trust-on-first-use (TOFU) mechanism. The first time a UA
+connects to a host, it lacks the information necessary to require SCTs for the
+connection. Thus, the UA will not be able to detect and thwart an attack on the
+UA's first connection to the host. Still, Expect-CT provides value by 1)
+allowing UAs to detect the use of unlogged certificates after the initial
+communication, and 2) allowing web hosts to be confident that UAs are only
+trusting publicly-auditable certificates.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">Expect-CT is similar to HSTS <span>[<a href="#RFC6797" class="xref">RFC6797</a>]</span> and HPKP <span>[<a href="#RFC7469" class="xref">RFC7469</a>]</span>. HSTS allows web
+sites to declare themselves accessible only via secure connections, and HPKP
+allows web sites to declare their cryptographic identifies. Similarly, Expect-CT
+allows web sites to declare themselves accessible only via connections that are
+compliant with CT policy.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">This Expect-CT specification is compatible with <span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span> and
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>, but not with future versions of Certificate
+Transparency. Expect-CT header fields will be ignore from web hosts which use
+future versions of Certificate Transparency, unless a future version of this
+document specifies how they should be processed.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<div id="requirements-language">
+<section id="section-1.1">
+        <h3 id="name-requirements-language">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-requirements-language" class="section-name selfRef">Requirements Language</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span>
+when, and only when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="terminology">
+<section id="section-1.2">
+        <h3 id="name-terminology">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+        </h3>
+<p id="section-1.2-1">Terminology is defined in this section.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2-2.1">"Certificate Transparency Policy" is a policy defined by the UA concerning the
+number, sources, and delivery mechanisms of Signed Certificate Timestamps that
+are associated with TLS connections. The policy defines the properties of a
+connection that must be met in order for the UA to consider it CT-qualified.<a href="#section-1.2-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.2">"Certificate Transparency Qualified" describes a TLS connection for which the
+UA has determined that a sufficient quantity and quality of Signed Certificate
+Timestamps have been provided.<a href="#section-1.2-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.3">"CT-qualified" is an abbreviation for "Certificate Transparency Qualified".<a href="#section-1.2-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.4">"CT Policy" is an abbreviation for "Certificate Transparency Policy".<a href="#section-1.2-2.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.5">"Effective Expect-CT Date" is the time at which a UA observed a valid
+Expect-CT header field for a given host.<a href="#section-1.2-2.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.6">"Expect-CT Host" is a conformant host implementing the HTTP server aspects of
+Expect-CT. This means that an Expect-CT Host returns the "Expect-CT" HTTP
+response header field in its HTTP response messages sent over secure
+transport. The term "host" is equivalent to "server" in this specification.<a href="#section-1.2-2.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.7">"Known Expect-CT Host" is an Expect-CT Host that the UA has noted as such. See
+<a href="#noting-expect-ct" class="xref">Section 2.3.2.1</a> for particulars.<a href="#section-1.2-2.7" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.8">UA is an acronym for "user agent". For the purposes of this specification, a
+UA is an HTTP client application typically actively manipulated by a user
+<span>[<a href="#RFC7230" class="xref">RFC7230</a>]</span>.<a href="#section-1.2-2.8" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-1.2-2.9">"Unknown Expect-CT Host" is an Expect-CT Host that the UA has not noted.<a href="#section-1.2-2.9" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="server-and-client-behavior">
+<section id="section-2">
+      <h2 id="name-server-and-client-behavior">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-server-and-client-behavior" class="section-name selfRef">Server and Client Behavior</a>
+      </h2>
+<div id="response-header-field-syntax">
+<section id="section-2.1">
+        <h3 id="name-response-header-field-synta">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-response-header-field-synta" class="section-name selfRef">Response Header Field Syntax</a>
+        </h3>
+<p id="section-2.1-1">The "Expect-CT" response header field is a new field defined in this
+specification. It is used by a server to indicate that UAs should evaluate
+connections to the host emitting the header field for CT compliance
+(<a href="#expect-ct-compliance" class="xref">Section 2.4</a>).<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2"><a href="#expect-ct-syntax" class="xref">Figure 1</a> describes the syntax (Augmented Backus-Naur Form) of the
+header field, using the grammar defined in <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span> and the rules defined in
+Section 3.2 of <span>[<a href="#RFC7230" class="xref">RFC7230</a>]</span>. The "#" ABNF extension is specified in Section 7 of
+<span>[<a href="#RFC7230" class="xref">RFC7230</a>]</span>.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<span id="name-syntax-of-the-expect-ct-hea"></span><div id="expect-ct-syntax">
+<figure id="figure-1">
+          <div class="artwork art-text alignLeft art-abnf" id="section-2.1-3.1">
+<pre>
 Expect-CT           = 1#expect-ct-directive
 expect-ct-directive = directive-name [ "=" directive-value ]
 directive-name      = token
 directive-value     = token / quoted-string
-</pre></div></div><p class="figure">Figure 1: Syntax of the Expect-CT header field</p><div id="rfc.section.2.1.p.3" class="avoidbreakafter"><p>The directives defined in this specification are described below. The overall requirements for directives are:</p></div><div id="rfc.section.2.1.p.4"><ol><li>The order of appearance of directives is not significant.</li><li>A given directive MUST NOT appear more than once in a given header field. Directives are either optional or required, as stipulated in their definitions.</li><li>Directive names are case insensitive.</li><li>UAs MUST ignore any header fields containing directives, or other header field value data that do not conform to the syntax defined in this specification. In particular, UAs MUST NOT attempt to fix malformed header fields.</li><li>If a header field contains any directive(s) the UA does not recognize, the UA MUST ignore those directives.</li><li>If the Expect-CT header field otherwise satisfies the above requirements (1 through 5), and Expect-CT is not disabled for local policy reasons (as discussed in <a href="#skipping-ct-compliance-checks" title="Skipping CT compliance checks">Section 2.4.1</a>), the UA MUST process the directives it recognizes.</li></ol></div><section id="the-report-uri-directive"><h4 id="rfc.section.2.1.1"><a href="#rfc.section.2.1.1">2.1.1.</a> <a href="#the-report-uri-directive">The report-uri Directive</a></h4><div id="rfc.section.2.1.1.p.1"><p>The OPTIONAL <span class="tt">report-uri</span> directive indicates the URI to which the UA SHOULD report Expect-CT failures (<a href="#expect-ct-compliance" title="Evaluating Expect-CT Connections for CT Compliance">Section 2.4</a>). The UA POSTs the reports to the given URI as described in <a href="#reporting-expect-ct-failure" title="Reporting Expect-CT Failure">Section 3</a>.</p></div><div id="rfc.section.2.1.1.p.2"><p>The <span class="tt">report-uri</span> directive is REQUIRED to have a directive value, for which the syntax is defined in <a href="#reporturi-syntax" title="Syntax of the report-uri directive value">Figure 2</a>.</p></div><div id="reporturi-syntax"></div><div id="rfc.figure.2"><div><pre class="inline">
+</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-syntax-of-the-expect-ct-hea" class="selfRef">Syntax of the Expect-CT header field</a>
+          </figcaption></figure>
+</div>
+<p id="section-2.1-4">The directives defined in this specification are described below. The overall
+requirements for directives are:<a href="#section-2.1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.1-5">
+<li id="section-2.1-5.1">The order of appearance of directives is not significant.<a href="#section-2.1-5.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-2.1-5.2">A given directive MUST NOT appear more than once in a given header
+field. Directives are either optional or required, as stipulated in their
+definitions.<a href="#section-2.1-5.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-2.1-5.3">Directive names are case insensitive.<a href="#section-2.1-5.3" class="pilcrow">¶</a>
+</li>
+          <li id="section-2.1-5.4">UAs MUST ignore any header fields containing directives, or other header
+field value data that do not conform to the syntax defined in this
+specification.  In particular, UAs MUST NOT attempt to fix malformed header
+fields.<a href="#section-2.1-5.4" class="pilcrow">¶</a>
+</li>
+          <li id="section-2.1-5.5">If a header field contains any directive(s) the UA does not recognize, the
+UA MUST ignore those directives.<a href="#section-2.1-5.5" class="pilcrow">¶</a>
+</li>
+          <li id="section-2.1-5.6">If the Expect-CT header field otherwise satisfies the above requirements (1
+through 5), and Expect-CT is not disabled for local policy reasons (as
+discussed in <a href="#skipping-ct-compliance-checks" class="xref">Section 2.4.1</a>), the UA MUST process the
+directives it recognizes.<a href="#section-2.1-5.6" class="pilcrow">¶</a>
+</li>
+        </ol>
+<div id="the-report-uri-directive">
+<section id="section-2.1.1">
+          <h4 id="name-the-report-uri-directive">
+<a href="#section-2.1.1" class="section-number selfRef">2.1.1. </a><a href="#name-the-report-uri-directive" class="section-name selfRef">The report-uri Directive</a>
+          </h4>
+<p id="section-2.1.1-1">The OPTIONAL <code>report-uri</code> directive indicates the URI to which the UA SHOULD
+report Expect-CT failures (<a href="#expect-ct-compliance" class="xref">Section 2.4</a>). The UA POSTs the reports
+to the given URI as described in <a href="#reporting-expect-ct-failure" class="xref">Section 3</a>.<a href="#section-2.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-2">The <code>report-uri</code> directive is REQUIRED to have a directive value, for which the
+syntax is defined in <a href="#reporturi-syntax" class="xref">Figure 2</a>.<a href="#section-2.1.1-2" class="pilcrow">¶</a></p>
+<span id="name-syntax-of-the-report-uri-di"></span><div id="reporturi-syntax">
+<figure id="figure-2">
+            <div class="artwork art-text alignLeft art-abnf" id="section-2.1.1-3.1">
+<pre>
 report-uri-value = absolute-URI
-</pre></div></div><p class="figure">Figure 2: Syntax of the report-uri directive value</p><div id="rfc.section.2.1.1.p.3"><p><span class="tt">absolute-URI</span> is defined in Section 4.3 of <a href="#RFC3986"><cite title="Uniform Resource Identifier (URI): Generic Syntax">[RFC3986]</cite></a>.</p></div><div id="rfc.section.2.1.1.p.4"><p>UAs MUST ignore <span class="tt">report-uri</span>s that do not use the HTTPS scheme. UAs MUST check Expect-CT compliance when the host in the <span class="tt">report-uri</span> is a Known Expect-CT Host; similarly, UAs MUST apply HSTS <a href="#RFC6797"><cite title="HTTP Strict Transport Security (HSTS)">[RFC6797]</cite></a> if the host in the <span class="tt">report-uri</span> is a Known HSTS Host.</p></div><div id="rfc.section.2.1.1.p.5"><p>UAs SHOULD make their best effort to report Expect-CT failures to the <span class="tt">report-uri</span>, but they may fail to report in exceptional conditions. For example, if connecting to the <span class="tt">report-uri</span> itself incurs an Expect-CT failure or other certificate validation failure, the UA MUST cancel the connection. Similarly, if Expect-CT Host A sets a <span class="tt">report-uri</span> referring to Expect-CT Host B, and if B sets a <span class="tt">report-uri</span> referring to A, and if both hosts fail to comply to the UA’s CT Policy, the UA SHOULD detect and break the loop by failing to send reports to and about those hosts.</p></div><div id="rfc.section.2.1.1.p.6"><p>Note that the report-uri need not necessarily be in the same Internet domain or web origin as the host being reported about. Hosts are in fact encouraged to use a separate host as the report-uri, so that CT failures on the Expect-CT host do not prevent reports from being sent.</p></div><div id="rfc.section.2.1.1.p.7"><p>UAs SHOULD limit the rate at which they send reports. For example, it is unnecessary to send the same report to the same <span class="tt">report-uri</span> more than once in the same web browsing session.</p></div></section><section id="the-enforce-directive"><h4 id="rfc.section.2.1.2"><a href="#rfc.section.2.1.2">2.1.2.</a> <a href="#the-enforce-directive">The enforce Directive</a></h4><div id="rfc.section.2.1.2.p.1"><p>The OPTIONAL <span class="tt">enforce</span> directive is a valueless directive that, if present (i.e., it is “asserted”), signals to the UA that compliance to the CT Policy should be enforced (rather than report-only) and that the UA should refuse future connections that violate its CT Policy. When both the <span class="tt">enforce</span> directive and <span class="tt">report-uri</span> directive (as defined in <a href="#reporturi-syntax" title="Syntax of the report-uri directive value">Figure 2</a>) are present, the configuration is referred to as an “enforce-and-report” configuration, signalling to the UA both that compliance to the CT Policy should be enforced and that violations should be reported.</p></div></section><section id="the-max-age-directive"><h4 id="rfc.section.2.1.3"><a href="#rfc.section.2.1.3">2.1.3.</a> <a href="#the-max-age-directive">The max-age Directive</a></h4><div id="rfc.section.2.1.3.p.1"><p>The <span class="tt">max-age</span> directive specifies the number of seconds after the reception of the Expect-CT header field during which the UA SHOULD regard the host from whom the message was received as a Known Expect-CT Host.</p></div><div id="rfc.section.2.1.3.p.2"><p>If a response contains an “Expect-CT” header field, then the response MUST contain an “Expect-CT” header field with a <span class="tt">max-age</span> directive. (A <span class="tt">max-age</span> directive need not appear in every “Expect-CT” header field in the response.) The <span class="tt">max-age</span> directive is REQUIRED to have a directive value, for which the syntax (after quoted-string unescaping, if necessary) is defined in <a href="#maxage-syntax" title="Syntax of the max-age directive value">Figure 3</a>.</p></div><div id="maxage-syntax"></div><div id="rfc.figure.3"><div><pre class="inline">
+</pre>
+</div>
+<figcaption><a href="#figure-2" class="selfRef">Figure 2</a>:
+<a href="#name-syntax-of-the-report-uri-di" class="selfRef">Syntax of the report-uri directive value</a>
+            </figcaption></figure>
+</div>
+<p id="section-2.1.1-4"><code>absolute-URI</code> is defined in Section 4.3 of <span>[<a href="#RFC3986" class="xref">RFC3986</a>]</span>.<a href="#section-2.1.1-4" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-5">UAs MUST ignore <code>report-uri</code>s that do not use the HTTPS scheme. UAs MUST check
+Expect-CT compliance when the host in the <code>report-uri</code> is a Known Expect-CT
+Host; similarly, UAs MUST apply HSTS <span>[<a href="#RFC6797" class="xref">RFC6797</a>]</span> if the host in the
+<code>report-uri</code> is a Known HSTS Host.<a href="#section-2.1.1-5" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-6">UAs SHOULD make their best effort to report Expect-CT failures to the
+<code>report-uri</code>, but they may fail to report in exceptional conditions.  For
+example, if connecting to the <code>report-uri</code> itself incurs an Expect-CT failure
+or other certificate validation failure, the UA MUST cancel the connection.
+Similarly, if Expect-CT Host A sets a <code>report-uri</code> referring to Expect-CT Host
+B, and if B sets a <code>report-uri</code> referring to A, and if both hosts fail to comply
+to the UA's CT Policy, the UA SHOULD detect and break the loop by failing to
+send reports to and about those hosts.<a href="#section-2.1.1-6" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-7">Note that the report-uri need not necessarily be in the same Internet domain or
+web origin as the host being reported about. Hosts are in fact encouraged to use
+a separate host as the report-uri, so that CT failures on the Expect-CT host do
+not prevent reports from being sent.<a href="#section-2.1.1-7" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-8">UAs SHOULD limit the rate at which they send reports. For example, it is
+unnecessary to send the same report to the same <code>report-uri</code> more than once in
+the same web browsing session.<a href="#section-2.1.1-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-enforce-directive">
+<section id="section-2.1.2">
+          <h4 id="name-the-enforce-directive">
+<a href="#section-2.1.2" class="section-number selfRef">2.1.2. </a><a href="#name-the-enforce-directive" class="section-name selfRef">The enforce Directive</a>
+          </h4>
+<p id="section-2.1.2-1">The OPTIONAL <code>enforce</code> directive is a valueless directive that, if present
+(i.e., it is "asserted"), signals to the UA that compliance to the CT Policy
+should be enforced (rather than report-only) and that the UA should refuse
+future connections that violate its CT Policy. When both the <code>enforce</code> directive
+and <code>report-uri</code> directive (as defined in <a href="#reporturi-syntax" class="xref">Figure 2</a>) are present, the
+configuration is referred to as an "enforce-and-report" configuration,
+signalling to the UA both that compliance to the CT Policy should be enforced
+and that violations should be reported.<a href="#section-2.1.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-max-age-directive">
+<section id="section-2.1.3">
+          <h4 id="name-the-max-age-directive">
+<a href="#section-2.1.3" class="section-number selfRef">2.1.3. </a><a href="#name-the-max-age-directive" class="section-name selfRef">The max-age Directive</a>
+          </h4>
+<p id="section-2.1.3-1">The <code>max-age</code> directive specifies the number of seconds after the reception of
+the Expect-CT header field during which the UA SHOULD regard the host from whom
+the message was received as a Known Expect-CT Host.<a href="#section-2.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.3-2">If a response contains an "Expect-CT" header field, then the response MUST
+contain an "Expect-CT" header field with a <code>max-age</code> directive. (A <code>max-age</code>
+directive need not appear in every "Expect-CT" header field in the response.)
+The <code>max-age</code> directive is REQUIRED to have a directive value, for which the
+syntax (after quoted-string unescaping, if necessary) is defined in
+<a href="#maxage-syntax" class="xref">Figure 3</a>.<a href="#section-2.1.3-2" class="pilcrow">¶</a></p>
+<span id="name-syntax-of-the-max-age-direc"></span><div id="maxage-syntax">
+<figure id="figure-3">
+            <div class="artwork art-text alignLeft art-abnf" id="section-2.1.3-3.1">
+<pre>
 max-age-value = delta-seconds
 delta-seconds = 1*DIGIT
-</pre></div></div><p class="figure">Figure 3: Syntax of the max-age directive value</p><div id="rfc.section.2.1.3.p.3"><p><span class="tt">delta-seconds</span> is used as defined in Section 1.2.1 of <a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>.</p></div></section><section id="examples"><h4 id="rfc.section.2.1.4"><a href="#rfc.section.2.1.4">2.1.4.</a> <a href="#examples">Examples</a></h4><div id="rfc.section.2.1.4.p.1" class="avoidbreakafter"><p>The following three examples demonstrate valid Expect-CT response header fields (where the second splits the directives into two field instances):</p></div><div id="example-header-fields"></div><div id="rfc.figure.4"><div><pre class="inline">
+</pre>
+</div>
+<figcaption><a href="#figure-3" class="selfRef">Figure 3</a>:
+<a href="#name-syntax-of-the-max-age-direc" class="selfRef">Syntax of the max-age directive value</a>
+            </figcaption></figure>
+</div>
+<p id="section-2.1.3-4"><code>delta-seconds</code> is used as defined in Section 1.2.1 of <span>[<a href="#RFC7234" class="xref">RFC7234</a>]</span>.<a href="#section-2.1.3-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="examples">
+<section id="section-2.1.4">
+          <h4 id="name-examples">
+<a href="#section-2.1.4" class="section-number selfRef">2.1.4. </a><a href="#name-examples" class="section-name selfRef">Examples</a>
+          </h4>
+<p id="section-2.1.4-1">The following three examples demonstrate valid Expect-CT response header fields
+(where the second splits the directives into two field instances):<a href="#section-2.1.4-1" class="pilcrow">¶</a></p>
+<span id="name-examples-of-valid-expect-ct"></span><div id="example-header-fields">
+<figure id="figure-4">
+            <div class="artwork art-text alignLeft art-inline" id="section-2.1.4-2.1">
+<pre>
 Expect-CT: max-age=86400, enforce
 
 Expect-CT: max-age=86400,enforce
 Expect-CT: report-uri="https://foo.example/report"
 
 Expect-CT: max-age=86400,report-uri="https://foo.example/report"
-</pre></div></div><p class="figure">Figure 4: Examples of valid Expect-CT response header fields</p></section></section><section id="host-processing-model"><h3 id="rfc.section.2.2"><a href="#rfc.section.2.2">2.2.</a> <a href="#host-processing-model">Host Processing Model</a></h3><div id="rfc.section.2.2.p.1"><p>This section describes the processing model that Expect-CT Hosts implement. The model has 2 parts: (1) the processing rules for HTTP request messages received over a secure transport (e.g., authenticated, non-anonymous TLS); and (2) the processing rules for HTTP request messages received over non-secure transports, such as TCP.</p></div><section id="http-over-secure-transport-request-type"><h4 id="rfc.section.2.2.1"><a href="#rfc.section.2.2.1">2.2.1.</a> <a href="#http-over-secure-transport-request-type">HTTP-over-Secure-Transport Request Type</a></h4><div id="rfc.section.2.2.1.p.1"><p>An Expect-CT Host includes an Expect-CT header field in its response. The header field MUST satisfy the grammar specified in <a href="#response-header-field-syntax" title="Response Header Field Syntax">Section 2.1</a>.</p></div><div id="rfc.section.2.2.1.p.2" class="avoidbreakafter"><p>Establishing a given host as an Expect-CT Host, in the context of a given UA, is accomplished as follows:</p></div><div id="rfc.section.2.2.1.p.3"><ol><li>Over the HTTP protocol running over secure transport, by correctly returning (per this specification) a valid Expect-CT header field to the UA.</li><li>Through other mechanisms, such as a client-side preloaded Expect-CT Host list.</li></ol></div></section><section id="http-request-type"><h4 id="rfc.section.2.2.2"><a href="#rfc.section.2.2.2">2.2.2.</a> <a href="#http-request-type">HTTP Request Type</a></h4><div id="rfc.section.2.2.2.p.1"><p>Expect-CT Hosts SHOULD NOT include the Expect-CT header field in HTTP responses conveyed over non-secure transport.</p></div></section></section><section id="user-agent-processing-model"><h3 id="rfc.section.2.3"><a href="#rfc.section.2.3">2.3.</a> <a href="#user-agent-processing-model">User Agent Processing Model</a></h3><div id="rfc.section.2.3.p.1"><p>The UA processing model relies on parsing domain names. Note that internationalized domain names SHALL be canonicalized by the UA according to the scheme in Section 10 of <a href="#RFC6797"><cite title="HTTP Strict Transport Security (HSTS)">[RFC6797]</cite></a>.</p></div><div id="rfc.section.2.3.p.2"><p>The UA stores Known Expect-CT Hosts and their associated Expect-CT directives. This data is collectively known as a host’s “Expect-CT” metadata”.</p></div><section id="missing-or-malformed-expect-ct-header-fields"><h4 id="rfc.section.2.3.1"><a href="#rfc.section.2.3.1">2.3.1.</a> <a href="#missing-or-malformed-expect-ct-header-fields">Missing or Malformed Expect-CT Header Fields</a></h4><div id="rfc.section.2.3.1.p.1"><p>If an HTTP response does not include an Expect-CT header field that conforms to the grammar specified in <a href="#response-header-field-syntax" title="Response Header Field Syntax">Section 2.1</a>, then the UA MUST NOT update any Expect-CT metadata.</p></div></section><section id="expect-ct-header-field-processing"><h4 id="rfc.section.2.3.2"><a href="#rfc.section.2.3.2">2.3.2.</a> <a href="#expect-ct-header-field-processing">Expect-CT Header Field Processing</a></h4><div id="rfc.section.2.3.2.p.1"><p>If the UA receives an HTTP response over a secure transport that includes an Expect-CT header field conforming to the grammar specified in <a href="#response-header-field-syntax" title="Response Header Field Syntax">Section 2.1</a>, the UA MUST evaluate the connection on which the header field was received for compliance with the UA’s CT Policy, and then process the Expect-CT header field as follows. UAs MUST ignore any Expect-CT header field received in an HTTP response conveyed over non-secure transport.</p></div><div id="rfc.section.2.3.2.p.2"><p>If the connection does not comply with the UA’s CT Policy (i.e., the connection is not CT-qualified), then the UA MUST NOT update any Expect-CT metadata. If the header field includes a <span class="tt">report-uri</span> directive, the UA SHOULD send a report to the specified <span class="tt">report-uri</span> (<a href="#header-field-processing-reporting" title="Reporting">Section 2.3.3</a>).</p></div><div id="rfc.section.2.3.2.p.3" class="avoidbreakafter"><p>If the connection complies with the UA’s CT Policy (i.e., the connection is CT-qualified), then the UA MUST either:</p></div><div id="rfc.section.2.3.2.p.4"><ul><li>Note the host as a Known Expect-CT Host if it is not already so noted (see <a href="#noting-expect-ct" title="Noting Expect-CT">Section 2.3.2.1</a>), or</li><li>Update the UA’s cached information for the Known Expect-CT Host if the <span class="tt">enforce</span>, <span class="tt">max-age</span>, or <span class="tt">report-uri</span> header field value directives convey information different from that already maintained by the UA. If the <span class="tt">max-age</span> directive has a value of 0, the UA MUST remove its cached Expect-CT information if the host was previously noted as a Known Expect-CT Host, and MUST NOT note this host as a Known Expect-CT Host if it is not already noted.</li></ul></div><div id="rfc.section.2.3.2.p.5"><p>If a UA receives an Expect-CT header field over a CT-compliant connection which uses a version of Certificate Transparency other than <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a> or <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>, the UA MUST ignore the Expect-CT header field and clear any Expect-CT metadata associated with the host.</p></div><section id="noting-expect-ct"><h5 id="rfc.section.2.3.2.1"><a href="#rfc.section.2.3.2.1">2.3.2.1.</a> <a href="#noting-expect-ct">Noting Expect-CT</a></h5><div id="rfc.section.2.3.2.1.p.1"><p>Upon receipt of the Expect-CT response header field over an error-free TLS connection (with X.509 certificate chain validation as described in <a href="#RFC5280"><cite title="Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile">[RFC5280]</cite></a>, as well as the validation described in <a href="#expect-ct-compliance" title="Evaluating Expect-CT Connections for CT Compliance">Section 2.4</a>), the UA MUST note the host as a Known Expect-CT Host, storing the host’s domain name and its associated Expect-CT directives in non-volatile storage.</p></div><div id="rfc.section.2.3.2.1.p.2"><p>To note a host as a Known Expect-CT Host, the UA MUST set its Expect-CT metadata in its Known Expect-CT Host cache (as specified in <a href="#storage-model" title="Storage Model">Section 2.3.2.2</a>, using the metadata given in the most recently received valid Expect-CT header field.</p></div><div id="rfc.section.2.3.2.1.p.3"><p>For forward compatibility, the UA MUST ignore any unrecognized Expect-CT header field directives, while still processing those directives it does recognize. <a href="#response-header-field-syntax" title="Response Header Field Syntax">Section 2.1</a> specifies the directives <span class="tt">enforce</span>, <span class="tt">max-age</span>, and <span class="tt">report-uri</span>, but future specifications and implementations might use additional directives.</p></div></section><section id="storage-model"><h5 id="rfc.section.2.3.2.2"><a href="#rfc.section.2.3.2.2">2.3.2.2.</a> <a href="#storage-model">Storage Model</a></h5><div id="rfc.section.2.3.2.2.p.1" class="avoidbreakafter"><p>If the substring matching the host production from the Request-URI (of the message to which the host responded) does not exactly match an existing Known Expect-CT Host’s domain name, per the matching procedure for a Congruent Match specified in Section 8.2 of <a href="#RFC6797"><cite title="HTTP Strict Transport Security (HSTS)">[RFC6797]</cite></a>, then the UA MUST add this host to the Known Expect-CT Host cache. The UA caches:</p></div><div id="rfc.section.2.3.2.2.p.2"><ul><li>the Expect-CT Host’s domain name,</li><li>whether the <span class="tt">enforce</span> directive is present</li><li>the Effective Expiration Date, which is the Effective Expect-CT Date plus the value of the <span class="tt">max-age</span> directive. Alternatively, the UA MAY cache enough information to calculate the Effective Expiration Date. The Effective Expiration Date is calculated from when the UA observed the Expect-CT header field and is independent of when the response was generated.</li><li>the value of the <span class="tt">report-uri</span> directive, if present.</li></ul></div><div id="rfc.section.2.3.2.2.p.3"><p>If any other metadata from optional or future Expect-CT header directives are present in the Expect-CT header field, and the UA understands them, the UA MAY note them as well.</p></div><div id="rfc.section.2.3.2.2.p.4"><p>UAs MAY set an upper limit on the value of max-age, so that UAs that have noted erroneous Expect-CT hosts (whether by accident or due to attack) have some chance of recovering over time. If the server sets a max-age greater than the UA’s upper limit, the UA may behave as if the server set the max-age to the UA’s upper limit. For example, if the UA caps max-age at 5,184,000 seconds (60 days), and an Expect-CT Host sets a max- age directive of 90 days in its Expect-CT header field, the UA may behave as if the max-age were effectively 60 days. (One way to achieve this behavior is for the UA to simply store a value of 60 days instead of the 90-day value provided by the Expect-CT host.)</p></div></section></section><section id="header-field-processing-reporting"><h4 id="rfc.section.2.3.3"><a href="#rfc.section.2.3.3">2.3.3.</a> <a href="#header-field-processing-reporting">Reporting</a></h4><div id="rfc.section.2.3.3.p.1"><p>If the UA receives, over a secure transport, an HTTP response that includes an Expect-CT header field with a <span class="tt">report-uri</span> directive, and the connection does not comply with the UA’s CT Policy (i.e., the connection is not CT-qualified), and the UA has not already sent an Expect-CT report for this connection, then the UA SHOULD send a report to the specified <span class="tt">report-uri</span> as specified in <a href="#reporting-expect-ct-failure" title="Reporting Expect-CT Failure">Section 3</a>.</p></div></section></section><section id="expect-ct-compliance"><h3 id="rfc.section.2.4"><a href="#rfc.section.2.4">2.4.</a> <a href="#expect-ct-compliance">Evaluating Expect-CT Connections for CT Compliance</a></h3><div id="rfc.section.2.4.p.1"><p>When a UA sets up a TLS connection, the UA determines whether the host is a Known Expect-CT Host according to its Known Expect-CT Host cache. An Expect-CT Host is “expired” if the effective expiration date refers to a date in the past. The UA MUST ignore any expired Expect-CT Hosts in its cache and not treat such hosts as Known Expect-CT hosts.</p></div><div id="rfc.section.2.4.p.2"><p>When a UA connects to a Known Expect-CT Host using a TLS connection, if the TLS connection has no errors, then the UA will apply an additional correctness check: compliance with a CT Policy. A UA should evaluate compliance with its CT Policy whenever connecting to a Known Expect-CT Host. However, the check can be skipped for local policy reasons (as discussed in <a href="#skipping-ct-compliance-checks" title="Skipping CT compliance checks">Section 2.4.1</a>), or in the event that other checks cause the UA to terminate the connection before CT compliance is evaluated. For example, a Public Key Pinning failure <a href="#RFC7469"><cite title="Public Key Pinning Extension for HTTP">[RFC7469]</cite></a> could cause the UA to terminate the connection before CT compliance is checked. Similarly, if the UA terminates the connection due to an Expect-CT failure, this could cause the UA to skip subsequent correctness checks. When the CT compliance check is skipped or bypassed, Expect-CT reports (<a href="#reporting-expect-ct-failure" title="Reporting Expect-CT Failure">Section 3</a>) will not be sent.</p></div><div id="rfc.section.2.4.p.3"><p>When CT compliance is evaluated for a Known Expect-CT Host, the UA MUST evaluate compliance when setting up the TLS session, before beginning an HTTP conversation over the TLS channel.</p></div><div id="rfc.section.2.4.p.4"><p>If a connection to a Known Expect-CT Host violates the UA’s CT policy (i.e., the connection is not CT-qualified), and if the Known Expect-CT Host’s Expect-CT metadata indicates an <span class="tt">enforce</span> configuration, the UA MUST treat the CT compliance failure as an error. The UA MAY allow the user to bypass the error, unless connection errors should have no user recourse due to other policies in effect (such as HSTS, as described in Section 12.1 of <a href="#RFC6797"><cite title="HTTP Strict Transport Security (HSTS)">[RFC6797]</cite></a>.</p></div><div id="rfc.section.2.4.p.5"><p>If a connection to a Known Expect-CT Host violates the UA’s CT policy, and if the Known Expect-CT Host’s Expect-CT metadata includes a <span class="tt">report-uri</span>, the UA SHOULD send an Expect-CT report to that <span class="tt">report-uri</span> (<a href="#reporting-expect-ct-failure" title="Reporting Expect-CT Failure">Section 3</a>).</p></div><section id="skipping-ct-compliance-checks"><h4 id="rfc.section.2.4.1"><a href="#rfc.section.2.4.1">2.4.1.</a> <a href="#skipping-ct-compliance-checks">Skipping CT compliance checks</a></h4><div id="rfc.section.2.4.1.p.1"><p>It is acceptable for a UA to skip CT compliance checks for some hosts according to local policy. For example, a UA MAY disable CT compliance checks for hosts whose validated certificate chain terminates at a user-defined trust anchor, rather than a trust anchor built-in to the UA (or underlying platform).</p></div><div id="rfc.section.2.4.1.p.2"><p>If the UA does not evaluate CT compliance, e.g., because the user has elected to disable it, or because a presented certificate chain chains up to a user-defined trust anchor, UAs SHOULD NOT send Expect-CT reports.</p></div></section></section></section><hr class="noprint"><section id="reporting-expect-ct-failure"><h2 id="rfc.section.3" class="np"><a href="#rfc.section.3">3.</a> <a href="#reporting-expect-ct-failure">Reporting Expect-CT Failure</a></h2><div id="rfc.section.3.p.1"><p>When the UA attempts to connect to a Known Expect-CT Host and the connection is not CT-qualified, the UA SHOULD report Expect-CT failures to the <span class="tt">report-uri</span>, if any, in the Known Expect-CT Host’s Expect-CT metadata.</p></div><div id="rfc.section.3.p.2"><p>When the UA receives an Expect-CT response header field over a connection that is not CT-qualified, if the UA has not already sent an Expect-CT report for this connection, then the UA SHOULD report Expect-CT failures to the configured <span class="tt">report-uri</span>, if any.</p></div><section id="generating-a-violation-report"><h3 id="rfc.section.3.1"><a href="#rfc.section.3.1">3.1.</a> <a href="#generating-a-violation-report">Generating a violation report</a></h3><div id="rfc.section.3.1.p.1" class="avoidbreakafter"><p>To generate a violation report object, the UA constructs a JSON <a href="#RFC8259"><cite title="The JavaScript Object Notation (JSON) Data Interchange Format">[RFC8259]</cite></a> object with the following keys and values:</p></div><div id="rfc.section.3.1.p.2"><ul><li>“date-time”: the value for this key indicates the UTC time that the UA observed the CT compliance failure. The value is a string formatted according to Section 5.6, “Internet Date/Time Format”, of <a href="#RFC3339"><cite title="Date and Time on the Internet: Timestamps">[RFC3339]</cite></a>.</li><li>“hostname”: the value is the hostname to which the UA made the original request that failed the CT compliance check. The value is provided as a string.</li><li>“port”: the value is the port to which the UA made the original request that failed the CT compliance check. The value is provided as an integer.</li><li>“scheme”: the value is the scheme with which the UA made the original request that failed the CT compliance check. The value is provided as a string. This key is optional and is assumed to be “https” if not present.</li><li>“effective-expiration-date”: the value indicates the Effective Expiration Date (see <a href="#storage-model" title="Storage Model">Section 2.3.2.2</a>) for the Expect-CT Host that failed the CT compliance check, in UTC. The value is provided as a string formatted according to Section 5.6 of <a href="#RFC3339"><cite title="Date and Time on the Internet: Timestamps">[RFC3339]</cite></a> (“Internet Date/Time Format”).</li><li>“served-certificate-chain”: the value is the certificate chain as served by the Expect-CT Host during TLS session setup. The value is provided as an array of strings, which MUST appear in the order that the certificates were served; each string in the array is the Privacy-Enhanced Mail (PEM) representation of each X.509 certificate as described in <a href="#RFC7468"><cite title="Textual Encodings of PKIX, PKCS, and CMS Structures">[RFC7468]</cite></a>.</li><li>“validated-certificate-chain”: the value is the certificate chain as constructed by the UA during certificate chain verification. (This may differ from the value of the “served-certificate-chain” key.) The value is provided as an array of strings, which MUST appear in the order matching the chain that the UA validated; each string in the array is the Privacy-Enhanced Mail (PEM) representation of each X.509 certificate as described in <a href="#RFC7468"><cite title="Textual Encodings of PKIX, PKCS, and CMS Structures">[RFC7468]</cite></a>. The first certificate in the chain represents the end-entity certificate being verified. UAs that build certificate chains in more than one way during the validation process SHOULD send the last chain built.</li><li>“scts”: the value represents the SCTs (if any) that the UA received for the Expect-CT host and their validation statuses. The value is provided as an array of JSON objects. The SCTs may appear in any order. Each JSON object in the array has the following keys: <ul><li>A “version” key, with an integer value. The UA MUST set this value to <span class="tt">1</span> if the SCT is in the format defined in Section 3.2 of <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a> and <span class="tt">2</span> if it is in the format defined in Section 4.5 of <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>.</li><li>The “status” key, with a string value that the UA MUST set to one of the following values: “unknown” (indicating that the UA does not have or does not trust the public key of the log from which the SCT was issued), “valid” (indicating that the UA successfully validated the SCT as described in Section 5.2 of <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a> or Section 8.2.3 of <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>), or “invalid” (indicating that the SCT validation failed because of a bad signature or an invalid timestamp).</li><li>The “source” key, with a string value that indicates from where the UA obtained the SCT, as defined in Section 3 of <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a> and Section 6 of <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>. The UA MUST set the value to one of “tls-extension”, “ocsp”, or “embedded”. These correspond to the three methods of delivering SCTs in the TLS handshake that are described in Section 3.3 of <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a>.</li><li>The “serialized_sct” key, with a string value. If the value of the “version” key is <span class="tt">1</span>, the UA MUST set this value to the base64 encoded <a href="#RFC4648"><cite title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</cite></a> serialized <span class="tt">SignedCertificateTimestamp</span> structure from Section 3.2 of <a href="#RFC6962"><cite title="Certificate Transparency">[RFC6962]</cite></a>. The base64 encoding is defined in Section 4 of <a href="#RFC4648"><cite title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</cite></a>. If the value of the “version” key is <span class="tt">2</span>, the UA MUST set this value to the base64 encoded <a href="#RFC4648"><cite title="The Base16, Base32, and Base64 Data Encodings">[RFC4648]</cite></a> serialized <span class="tt">TransItem</span> structure representing the SCT, as defined in Section 4.5 of <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>.</li></ul></li><li>“failure-mode”: the value indicates whether the Expect-CT report was triggered by an Expect-CT policy in enforce or report-only mode. The value is provided as a string. The UA MUST set this value to “enforce” if the Expect-CT metadata indicates an <span class="tt">enforce</span> configuration, and “report-only” otherwise.</li><li>“test-report”: the value is set to true if the report is being sent by a testing client to verify that the report server behaves correctly. The value is provided as a boolean, and MUST be set to true if the report serves to test the server’s behavior and can be discarded.</li></ul></div></section><section id="sending-report"><h3 id="rfc.section.3.2"><a href="#rfc.section.3.2">3.2.</a> <a href="#sending-report">Sending a violation report</a></h3><div id="rfc.section.3.2.p.1"><p>The UA SHOULD report Expect-CT failures for Known Expect-CT Hosts: that is, when a connection to a Known Expect-CT Host does not comply with the UA’s CT Policy and the host’s Expect-CT metadata contains a <span class="tt">report-uri</span>.</p></div><div id="rfc.section.3.2.p.2"><p>Additionally, the UA SHOULD report Expect-CT failures for hosts for which it does not have any stored Expect-CT metadata. That is, when the UA connects to a host and receives an Expect-CT header field which contains the <span class="tt">report-uri</span> directive, the UA SHOULD report an Expect-CT failure if the the connection does not comply with the UA’s CT Policy.</p></div><div id="rfc.section.3.2.p.3"><p>The steps to report an Expect-CT failure are as follows.</p></div><div id="rfc.section.3.2.p.4"><ol><li>Prepare a JSON object <span class="tt">report object</span> with the single key “expect-ct-report”, whose value is the result of generating a violation report object as described in <a href="#generating-a-violation-report" title="Generating a violation report">Section 3.1</a>.</li><li>Let <span class="tt">report body</span> be the JSON stringification of <span class="tt">report object</span>.</li><li>Let <span class="tt">report-uri</span> be the value of the <span class="tt">report-uri</span> directive in the Expect-CT header field.</li><li>Send an HTTP POST request to <span class="tt">report-uri</span> with a <span class="tt">Content-Type</span> header field of <span class="tt">application/expect-ct-report+json</span>, and an entity body consisting of <span class="tt">report body</span>.</li></ol></div><div id="rfc.section.3.2.p.5"><p>The UA MAY perform other operations as part of sending the HTTP POST request, for example sending a CORS preflight as part of <a href="#FETCH"><cite title="Fetch - Living Standard">[FETCH]</cite></a>.</p></div><div id="rfc.section.3.2.p.6"><p>Future versions of this specification may need to modify or extend the Expect-CT report format. They may do so by defining a new top-level key to contain the report, replacing the “expect-ct-report” key. <a href="#receiving-report" title="Receiving a violation report">Section 3.3</a> defines how report servers should handle report formats that they do not support.</p></div></section><section id="receiving-report"><h3 id="rfc.section.3.3"><a href="#rfc.section.3.3">3.3.</a> <a href="#receiving-report">Receiving a violation report</a></h3><div id="rfc.section.3.3.p.1"><p>Upon receiving an Expect-CT violation report, the report server MUST respond with a 2xx (Successful) status code if it can parse the request body as valid JSON, the report conforms to the format described in <a href="#generating-a-violation-report" title="Generating a violation report">Section 3.1</a>, and it recognizes the scheme, hostname, and port in the “scheme”, “hostname”, and “port” fields of the report. If the report body cannot be parsed, or the report does not conform to the format described in <a href="#generating-a-violation-report" title="Generating a violation report">Section 3.1</a>, or the report server does not expect to receive reports for the scheme, hostname, or port in the report, then the report server MUST respond with a 400 Bad Request status code.</p></div><div id="rfc.section.3.3.p.2"><p>As described in <a href="#sending-report" title="Sending a violation report">Section 3.2</a>, future versions of this specification may define new report formats that are sent with a different top-level key. If the report server does not recognize the report format, the report server MUST respond with a 501 Not Implemented status code.</p></div><div id="rfc.section.3.3.p.3"><p>If the report’s “test-report” key is set to true, the server MAY discard the report without further processing but MUST still return a 2xx (Successful) status code. If the “test-report” key is absent or set to false, the server SHOULD store the report for processing and analysis by the owner of the Expect-CT Host.</p></div></section></section><hr class="noprint"><section id="usability-considerations"><h2 id="rfc.section.4" class="np"><a href="#rfc.section.4">4.</a> <a href="#usability-considerations">Usability Considerations</a></h2><div id="rfc.section.4.p.1"><p>When the UA detects a Known Expect-CT Host in violation of the UA’s CT Policy, end users will experience denials of service. It is advisable for UAs to explain to users why they cannot access the Expect-CT Host, e.g., in a user interface that explains that the host’s certificate cannot be validated.</p></div></section><hr class="noprint"><section id="authoring-considerations"><h2 id="rfc.section.5" class="np"><a href="#rfc.section.5">5.</a> <a href="#authoring-considerations">Authoring Considerations</a></h2><div id="rfc.section.5.p.1"><p>Expect-CT could be specified as a TLS extension or X.509 certificate extension instead of an HTTP response header field. Using an HTTP header field as the mechanism for Expect-CT introduces a layering mismatch: for example, the software that terminates TLS and validates Certificate Transparency information might know nothing about HTTP. Nevertheless, an HTTP header field was chosen primarily for ease of deployment. In practice, deploying new certificate extensions requires certificate authorities to support them, and new TLS extensions require server software updates, including possibly to servers outside of the site owner’s direct control (such as in the case of a third-party CDN). Ease of deployment is a high priority for Expect-CT because it is intended as a temporary transition mechanism for user agents that are transitioning to universal Certificate Transparency requirements.</p></div></section><hr class="noprint"><section id="privacy-considerations"><h2 id="rfc.section.6" class="np"><a href="#rfc.section.6">6.</a> <a href="#privacy-considerations">Privacy Considerations</a></h2><div id="rfc.section.6.p.1"><p>Expect-CT can be used to infer what Certificate Transparency policy a UA is using, by attempting to retrieve specially-configured websites which pass one user agents’ policies but not another’s. Note that this consideration is true of UAs which enforce CT policies without Expect-CT as well.</p></div><div id="rfc.section.6.p.2"><p>Additionally, reports submitted to the <span class="tt">report-uri</span> could reveal information to a third party about which webpage is being accessed and by which IP address, by using individual <span class="tt">report-uri</span> values for individually-tracked pages. This information could be leaked even if client-side scripting were disabled.</p></div><div id="rfc.section.6.p.3"><p>Implementations store state about Known Expect-CT Hosts, and hence which domains the UA has contacted. Implementations may choose to not store this state subject to local policy (e.g., in the private browsing mode of a web browser).</p></div><div id="rfc.section.6.p.4"><p>Violation reports, as noted in <a href="#reporting-expect-ct-failure" title="Reporting Expect-CT Failure">Section 3</a>, contain information about the certificate chain that has violated the CT policy. In some cases, such as organization-wide compromise of the end-to-end security of TLS, this may include information about the interception tools and design used by the organization that the organization would otherwise prefer not be disclosed.</p></div><div id="rfc.section.6.p.5"><p>Because Expect-CT causes remotely-detectable behavior, it’s advisable that UAs offer a way for privacy-sensitive end users to clear currently noted Expect-CT hosts, and allow users to query the current state of Known Expect-CT Hosts.</p></div></section><hr class="noprint"><section id="security-considerations"><h2 id="rfc.section.7" class="np"><a href="#rfc.section.7">7.</a> <a href="#security-considerations">Security Considerations</a></h2><section id="hostile-header-attacks"><h3 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> <a href="#hostile-header-attacks">Hostile header attacks</a></h3><div id="rfc.section.7.1.p.1"><p>When UAs support the Expect-CT header field, it becomes a potential vector for hostile header attacks against site owners. If a site owner uses a certificate issued by a certificate authority which does not embed SCTs nor serve SCTs via OCSP or TLS extension, a malicious server operator or attacker could temporarily reconfigure the host to comply with the UA’s CT policy, and add the Expect-CT header field in enforcing mode with a long <span class="tt">max-age</span>. Implementing user agents would note this as an Expect-CT Host (see <a href="#noting-expect-ct" title="Noting Expect-CT">Section 2.3.2.1</a>). After having done this, the configuration could then be reverted to not comply with the CT policy, prompting failures. Note this scenario would require the attacker to have substantial control over the infrastructure in question, being able to obtain different certificates, change server software, or act as a man-in-the-middle in connections.</p></div><div id="rfc.section.7.1.p.2"><p>Site operators can mitigate this situation by one of: reconfiguring their web server to transmit SCTs using the TLS extension defined in Section 6.5 of <a href="#I-D.ietf-trans-rfc6962-bis"><cite title="Certificate Transparency Version 2.0">[I-D.ietf-trans-rfc6962-bis]</cite></a>, obtaining a certificate from an alternative certificate authority which provides SCTs by one of the other methods, or by waiting for the user agents’ persisted notation of this as an Expect-CT host to reach its <span class="tt">max-age</span>. User agents may choose to implement mechanisms for users to cure this situation, as noted in <a href="#usability-considerations" title="Usability Considerations">Section 4</a>.</p></div></section><section id="maximum-max-age"><h3 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> <a href="#maximum-max-age">Maximum max-age</a></h3><div id="rfc.section.7.2.p.1"><p>There is a security trade-off in that low maximum values provide a narrow window of protection for users that visit the Known Expect-CT Host only infrequently, while high maximum values might result in a denial of service to a UA in the event of a hostile header attack, or simply an error on the part of the site-owner.</p></div><div id="rfc.section.7.2.p.2"><p>There is probably no ideal maximum for the <span class="tt">max-age</span> directive. Since Expect-CT is primarily a policy-expansion and investigation technology rather than an end-user protection, a value on the order of 30 days (2,592,000 seconds) may be considered a balance between these competing security concerns.</p></div></section><section id="amplification-attacks"><h3 id="rfc.section.7.3"><a href="#rfc.section.7.3">7.3.</a> <a href="#amplification-attacks">Amplification attacks</a></h3><div id="rfc.section.7.3.p.1"><p>Another kind of hostile header attack uses the <span class="tt">report-uri</span> mechanism on many hosts not currently exposing SCTs as a method to cause a denial-of-service to the host receiving the reports. If some highly-trafficked websites emitted a non-enforcing Expect-CT header field with a <span class="tt">report-uri</span>, implementing UAs’ reports could flood the reporting host. It is noted in <a href="#the-report-uri-directive" title="The report-uri Directive">Section 2.1.1</a> that UAs should limit the rate at which they emit reports, but an attacker may alter the Expect-CT header’s fields to induce UAs to submit different reports to different URIs to still cause the same effect.</p></div></section></section><hr class="noprint"><section id="iana-considerations"><h2 id="rfc.section.8" class="np"><a href="#rfc.section.8">8.</a> <a href="#iana-considerations">IANA Considerations</a></h2><section id="header-field-registry"><h3 id="rfc.section.8.1"><a href="#rfc.section.8.1">8.1.</a> <a href="#header-field-registry">Header Field Registry</a></h3><div id="rfc.section.8.1.p.1"><p>This document registers the <span class="tt">Expect-CT</span> header field in the “Permanent Message Header Field Names” registry located at <a href="https://www.iana.org/assignments/message-headers">https://www.iana.org/assignments/message-headers</a>.</p></div><div id="rfc.section.8.1.p.2"><dl><dt>Header field name:</dt><dd>Expect-CT</dd><dt>Applicable protocol:</dt><dd>http</dd><dt>Status:</dt><dd>experimental</dd><dt>Author/Change controller:</dt><dd>IETF</dd><dt>Specification document(s):</dt><dd>This document</dd><dt>Related information:</dt><dd>(empty)</dd></dl></div></section><section id="media-types-registry"><h3 id="rfc.section.8.2"><a href="#rfc.section.8.2">8.2.</a> <a href="#media-types-registry">Media Types Registry</a></h3><div id="rfc.section.8.2.p.1"><p>The MIME media type for Expect-CT violation reports is “application/expect-ct-report+json” (which uses the suffix established in <a href="#RFC6839"><cite title="Additional Media Type Structured Syntax Suffixes">[RFC6839]</cite></a>).</p></div><div id="rfc.section.8.2.p.2"><dl><dt>Type name:</dt><dd>application</dd><dt>Subtype name:</dt><dd>expect-ct-report+json</dd><dt>Required parameters:</dt><dd>n/a</dd><dt>Optional parameters:</dt><dd>n/a</dd><dt>Encoding considerations:</dt><dd>binary</dd><dt>Security considerations:</dt><dd>See <a href="#security-considerations" title="Security Considerations">Section 7</a></dd><dt>Interoperability considerations:</dt><dd>n/a</dd><dt>Published specification:</dt><dd>This document</dd><dt>Applications that use this media type:</dt><dd>UAs that implement Certificate Transparency compliance checks and reporting</dd><dt>Additional information:</dt><dd> </dd><dd>Deprecated alias names for this type: n/a</dd><dd>Magic number(s): n/a</dd><dd>File extension(s): n/a</dd><dd>Macintosh file type code(s): n/a</dd><dt>Person &amp; email address to contact for further information:</dt><dd>Emily Stark (estark@google.com)</dd><dt>Intended usage:</dt><dd>COMMON</dd><dt>Restrictions on usage:</dt><dd>none</dd><dt>Author:</dt><dd>Emily Stark (estark@google.com)</dd><dt>Change controller:</dt><dd>IETF</dd></dl></div></section></section><hr class="noprint"><section id="rfc.references" class="np"><h2 id="rfc.section.9"><a href="#rfc.section.9">9.</a> References</h2><section class="np"><div id="rfc.references.1"><h3 id="rfc.section.9.1"><a href="#rfc.section.9.1">9.1.</a> Normative References</h3><dl class="reference"><dt id="I-D.ietf-trans-rfc6962-bis">[I-D.ietf-trans-rfc6962-bis]</dt><dd>Laurie, B., Langley, A., Kasper, E., Messeri, E., and R. Stradling, “<a href="https://tools.ietf.org/html/draft-ietf-trans-rfc6962-bis-34">Certificate Transparency Version 2.0</a>”, Internet-Draft draft-ietf-trans-rfc6962-bis-34 (<a href="https://datatracker.ietf.org/doc/draft-ietf-trans-rfc6962-bis">work in progress</a>), November 2019.</dd><dt id="RFC2119">[RFC2119]</dt><dd>Bradner, S., “<a href="https://www.rfc-editor.org/rfc/rfc2119.html">Key words for use in RFCs to Indicate Requirement Levels</a>”, BCP 14, RFC 2119, <a href="https://dx.doi.org/10.17487/RFC2119">DOI 10.17487/RFC2119</a>, March 1997, &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.</dd><dt id="RFC3339">[RFC3339]</dt><dd>Klyne, G. and C. Newman, “<a href="https://www.rfc-editor.org/rfc/rfc3339.html">Date and Time on the Internet: Timestamps</a>”, RFC 3339, <a href="https://dx.doi.org/10.17487/RFC3339">DOI 10.17487/RFC3339</a>, July 2002, &lt;<a href="https://www.rfc-editor.org/info/rfc3339">https://www.rfc-editor.org/info/rfc3339</a>&gt;.</dd><dt id="RFC3986">[RFC3986]</dt><dd>Berners-Lee, T., Fielding, R., and L. Masinter, “<a href="https://www.rfc-editor.org/rfc/rfc3986.html">Uniform Resource Identifier (URI): Generic Syntax</a>”, STD 66, RFC 3986, <a href="https://dx.doi.org/10.17487/RFC3986">DOI 10.17487/RFC3986</a>, January 2005, &lt;<a href="https://www.rfc-editor.org/info/rfc3986">https://www.rfc-editor.org/info/rfc3986</a>&gt;.</dd><dt id="RFC4648">[RFC4648]</dt><dd>Josefsson, S., “<a href="https://www.rfc-editor.org/rfc/rfc4648.html">The Base16, Base32, and Base64 Data Encodings</a>”, RFC 4648, <a href="https://dx.doi.org/10.17487/RFC4648">DOI 10.17487/RFC4648</a>, October 2006, &lt;<a href="https://www.rfc-editor.org/info/rfc4648">https://www.rfc-editor.org/info/rfc4648</a>&gt;.</dd><dt id="RFC5234">[RFC5234]</dt><dd>Crocker, D., Ed. and P. Overell, “<a href="https://www.rfc-editor.org/rfc/rfc5234.html">Augmented BNF for Syntax Specifications: ABNF</a>”, STD 68, RFC 5234, <a href="https://dx.doi.org/10.17487/RFC5234">DOI 10.17487/RFC5234</a>, January 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.</dd><dt id="RFC5280">[RFC5280]</dt><dd>Cooper, D., Santesson, S., Farrell, S., Boeyen, S., Housley, R., and W. Polk, “<a href="https://www.rfc-editor.org/rfc/rfc5280.html">Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile</a>”, RFC 5280, <a href="https://dx.doi.org/10.17487/RFC5280">DOI 10.17487/RFC5280</a>, May 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5280">https://www.rfc-editor.org/info/rfc5280</a>&gt;.</dd><dt id="RFC6797">[RFC6797]</dt><dd>Hodges, J., Jackson, C., and A. Barth, “<a href="https://www.rfc-editor.org/rfc/rfc6797.html">HTTP Strict Transport Security (HSTS)</a>”, RFC 6797, <a href="https://dx.doi.org/10.17487/RFC6797">DOI 10.17487/RFC6797</a>, November 2012, &lt;<a href="https://www.rfc-editor.org/info/rfc6797">https://www.rfc-editor.org/info/rfc6797</a>&gt;.</dd><dt id="RFC6839">[RFC6839]</dt><dd>Hansen, T. and A. Melnikov, “<a href="https://www.rfc-editor.org/rfc/rfc6839.html">Additional Media Type Structured Syntax Suffixes</a>”, RFC 6839, <a href="https://dx.doi.org/10.17487/RFC6839">DOI 10.17487/RFC6839</a>, January 2013, &lt;<a href="https://www.rfc-editor.org/info/rfc6839">https://www.rfc-editor.org/info/rfc6839</a>&gt;.</dd><dt id="RFC6962">[RFC6962]</dt><dd>Laurie, B., Langley, A., and E. Kasper, “<a href="https://www.rfc-editor.org/rfc/rfc6962.html">Certificate Transparency</a>”, RFC 6962, <a href="https://dx.doi.org/10.17487/RFC6962">DOI 10.17487/RFC6962</a>, June 2013, &lt;<a href="https://www.rfc-editor.org/info/rfc6962">https://www.rfc-editor.org/info/rfc6962</a>&gt;.</dd><dt id="RFC7230">[RFC7230]</dt><dd>Fielding, R., Ed. and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7230.html">Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing</a>”, RFC 7230, <a href="https://dx.doi.org/10.17487/RFC7230">DOI 10.17487/RFC7230</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7230">https://www.rfc-editor.org/info/rfc7230</a>&gt;.</dd><dt id="RFC7234">[RFC7234]</dt><dd>Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7234.html">Hypertext Transfer Protocol (HTTP/1.1): Caching</a>”, RFC 7234, <a href="https://dx.doi.org/10.17487/RFC7234">DOI 10.17487/RFC7234</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7234">https://www.rfc-editor.org/info/rfc7234</a>&gt;.</dd><dt id="RFC7468">[RFC7468]</dt><dd>Josefsson, S. and S. Leonard, “<a href="https://www.rfc-editor.org/rfc/rfc7468.html">Textual Encodings of PKIX, PKCS, and CMS Structures</a>”, RFC 7468, <a href="https://dx.doi.org/10.17487/RFC7468">DOI 10.17487/RFC7468</a>, April 2015, &lt;<a href="https://www.rfc-editor.org/info/rfc7468">https://www.rfc-editor.org/info/rfc7468</a>&gt;.</dd><dt id="RFC7469">[RFC7469]</dt><dd>Evans, C., Palmer, C., and R. Sleevi, “<a href="https://www.rfc-editor.org/rfc/rfc7469.html">Public Key Pinning Extension for HTTP</a>”, RFC 7469, <a href="https://dx.doi.org/10.17487/RFC7469">DOI 10.17487/RFC7469</a>, April 2015, &lt;<a href="https://www.rfc-editor.org/info/rfc7469">https://www.rfc-editor.org/info/rfc7469</a>&gt;.</dd><dt id="RFC8174">[RFC8174]</dt><dd>Leiba, B., “<a href="https://www.rfc-editor.org/rfc/rfc8174.html">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>”, BCP 14, RFC 8174, <a href="https://dx.doi.org/10.17487/RFC8174">DOI 10.17487/RFC8174</a>, May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.</dd><dt id="RFC8259">[RFC8259]</dt><dd>Bray, T., Ed., “<a href="https://www.rfc-editor.org/rfc/rfc8259.html">The JavaScript Object Notation (JSON) Data Interchange Format</a>”, STD 90, RFC 8259, <a href="https://dx.doi.org/10.17487/RFC8259">DOI 10.17487/RFC8259</a>, December 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8259">https://www.rfc-editor.org/info/rfc8259</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.9.2"><a href="#rfc.section.9.2">9.2.</a> Informative References</h3><dl class="reference"><dt id="FETCH">[FETCH]</dt><dd>WHATWG, “<a href="https://fetch.spec.whatwg.org">Fetch - Living Standard</a>”, n.d., &lt;<a href="https://fetch.spec.whatwg.org">https://fetch.spec.whatwg.org</a>&gt;.</dd><dt id="RFC8446">[RFC8446]</dt><dd>Rescorla, E., “<a href="https://www.rfc-editor.org/rfc/rfc8446.html">The Transport Layer Security (TLS) Protocol Version 1.3</a>”, RFC 8446, <a href="https://dx.doi.org/10.17487/RFC8446">DOI 10.17487/RFC8446</a>, August 2018, &lt;<a href="https://www.rfc-editor.org/info/rfc8446">https://www.rfc-editor.org/info/rfc8446</a>&gt;.</dd></dl></div></section></section><hr class="noprint"><section id="changes"><h2 id="rfc.section.A" class="np"><a href="#rfc.section.A">Appendix A.</a> <a href="#changes">Changes</a></h2><section id="since-07"><h3 id="rfc.section.A.1"><a href="#rfc.section.A.1">A.1.</a> <a href="#since-07">Since -07</a></h3><div id="rfc.section.A.1.p.1"><ul><li>Editorial changes</li><li>Specify that the end-entity certificate appears first in the “validated-certificate-chain” field of an Expect-CT report.</li><li>Define how report format can be extended by future versions of this specification.</li><li>Add optional “scheme” key to report format.</li><li>Specify exact status codes for report server errors.</li><li>Limit report-uris to HTTPS only.</li><li>Note that this version of Expect-CT is only compatible with RFC 6962 and 6962-bis, not any future versions of CT.</li></ul></div></section><section id="since-06"><h3 id="rfc.section.A.2"><a href="#rfc.section.A.2">A.2.</a> <a href="#since-06">Since -06</a></h3><div id="rfc.section.A.2.p.1"><ul><li>Editorial changes</li></ul></div></section><section id="since-05"><h3 id="rfc.section.A.3"><a href="#rfc.section.A.3">A.3.</a> <a href="#since-05">Since -05</a></h3><div id="rfc.section.A.3.p.1"><ul><li>Remove SHOULD requirement that UAs disallow certificate error overrides for Known Expect-CT Hosts.</li><li>Remove restriction that Expect-CT Hosts cannot be IP addresses.</li><li>Editorial changes</li></ul></div></section><section id="since-04"><h3 id="rfc.section.A.4"><a href="#rfc.section.A.4">A.4.</a> <a href="#since-04">Since -04</a></h3><div id="rfc.section.A.4.p.1"><ul><li>Editorial changes</li></ul></div></section><section id="since-03"><h3 id="rfc.section.A.5"><a href="#rfc.section.A.5">A.5.</a> <a href="#since-03">Since -03</a></h3><div id="rfc.section.A.5.p.1"><ul><li>Editorial changes</li></ul></div></section><section id="since-02"><h3 id="rfc.section.A.6"><a href="#rfc.section.A.6">A.6.</a> <a href="#since-02">Since -02</a></h3><div id="rfc.section.A.6.p.1"><ul><li>Add concept of test reports and specify that servers must respond with 2xx status codes to valid reports.</li><li>Add “failure-mode” key to reports to allow report servers to distinguish report-only from enforced failures.</li></ul></div></section><section id="since-01"><h3 id="rfc.section.A.7"><a href="#rfc.section.A.7">A.7.</a> <a href="#since-01">Since -01</a></h3><div id="rfc.section.A.7.p.1"><ul><li>Change SCT reporting format to support both RFC 6962 and 6962-bis SCTs.</li></ul></div></section><section id="since-00"><h3 id="rfc.section.A.8"><a href="#rfc.section.A.8">A.8.</a> <a href="#since-00">Since -00</a></h3><div id="rfc.section.A.8.p.1"><ul><li>Editorial changes</li><li>Change Content-Type header of reports to ‘application/expect-ct-report+json’</li><li>Update header field syntax to match convention (issue #327)</li><li>Reference RFC 6962-bis instead of RFC 6962</li></ul></div></section></section><hr class="noprint"><section id="rfc.authors" class="np"><h2><a href="#rfc.authors">Author's Address</a></h2><address><b>Emily Stark</b><br>Google<br>EMail: <a href="mailto:estark@google.com">estark@google.com</a></address></section></body></html>
+</pre>
+</div>
+<figcaption><a href="#figure-4" class="selfRef">Figure 4</a>:
+<a href="#name-examples-of-valid-expect-ct" class="selfRef">Examples of valid Expect-CT response header fields</a>
+            </figcaption></figure>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="host-processing-model">
+<section id="section-2.2">
+        <h3 id="name-host-processing-model">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-host-processing-model" class="section-name selfRef">Host Processing Model</a>
+        </h3>
+<p id="section-2.2-1">This section describes the processing model that Expect-CT Hosts implement.  The
+model has 2 parts: (1) the processing rules for HTTP request messages received
+over a secure transport (e.g., authenticated, non-anonymous TLS); and (2) the
+processing rules for HTTP request messages received over non-secure transports,
+such as TCP.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<div id="http-over-secure-transport-request-type">
+<section id="section-2.2.1">
+          <h4 id="name-http-over-secure-transport-">
+<a href="#section-2.2.1" class="section-number selfRef">2.2.1. </a><a href="#name-http-over-secure-transport-" class="section-name selfRef">HTTP-over-Secure-Transport Request Type</a>
+          </h4>
+<p id="section-2.2.1-1">An Expect-CT Host includes an Expect-CT header field in its response. The header
+field MUST satisfy the grammar specified in <a href="#response-header-field-syntax" class="xref">Section 2.1</a>.<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.1-2">Establishing a given host as an Expect-CT Host, in the context of a given UA,
+is accomplished as follows:<a href="#section-2.2.1-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-2.2.1-3">
+<li id="section-2.2.1-3.1">Over the HTTP protocol running over secure transport, by correctly returning
+(per this specification) a valid Expect-CT header field to the UA.<a href="#section-2.2.1-3.1" class="pilcrow">¶</a>
+</li>
+            <li id="section-2.2.1-3.2">Through other mechanisms, such as a client-side preloaded Expect-CT Host
+list.<a href="#section-2.2.1-3.2" class="pilcrow">¶</a>
+</li>
+          </ol>
+</section>
+</div>
+<div id="http-request-type">
+<section id="section-2.2.2">
+          <h4 id="name-http-request-type">
+<a href="#section-2.2.2" class="section-number selfRef">2.2.2. </a><a href="#name-http-request-type" class="section-name selfRef">HTTP Request Type</a>
+          </h4>
+<p id="section-2.2.2-1">Expect-CT Hosts SHOULD NOT include the Expect-CT header field in HTTP responses
+conveyed over non-secure transport.<a href="#section-2.2.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="user-agent-processing-model">
+<section id="section-2.3">
+        <h3 id="name-user-agent-processing-model">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-user-agent-processing-model" class="section-name selfRef">User Agent Processing Model</a>
+        </h3>
+<p id="section-2.3-1">The UA processing model relies on parsing domain names.  Note that
+internationalized domain names SHALL be canonicalized by the UA according to the
+scheme in Section 10 of <span>[<a href="#RFC6797" class="xref">RFC6797</a>]</span>.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">The UA stores Known Expect-CT Hosts and their associated Expect-CT
+directives. This data is collectively known as a host's "Expect-CT" metadata".<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<div id="missing-or-malformed-expect-ct-header-fields">
+<section id="section-2.3.1">
+          <h4 id="name-missing-or-malformed-expect">
+<a href="#section-2.3.1" class="section-number selfRef">2.3.1. </a><a href="#name-missing-or-malformed-expect" class="section-name selfRef">Missing or Malformed Expect-CT Header Fields</a>
+          </h4>
+<p id="section-2.3.1-1">If an HTTP response does not include an Expect-CT header field that conforms to
+the grammar specified in <a href="#response-header-field-syntax" class="xref">Section 2.1</a>, then the UA MUST NOT
+update any Expect-CT metadata.<a href="#section-2.3.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="expect-ct-header-field-processing">
+<section id="section-2.3.2">
+          <h4 id="name-expect-ct-header-field-proc">
+<a href="#section-2.3.2" class="section-number selfRef">2.3.2. </a><a href="#name-expect-ct-header-field-proc" class="section-name selfRef">Expect-CT Header Field Processing</a>
+          </h4>
+<p id="section-2.3.2-1">If the UA receives an HTTP response over a secure transport that includes an
+Expect-CT header field conforming to the grammar specified in
+<a href="#response-header-field-syntax" class="xref">Section 2.1</a>, the UA MUST evaluate the connection on which
+the header field was received for compliance with the UA's CT Policy, and then
+process the Expect-CT header field as follows. UAs MUST ignore any Expect-CT
+header field received in an HTTP response conveyed over non-secure transport.<a href="#section-2.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.2-2">If the connection does not comply with the UA's CT Policy (i.e., the connection
+is not CT-qualified), then the UA MUST NOT update any Expect-CT metadata. If the
+header field includes a <code>report-uri</code> directive, the UA SHOULD send a report to
+the specified <code>report-uri</code> (<a href="#header-field-processing-reporting" class="xref">Section 2.3.3</a>).<a href="#section-2.3.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.3.2-3">If the connection complies with the UA's CT Policy (i.e., the connection is
+CT-qualified), then the UA MUST either:<a href="#section-2.3.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.2-4.1">Note the host as a Known Expect-CT Host if it is not already so noted (see
+<a href="#noting-expect-ct" class="xref">Section 2.3.2.1</a>), or<a href="#section-2.3.2-4.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.2-4.2">Update the UA's cached information for the Known Expect-CT Host if the
+<code>enforce</code>, <code>max-age</code>, or <code>report-uri</code> header field value directives convey
+information different from that already maintained by the UA. If the <code>max-age</code>
+directive has a value of 0, the UA MUST remove its cached Expect-CT
+information if the host was previously noted as a Known Expect-CT Host, and
+MUST NOT note this host as a Known Expect-CT Host if it is not already noted.<a href="#section-2.3.2-4.2" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.2-5">If a UA receives an Expect-CT header field over a CT-compliant connection which
+uses a version of Certificate Transparency other than <span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span> or
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>, the UA MUST ignore the Expect-CT header field
+and clear any Expect-CT metadata associated with the host.<a href="#section-2.3.2-5" class="pilcrow">¶</a></p>
+<div id="noting-expect-ct">
+<section id="section-2.3.2.1">
+            <h5 id="name-noting-expect-ct">
+<a href="#section-2.3.2.1" class="section-number selfRef">2.3.2.1. </a><a href="#name-noting-expect-ct" class="section-name selfRef">Noting Expect-CT</a>
+            </h5>
+<p id="section-2.3.2.1-1">Upon receipt of the Expect-CT response header field over an error-free TLS
+connection (with X.509 certificate chain validation as described in
+<span>[<a href="#RFC5280" class="xref">RFC5280</a>]</span>, as well as the validation described in <a href="#expect-ct-compliance" class="xref">Section 2.4</a>),
+the UA MUST note the host as a Known Expect-CT Host, storing the host's domain
+name and its associated Expect-CT directives in non-volatile storage.<a href="#section-2.3.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.3.2.1-2">To note a host as a Known Expect-CT Host, the UA MUST set its Expect-CT metadata
+in its Known Expect-CT Host cache (as specified in <a href="#storage-model" class="xref">Section 2.3.2.2</a>, using the
+metadata given in the most recently received valid Expect-CT header field.<a href="#section-2.3.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.3.2.1-3">For forward compatibility, the UA MUST ignore any unrecognized Expect-CT header
+field directives, while still processing those directives it does
+recognize. <a href="#response-header-field-syntax" class="xref">Section 2.1</a> specifies the directives <code>enforce</code>,
+<code>max-age</code>, and <code>report-uri</code>, but future specifications and implementations might
+use additional directives.<a href="#section-2.3.2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="storage-model">
+<section id="section-2.3.2.2">
+            <h5 id="name-storage-model">
+<a href="#section-2.3.2.2" class="section-number selfRef">2.3.2.2. </a><a href="#name-storage-model" class="section-name selfRef">Storage Model</a>
+            </h5>
+<p id="section-2.3.2.2-1">If the substring matching the host production from the Request-URI (of the
+message to which the host responded) does not exactly match an existing Known
+Expect-CT Host's domain name, per the matching procedure for a Congruent Match
+specified in Section 8.2 of <span>[<a href="#RFC6797" class="xref">RFC6797</a>]</span>, then the UA MUST add this host to the
+Known Expect-CT Host cache. The UA caches:<a href="#section-2.3.2.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.2.2-2.1">the Expect-CT Host's domain name,<a href="#section-2.3.2.2-2.1" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-2.3.2.2-2.2">whether the <code>enforce</code> directive is present<a href="#section-2.3.2.2-2.2" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-2.3.2.2-2.3">the Effective Expiration Date, which is the Effective Expect-CT Date plus the
+value of the <code>max-age</code> directive. Alternatively, the UA MAY cache enough
+information to calculate the Effective Expiration Date. The Effective
+Expiration Date is calculated from when the UA observed the Expect-CT header
+field and is independent of when the response was generated.<a href="#section-2.3.2.2-2.3" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-2.3.2.2-2.4">the value of the <code>report-uri</code> directive, if present.<a href="#section-2.3.2.2-2.4" class="pilcrow">¶</a>
+</li>
+            </ul>
+<p id="section-2.3.2.2-3">If any other metadata from optional or future Expect-CT header directives are
+present in the Expect-CT header field, and the UA understands them, the UA MAY note
+them as well.<a href="#section-2.3.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.3.2.2-4">UAs MAY set an upper limit on the value of max-age, so that UAs that have noted
+erroneous Expect-CT hosts (whether by accident or due to attack) have some
+chance of recovering over time.  If the server sets a max-age greater than the
+UA's upper limit, the UA may behave as if the server set the max-age to the UA's
+upper limit.  For example, if the UA caps max-age at 5,184,000 seconds (60
+days), and an Expect-CT Host sets a max- age directive of 90 days in its
+Expect-CT header field, the UA may behave as if the max-age were effectively 60
+days. (One way to achieve this behavior is for the UA to simply store a value of
+60 days instead of the 90-day value provided by the Expect-CT host.)<a href="#section-2.3.2.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="header-field-processing-reporting">
+<section id="section-2.3.3">
+          <h4 id="name-reporting">
+<a href="#section-2.3.3" class="section-number selfRef">2.3.3. </a><a href="#name-reporting" class="section-name selfRef">Reporting</a>
+          </h4>
+<p id="section-2.3.3-1">If the UA receives, over a secure transport, an HTTP response that includes an
+Expect-CT header field with a <code>report-uri</code> directive, and the connection does
+not comply with the UA's CT Policy (i.e., the connection is not CT-qualified),
+and the UA has not already sent an Expect-CT report for this connection, then
+the UA SHOULD send a report to the specified <code>report-uri</code> as specified in
+<a href="#reporting-expect-ct-failure" class="xref">Section 3</a>.<a href="#section-2.3.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="expect-ct-compliance">
+<section id="section-2.4">
+        <h3 id="name-evaluating-expect-ct-connec">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-evaluating-expect-ct-connec" class="section-name selfRef">Evaluating Expect-CT Connections for CT Compliance</a>
+        </h3>
+<p id="section-2.4-1">When a UA sets up a TLS connection, the UA determines whether the host is a
+Known Expect-CT Host according to its Known Expect-CT Host cache. An Expect-CT
+Host is "expired" if the effective expiration date refers to a date in the
+past. The UA MUST ignore any expired Expect-CT Hosts in its cache and not treat
+such hosts as Known Expect-CT hosts.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-2">When a UA connects to a Known Expect-CT Host using a TLS connection, if the TLS
+connection has no errors, then the UA will apply an additional correctness
+check: compliance with a CT Policy. A UA should evaluate compliance with its CT
+Policy whenever connecting to a Known Expect-CT Host. However, the check can be
+skipped for local policy reasons (as discussed in
+<a href="#skipping-ct-compliance-checks" class="xref">Section 2.4.1</a>), or in the event that other checks cause the
+UA to terminate the connection before CT compliance is evaluated. For example, a
+Public Key Pinning failure <span>[<a href="#RFC7469" class="xref">RFC7469</a>]</span> could cause the UA to terminate the
+connection before CT compliance is checked. Similarly, if the UA terminates the
+connection due to an Expect-CT failure, this could cause the UA to skip
+subsequent correctness checks. When the CT compliance check is skipped or
+bypassed, Expect-CT reports (<a href="#reporting-expect-ct-failure" class="xref">Section 3</a>) will not be sent.<a href="#section-2.4-2" class="pilcrow">¶</a></p>
+<p id="section-2.4-3">When CT compliance is evaluated for a Known
+Expect-CT Host, the UA MUST evaluate compliance when setting up the TLS session,
+before beginning an HTTP conversation over the TLS channel.<a href="#section-2.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.4-4">If a connection to a Known Expect-CT Host violates the UA's CT policy (i.e., the
+connection is not CT-qualified), and if the Known Expect-CT Host's Expect-CT
+metadata indicates an <code>enforce</code> configuration, the UA MUST treat the CT
+compliance failure as an error. The UA MAY allow the user to bypass the error,
+unless connection errors should have no user recourse due to other policies in
+effect (such as HSTS, as described in Section 12.1 of <span>[<a href="#RFC6797" class="xref">RFC6797</a>]</span>.<a href="#section-2.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.4-5">If a connection to a Known Expect-CT Host violates the UA's CT policy, and if the
+Known Expect-CT Host's Expect-CT metadata includes a <code>report-uri</code>, the UA SHOULD
+send an Expect-CT report to that <code>report-uri</code> (<a href="#reporting-expect-ct-failure" class="xref">Section 3</a>).<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+<div id="skipping-ct-compliance-checks">
+<section id="section-2.4.1">
+          <h4 id="name-skipping-ct-compliance-chec">
+<a href="#section-2.4.1" class="section-number selfRef">2.4.1. </a><a href="#name-skipping-ct-compliance-chec" class="section-name selfRef">Skipping CT compliance checks</a>
+          </h4>
+<p id="section-2.4.1-1">It is acceptable for a UA to skip CT compliance checks for some hosts according
+to local policy. For example, a UA MAY disable CT compliance checks for hosts
+whose validated certificate chain terminates at a user-defined trust anchor,
+rather than a trust anchor built-in to the UA (or underlying platform).<a href="#section-2.4.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.4.1-2">If the UA does not evaluate CT compliance, e.g., because the user has elected to
+disable it, or because a presented certificate chain chains up to a user-defined
+trust anchor, UAs SHOULD NOT send Expect-CT reports.<a href="#section-2.4.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="reporting-expect-ct-failure">
+<section id="section-3">
+      <h2 id="name-reporting-expect-ct-failure">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-reporting-expect-ct-failure" class="section-name selfRef">Reporting Expect-CT Failure</a>
+      </h2>
+<p id="section-3-1">When the UA attempts to connect to a Known Expect-CT Host and the connection is
+not CT-qualified, the UA SHOULD report Expect-CT failures to the <code>report-uri</code>,
+if any, in the Known Expect-CT Host's Expect-CT metadata.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">When the UA receives an Expect-CT response header field over a connection that
+is not CT-qualified, if the UA has not already sent an Expect-CT report for this
+connection, then the UA SHOULD report Expect-CT failures to the configured
+<code>report-uri</code>, if any.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div id="generating-a-violation-report">
+<section id="section-3.1">
+        <h3 id="name-generating-a-violation-repo">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-generating-a-violation-repo" class="section-name selfRef">Generating a violation report</a>
+        </h3>
+<p id="section-3.1-1">To generate a violation report object, the UA constructs a JSON <span>[<a href="#RFC8259" class="xref">RFC8259</a>]</span>
+object with the following keys and values:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-2.1">"date-time": the value for this key indicates the UTC time that the UA
+observed the CT compliance failure. The value is a string formatted according to
+Section 5.6, "Internet Date/Time Format", of <span>[<a href="#RFC3339" class="xref">RFC3339</a>]</span>.<a href="#section-3.1-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.2">"hostname": the value is the hostname to which the UA made the original
+request that failed the CT compliance check. The value is provided as a string.<a href="#section-3.1-2.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.3">"port": the value is the port to which the UA made the original request that
+failed the CT compliance check. The value is provided as an integer.<a href="#section-3.1-2.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.4">"scheme": the value is the scheme with which the UA made the original request
+that failed the CT compliance check. The value is provided as a string. This
+key is optional and is assumed to be "https" if not present.<a href="#section-3.1-2.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.5">"effective-expiration-date": the value indicates the Effective Expiration Date
+(see <a href="#storage-model" class="xref">Section 2.3.2.2</a>) for the Expect-CT Host that failed the CT compliance
+check, in UTC. The value is provided as a string formatted according to Section
+5.6 of <span>[<a href="#RFC3339" class="xref">RFC3339</a>]</span> ("Internet Date/Time Format").<a href="#section-3.1-2.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.6">"served-certificate-chain": the value is the certificate chain as served by
+the Expect-CT Host during TLS session setup. The value is provided as an array
+of strings, which MUST appear in the order that the certificates were served;
+each string in the array is the Privacy-Enhanced Mail (PEM) representation of
+each X.509 certificate as described in <span>[<a href="#RFC7468" class="xref">RFC7468</a>]</span>.<a href="#section-3.1-2.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.7">"validated-certificate-chain": the value is the certificate chain as
+constructed by the UA during certificate chain verification. (This may differ
+from the value of the "served-certificate-chain" key.) The value is provided as
+an array of strings, which MUST appear in the order matching the chain that the
+UA validated; each string in the array is the Privacy-Enhanced Mail (PEM)
+representation of each X.509 certificate as described in <span>[<a href="#RFC7468" class="xref">RFC7468</a>]</span>. The first
+certificate in the chain represents the end-entity certificate being verified.
+UAs that build certificate chains in more than one way during the validation
+process SHOULD send the last chain built.<a href="#section-3.1-2.7" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.8">
+            <p id="section-3.1-2.8.1">"scts": the value represents the SCTs (if any) that the UA received for the
+Expect-CT host and their validation statuses. The value is provided as an array
+of JSON objects. The SCTs may appear in any order. Each JSON object in the array
+has the following keys:<a href="#section-3.1-2.8.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-2.8.2.1">A "version" key, with an integer value. The UA MUST set this value to <code>1</code> if
+the SCT is in the format defined in Section 3.2 of <span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span> and <code>2</code> if
+it is in the format defined in Section 4.5 of
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>.<a href="#section-3.1-2.8.2.1" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-3.1-2.8.2.2">The "status" key, with a string value that the UA MUST set to one of the
+following values: "unknown" (indicating that the UA does not have or does
+not trust the public key of the log from which the SCT was issued), "valid"
+(indicating that the UA successfully validated the SCT as described in
+Section 5.2 of <span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span> or Section 8.2.3 of
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>), or "invalid" (indicating that the SCT
+validation failed because of a bad signature or an invalid timestamp).<a href="#section-3.1-2.8.2.2" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-3.1-2.8.2.3">The "source" key, with a string value that indicates from where the UA
+obtained the SCT, as defined in Section 3 of <span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span> and Section 6 of
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>. The UA MUST set the value to one of
+"tls-extension", "ocsp", or "embedded". These correspond to the three
+methods of delivering SCTs in the TLS handshake that are described in
+Section 3.3 of <span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span>.<a href="#section-3.1-2.8.2.3" class="pilcrow">¶</a>
+</li>
+              <li class="normal" id="section-3.1-2.8.2.4">The "serialized_sct" key, with a string value. If the value of the "version"
+key is <code>1</code>, the UA MUST set this value to the base64 encoded <span>[<a href="#RFC4648" class="xref">RFC4648</a>]</span>
+serialized <code>SignedCertificateTimestamp</code> structure from Section 3.2 of
+<span>[<a href="#RFC6962" class="xref">RFC6962</a>]</span>. The base64 encoding is defined in Section 4 of <span>[<a href="#RFC4648" class="xref">RFC4648</a>]</span>.
+If the value of the "version" key is <code>2</code>, the UA MUST set this
+value to the base64 encoded <span>[<a href="#RFC4648" class="xref">RFC4648</a>]</span> serialized <code>TransItem</code> structure
+representing the SCT, as defined in Section 4.5 of
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>.<a href="#section-3.1-2.8.2.4" class="pilcrow">¶</a>
+</li>
+            </ul>
+</li>
+          <li class="normal" id="section-3.1-2.9">"failure-mode": the value indicates whether the Expect-CT report was triggered
+by an Expect-CT policy in enforce or report-only mode. The value is provided
+as a string. The UA MUST set this value to "enforce" if the Expect-CT metadata
+indicates an <code>enforce</code> configuration, and "report-only" otherwise.<a href="#section-3.1-2.9" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-3.1-2.10">"test-report": the value is set to true if the report is being sent by a
+testing client to verify that the report server behaves correctly. The
+value is provided as a boolean, and MUST be set to true if the report serves
+to test the server's behavior and can be discarded.<a href="#section-3.1-2.10" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="sending-report">
+<section id="section-3.2">
+        <h3 id="name-sending-a-violation-report">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-sending-a-violation-report" class="section-name selfRef">Sending a violation report</a>
+        </h3>
+<p id="section-3.2-1">The UA SHOULD report Expect-CT failures for Known Expect-CT Hosts: that is, when
+a connection to a Known Expect-CT Host does not comply with the UA's CT Policy
+and the host's Expect-CT metadata contains a <code>report-uri</code>.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">Additionally, the UA SHOULD report Expect-CT failures for hosts for which it
+does not have any stored Expect-CT metadata. That is, when the UA connects to a
+host and receives an Expect-CT header field which contains the <code>report-uri</code>
+directive, the UA SHOULD report an Expect-CT failure if the the connection does
+not comply with the UA's CT Policy.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">The steps to report an Expect-CT failure are as follows.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.2-4">
+<li id="section-3.2-4.1">Prepare a JSON object <code>report object</code> with the single key "expect-ct-report",
+whose value is the result of generating a violation report object as
+described in <a href="#generating-a-violation-report" class="xref">Section 3.1</a>.<a href="#section-3.2-4.1" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.2-4.2">Let <code>report body</code> be the JSON stringification of <code>report object</code>.<a href="#section-3.2-4.2" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.2-4.3">Let <code>report-uri</code> be the value of the <code>report-uri</code> directive in the Expect-CT
+header field.<a href="#section-3.2-4.3" class="pilcrow">¶</a>
+</li>
+          <li id="section-3.2-4.4">Send an HTTP POST request to <code>report-uri</code> with a <code>Content-Type</code> header field
+of <code>application/expect-ct-report+json</code>, and an entity body consisting of
+<code>report body</code>.<a href="#section-3.2-4.4" class="pilcrow">¶</a>
+</li>
+        </ol>
+<p id="section-3.2-5">The UA MAY perform other operations as part of sending the HTTP POST request,
+for example sending a CORS preflight as part of <span>[<a href="#FETCH" class="xref">FETCH</a>]</span>.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<p id="section-3.2-6">Future versions of this specification may need to modify or extend the Expect-CT
+report format. They may do so by defining a new top-level key to contain the
+report, replacing the "expect-ct-report" key. <a href="#receiving-report" class="xref">Section 3.3</a> defines how
+report servers should handle report formats that they do not support.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="receiving-report">
+<section id="section-3.3">
+        <h3 id="name-receiving-a-violation-repor">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-receiving-a-violation-repor" class="section-name selfRef">Receiving a violation report</a>
+        </h3>
+<p id="section-3.3-1">Upon receiving an Expect-CT violation report, the report server MUST respond
+with a 2xx (Successful) status code if it can parse the request body as valid
+JSON, the report conforms to the format described in
+<a href="#generating-a-violation-report" class="xref">Section 3.1</a>, and it recognizes the scheme, hostname, and
+port in the "scheme", "hostname", and "port" fields of the report. If the report
+body cannot be parsed, or the report does not conform to the format described in
+<a href="#generating-a-violation-report" class="xref">Section 3.1</a>, or the report server does not expect to
+receive reports for the scheme, hostname, or port in the report, then the report
+server MUST respond with a 400 Bad Request status code.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">As described in <a href="#sending-report" class="xref">Section 3.2</a>, future versions of this specification may
+define new report formats that are sent with a different top-level key. If the
+report server does not recognize the report format, the report server MUST
+respond with a 501 Not Implemented status code.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">If the report's "test-report" key is set to true, the server MAY discard the
+report without further processing but MUST still return a 2xx (Successful)
+status code. If the "test-report" key is absent or set to false, the server
+SHOULD store the report for processing and analysis by the owner of the
+Expect-CT Host.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="usability-considerations">
+<section id="section-4">
+      <h2 id="name-usability-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-usability-considerations" class="section-name selfRef">Usability Considerations</a>
+      </h2>
+<p id="section-4-1">When the UA detects a Known Expect-CT Host in violation of the UA's CT Policy,
+end users will experience denials of service. It is advisable for UAs to explain
+to users why they cannot access the Expect-CT Host, e.g., in a user interface
+that explains that the host's certificate cannot be validated.<a href="#section-4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authoring-considerations">
+<section id="section-5">
+      <h2 id="name-authoring-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-authoring-considerations" class="section-name selfRef">Authoring Considerations</a>
+      </h2>
+<p id="section-5-1">Expect-CT could be specified as a TLS extension or X.509 certificate extension
+instead of an HTTP response header field. Using an HTTP header field as the mechanism for
+Expect-CT introduces a layering mismatch: for example, the software that
+terminates TLS and validates Certificate Transparency information might know
+nothing about HTTP. Nevertheless, an HTTP header field was chosen primarily for ease
+of deployment. In practice, deploying new certificate extensions requires
+certificate authorities to support them, and new TLS extensions require server
+software updates, including possibly to servers outside of the site owner's
+direct control (such as in the case of a third-party CDN). Ease of deployment is
+a high priority for Expect-CT because it is intended as a temporary transition
+mechanism for user agents that are transitioning to universal Certificate
+Transparency requirements.<a href="#section-5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="privacy-considerations">
+<section id="section-6">
+      <h2 id="name-privacy-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+      </h2>
+<p id="section-6-1">Expect-CT can be used to infer what Certificate Transparency policy a UA is
+using, by attempting to retrieve specially-configured websites which pass one
+user agents' policies but not another's. Note that this consideration is true of
+UAs which enforce CT policies without Expect-CT as well.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">Additionally, reports submitted to the <code>report-uri</code> could reveal information to
+a third party about which webpage is being accessed and by which IP address, by
+using individual <code>report-uri</code> values for individually-tracked pages. This
+information could be leaked even if client-side scripting were disabled.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-3">Implementations store state about Known Expect-CT Hosts, and hence which domains
+the UA has contacted. Implementations may choose to not store this state subject
+to local policy (e.g., in the private browsing mode of a web browser).<a href="#section-6-3" class="pilcrow">¶</a></p>
+<p id="section-6-4">Violation reports, as noted in <a href="#reporting-expect-ct-failure" class="xref">Section 3</a>, contain
+information about the certificate chain that has violated the CT policy. In some
+cases, such as organization-wide compromise of the end-to-end security of TLS,
+this may include information about the interception tools and design used by the
+organization that the organization would otherwise prefer not be disclosed.<a href="#section-6-4" class="pilcrow">¶</a></p>
+<p id="section-6-5">Because Expect-CT causes remotely-detectable behavior, it's advisable that UAs
+offer a way for privacy-sensitive end users to clear currently noted Expect-CT
+hosts, and allow users to query the current state of Known Expect-CT Hosts.<a href="#section-6-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-7">
+      <h2 id="name-security-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="hostile-header-attacks">
+<section id="section-7.1">
+        <h3 id="name-hostile-header-attacks">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-hostile-header-attacks" class="section-name selfRef">Hostile header attacks</a>
+        </h3>
+<p id="section-7.1-1">When UAs support the Expect-CT header field, it becomes a potential vector for hostile
+header attacks against site owners. If a site owner uses a certificate issued by
+a certificate authority which does not embed SCTs nor serve SCTs via OCSP or TLS
+extension, a malicious server operator or attacker could temporarily reconfigure
+the host to comply with the UA's CT policy, and add the Expect-CT header field in
+enforcing mode with a long <code>max-age</code>.  Implementing user agents would note this
+as an Expect-CT Host (see  <a href="#noting-expect-ct" class="xref">Section 2.3.2.1</a>). After having done this, the
+configuration could then be reverted to not comply with the CT policy, prompting
+failures. Note this scenario would require the attacker to have substantial
+control over the infrastructure in question, being able to obtain different
+certificates, change server software, or act as a man-in-the-middle in
+connections.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">Site operators can mitigate this situation by one of: reconfiguring their web
+server to transmit SCTs using the TLS extension defined in Section 6.5 of
+<span>[<a href="#I-D.ietf-trans-rfc6962-bis" class="xref">I-D.ietf-trans-rfc6962-bis</a>]</span>, obtaining a certificate from an alternative
+certificate authority which provides SCTs by one of the other methods, or by
+waiting for the user agents' persisted notation of this as an Expect-CT host to
+reach its <code>max-age</code>. User agents may choose to implement mechanisms for users to
+cure this situation, as noted in <a href="#usability-considerations" class="xref">Section 4</a>.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="maximum-max-age">
+<section id="section-7.2">
+        <h3 id="name-maximum-max-age">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-maximum-max-age" class="section-name selfRef">Maximum max-age</a>
+        </h3>
+<p id="section-7.2-1">There is a security trade-off in that low maximum values provide a narrow window
+of protection for users that visit the Known Expect-CT Host only infrequently,
+while high maximum values might result in a denial of service to a UA in the
+event of a hostile header attack, or simply an error on the part of the
+site-owner.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">There is probably no ideal maximum for the <code>max-age</code> directive. Since Expect-CT
+is primarily a policy-expansion and investigation technology rather than an
+end-user protection, a value on the order of 30 days (2,592,000 seconds) may be
+considered a balance between these competing security concerns.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="amplification-attacks">
+<section id="section-7.3">
+        <h3 id="name-amplification-attacks">
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-amplification-attacks" class="section-name selfRef">Amplification attacks</a>
+        </h3>
+<p id="section-7.3-1">Another kind of hostile header attack uses the <code>report-uri</code> mechanism on many
+hosts not currently exposing SCTs as a method to cause a denial-of-service to
+the host receiving the reports. If some highly-trafficked websites emitted
+a non-enforcing Expect-CT header field with a <code>report-uri</code>, implementing UAs' reports
+could flood the reporting host. It is noted in <a href="#the-report-uri-directive" class="xref">Section 2.1.1</a> that UAs
+should limit the rate at which they emit reports, but an attacker may alter the
+Expect-CT header's fields to induce UAs to submit different reports to different
+URIs to still cause the same effect.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="header-field-registry">
+<section id="section-8.1">
+        <h3 id="name-header-field-registry">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-header-field-registry" class="section-name selfRef">Header Field Registry</a>
+        </h3>
+<p id="section-8.1-1">This document registers the <code>Expect-CT</code> header field in the "Permanent Message Header Field Names"
+registry located at <a href="https://www.iana.org/assignments/message-headers">https://www.iana.org/assignments/message-headers</a>.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-8.1-2">
+          <dt id="section-8.1-2.1">Header field name:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.2">
+  Expect-CT<a href="#section-8.1-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.3">Applicable protocol:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.4">
+  http<a href="#section-8.1-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.5">Status:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.6">
+  experimental<a href="#section-8.1-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.7">Author/Change controller:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.8">
+  IETF<a href="#section-8.1-2.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.9">Specification document(s):</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.10">
+  This document<a href="#section-8.1-2.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.1-2.11">Related information:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.1-2.12">
+  (empty)<a href="#section-8.1-2.12" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="media-types-registry">
+<section id="section-8.2">
+        <h3 id="name-media-types-registry">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-media-types-registry" class="section-name selfRef">Media Types Registry</a>
+        </h3>
+<p id="section-8.2-1">The MIME media type for Expect-CT violation reports is
+"application/expect-ct-report+json" (which uses the suffix established in
+<span>[<a href="#RFC6839" class="xref">RFC6839</a>]</span>).<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-8.2-2">
+          <dt id="section-8.2-2.1">Type name:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.2">
+  application<a href="#section-8.2-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.3">Subtype name:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.4">
+  expect-ct-report+json<a href="#section-8.2-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.5">Required parameters:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.6">
+  n/a<a href="#section-8.2-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.7">Optional parameters:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.8">
+  n/a<a href="#section-8.2-2.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.9">Encoding considerations:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.10">
+  binary<a href="#section-8.2-2.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.11">Security considerations:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.12">
+  See <a href="#security-considerations" class="xref">Section 7</a><a href="#section-8.2-2.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.13">Interoperability considerations:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.14">
+  n/a<a href="#section-8.2-2.14" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.15">Published specification:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.16">
+  This document<a href="#section-8.2-2.16" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.17">Applications that use this media type:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.18">
+  UAs that implement Certificate Transparency compliance checks and reporting<a href="#section-8.2-2.18" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.19">Additional information:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.20"></dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.21"></dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.22">Deprecated alias names for this type: n/a<a href="#section-8.2-2.22" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.23"></dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.24">Magic number(s): n/a<a href="#section-8.2-2.24" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.25"></dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.26">File extension(s): n/a<a href="#section-8.2-2.26" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.27"></dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.28">Macintosh file type code(s): n/a<a href="#section-8.2-2.28" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.29">Person &amp; email address to contact for further information:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.30">
+  Emily Stark (estark@google.com)<a href="#section-8.2-2.30" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.31">Intended usage:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.32">
+  COMMON<a href="#section-8.2-2.32" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.33">Restrictions on usage:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.34">
+  none<a href="#section-8.2-2.34" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.35">Author:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.36">
+  Emily Stark (estark@google.com)<a href="#section-8.2-2.36" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-8.2-2.37">Change controller:</dt>
+          <dd style="margin-left: 1.5em" id="section-8.2-2.38">
+  IETF<a href="#section-8.2-2.38" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-trans-rfc6962-bis">[I-D.ietf-trans-rfc6962-bis]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, Kasper, E.</span><span class="refAuthor">, Messeri, E.</span><span class="refAuthor">, and R. Stradling</span>, <span class="refTitle">"Certificate Transparency Version 2.0"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-trans-rfc6962-bis-34</span>, <time datetime="2019-11-04" class="refDate">4 November 2019</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-trans-rfc6962-bis-34.txt">http://www.ietf.org/internet-drafts/draft-ietf-trans-rfc6962-bis-34.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3339">[RFC3339]</dt>
+        <dd>
+<span class="refAuthor">Klyne, G.</span><span class="refAuthor"> and C. Newman</span>, <span class="refTitle">"Date and Time on the Internet: Timestamps"</span>, <span class="seriesInfo">RFC 3339</span>, <span class="seriesInfo">DOI 10.17487/RFC3339</span>, <time datetime="2002-07" class="refDate">July 2002</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3339">https://www.rfc-editor.org/info/rfc3339</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3986">[RFC3986]</dt>
+        <dd>
+<span class="refAuthor">Berners-Lee, T.</span><span class="refAuthor">, Fielding, R.</span><span class="refAuthor">, and L. Masinter</span>, <span class="refTitle">"Uniform Resource Identifier (URI): Generic Syntax"</span>, <span class="seriesInfo">STD 66</span>, <span class="seriesInfo">RFC 3986</span>, <span class="seriesInfo">DOI 10.17487/RFC3986</span>, <time datetime="2005-01" class="refDate">January 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3986">https://www.rfc-editor.org/info/rfc3986</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4648">[RFC4648]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span>, <span class="refTitle">"The Base16, Base32, and Base64 Data Encodings"</span>, <span class="seriesInfo">RFC 4648</span>, <span class="seriesInfo">DOI 10.17487/RFC4648</span>, <time datetime="2006-10" class="refDate">October 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4648">https://www.rfc-editor.org/info/rfc4648</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span><span class="refAuthor"> and P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5280">[RFC5280]</dt>
+        <dd>
+<span class="refAuthor">Cooper, D.</span><span class="refAuthor">, Santesson, S.</span><span class="refAuthor">, Farrell, S.</span><span class="refAuthor">, Boeyen, S.</span><span class="refAuthor">, Housley, R.</span><span class="refAuthor">, and W. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 5280</span>, <span class="seriesInfo">DOI 10.17487/RFC5280</span>, <time datetime="2008-05" class="refDate">May 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5280">https://www.rfc-editor.org/info/rfc5280</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6797">[RFC6797]</dt>
+        <dd>
+<span class="refAuthor">Hodges, J.</span><span class="refAuthor">, Jackson, C.</span><span class="refAuthor">, and A. Barth</span>, <span class="refTitle">"HTTP Strict Transport Security (HSTS)"</span>, <span class="seriesInfo">RFC 6797</span>, <span class="seriesInfo">DOI 10.17487/RFC6797</span>, <time datetime="2012-11" class="refDate">November 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6797">https://www.rfc-editor.org/info/rfc6797</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6839">[RFC6839]</dt>
+        <dd>
+<span class="refAuthor">Hansen, T.</span><span class="refAuthor"> and A. Melnikov</span>, <span class="refTitle">"Additional Media Type Structured Syntax Suffixes"</span>, <span class="seriesInfo">RFC 6839</span>, <span class="seriesInfo">DOI 10.17487/RFC6839</span>, <time datetime="2013-01" class="refDate">January 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6839">https://www.rfc-editor.org/info/rfc6839</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6962">[RFC6962]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Kasper</span>, <span class="refTitle">"Certificate Transparency"</span>, <span class="seriesInfo">RFC 6962</span>, <span class="seriesInfo">DOI 10.17487/RFC6962</span>, <time datetime="2013-06" class="refDate">June 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6962">https://www.rfc-editor.org/info/rfc6962</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7230">[RFC7230]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span><span class="refAuthor"> and J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing"</span>, <span class="seriesInfo">RFC 7230</span>, <span class="seriesInfo">DOI 10.17487/RFC7230</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7230">https://www.rfc-editor.org/info/rfc7230</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7234">[RFC7234]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span><span class="refAuthor">, Nottingham, M., Ed.</span><span class="refAuthor">, and J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Caching"</span>, <span class="seriesInfo">RFC 7234</span>, <span class="seriesInfo">DOI 10.17487/RFC7234</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7234">https://www.rfc-editor.org/info/rfc7234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7468">[RFC7468]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span><span class="refAuthor"> and S. Leonard</span>, <span class="refTitle">"Textual Encodings of PKIX, PKCS, and CMS Structures"</span>, <span class="seriesInfo">RFC 7468</span>, <span class="seriesInfo">DOI 10.17487/RFC7468</span>, <time datetime="2015-04" class="refDate">April 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7468">https://www.rfc-editor.org/info/rfc7468</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7469">[RFC7469]</dt>
+        <dd>
+<span class="refAuthor">Evans, C.</span><span class="refAuthor">, Palmer, C.</span><span class="refAuthor">, and R. Sleevi</span>, <span class="refTitle">"Public Key Pinning Extension for HTTP"</span>, <span class="seriesInfo">RFC 7469</span>, <span class="seriesInfo">DOI 10.17487/RFC7469</span>, <time datetime="2015-04" class="refDate">April 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7469">https://www.rfc-editor.org/info/rfc7469</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8259">[RFC8259]</dt>
+      <dd>
+<span class="refAuthor">Bray, T., Ed.</span>, <span class="refTitle">"The JavaScript Object Notation (JSON) Data Interchange Format"</span>, <span class="seriesInfo">STD 90</span>, <span class="seriesInfo">RFC 8259</span>, <span class="seriesInfo">DOI 10.17487/RFC8259</span>, <time datetime="2017-12" class="refDate">December 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8259">https://www.rfc-editor.org/info/rfc8259</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="FETCH">[FETCH]</dt>
+        <dd>
+<span class="refAuthor">WHATWG</span>, <span class="refTitle">"Fetch - Living Standard"</span>, <span>n.d.</span>, <span>&lt;<a href="https://fetch.spec.whatwg.org">https://fetch.spec.whatwg.org</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8446">[RFC8446]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8446">https://www.rfc-editor.org/info/rfc8446</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="changes">
+<section id="section-appendix.a">
+      <h2 id="name-changes">
+<a href="#section-appendix.a" class="section-number selfRef">Appendix A. </a><a href="#name-changes" class="section-name selfRef">Changes</a>
+      </h2>
+<div id="since-07">
+<section id="section-a.1">
+        <h2 id="name-since-07">
+<a href="#section-a.1" class="section-number selfRef">A.1. </a><a href="#name-since-07" class="section-name selfRef">Since -07</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.1-1.1">Editorial changes<a href="#section-a.1-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.1-1.2">Specify that the end-entity certificate appears first in the
+"validated-certificate-chain" field of an Expect-CT report.<a href="#section-a.1-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.1-1.3">Define how report format can be extended by future versions of this
+specification.<a href="#section-a.1-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.1-1.4">Add optional "scheme" key to report format.<a href="#section-a.1-1.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.1-1.5">Specify exact status codes for report server errors.<a href="#section-a.1-1.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.1-1.6">Limit report-uris to HTTPS only.<a href="#section-a.1-1.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.1-1.7">Note that this version of Expect-CT is only compatible with RFC 6962 and
+6962-bis, not any future versions of CT.<a href="#section-a.1-1.7" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-06">
+<section id="section-a.2">
+        <h2 id="name-since-06">
+<a href="#section-a.2" class="section-number selfRef">A.2. </a><a href="#name-since-06" class="section-name selfRef">Since -06</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.2-1.1">Editorial changes<a href="#section-a.2-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-05">
+<section id="section-a.3">
+        <h2 id="name-since-05">
+<a href="#section-a.3" class="section-number selfRef">A.3. </a><a href="#name-since-05" class="section-name selfRef">Since -05</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.3-1.1">Remove SHOULD requirement that UAs disallow certificate error overrides for
+Known Expect-CT Hosts.<a href="#section-a.3-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.3-1.2">Remove restriction that Expect-CT Hosts cannot be IP addresses.<a href="#section-a.3-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.3-1.3">Editorial changes<a href="#section-a.3-1.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-04">
+<section id="section-a.4">
+        <h2 id="name-since-04">
+<a href="#section-a.4" class="section-number selfRef">A.4. </a><a href="#name-since-04" class="section-name selfRef">Since -04</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.4-1.1">Editorial changes<a href="#section-a.4-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-03">
+<section id="section-a.5">
+        <h2 id="name-since-03">
+<a href="#section-a.5" class="section-number selfRef">A.5. </a><a href="#name-since-03" class="section-name selfRef">Since -03</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.5-1.1">Editorial changes<a href="#section-a.5-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-02">
+<section id="section-a.6">
+        <h2 id="name-since-02">
+<a href="#section-a.6" class="section-number selfRef">A.6. </a><a href="#name-since-02" class="section-name selfRef">Since -02</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.6-1.1">Add concept of test reports and specify that servers must respond with 2xx
+status codes to valid reports.<a href="#section-a.6-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.6-1.2">Add "failure-mode" key to reports to allow report servers to distinguish
+report-only from enforced failures.<a href="#section-a.6-1.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-01">
+<section id="section-a.7">
+        <h2 id="name-since-01">
+<a href="#section-a.7" class="section-number selfRef">A.7. </a><a href="#name-since-01" class="section-name selfRef">Since -01</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.7-1.1">Change SCT reporting format to support both RFC 6962 and 6962-bis SCTs.<a href="#section-a.7-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-00">
+<section id="section-a.8">
+        <h2 id="name-since-00">
+<a href="#section-a.8" class="section-number selfRef">A.8. </a><a href="#name-since-00" class="section-name selfRef">Since -00</a>
+        </h2>
+<ul class="normal">
+<li class="normal" id="section-a.8-1.1">Editorial changes<a href="#section-a.8-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.8-1.2">Change Content-Type header of reports to 'application/expect-ct-report+json'<a href="#section-a.8-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.8-1.3">Update header field syntax to match convention (issue #327)<a href="#section-a.8-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-a.8-1.4">Reference RFC 6962-bis instead of RFC 6962<a href="#section-a.8-1.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="section-appendix.b">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Emily Stark</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:estark@google.com" class="email">estark@google.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

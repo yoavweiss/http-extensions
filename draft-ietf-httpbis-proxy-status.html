@@ -1,266 +1,1942 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>The Proxy-Status HTTP Response Header Field</title><script>
-function anchorRewrite() {
-  map = { };
-  if (window.location.hash.length >= 1) {
-    var fragid = window.location.hash.substr(1);
-    if (fragid) {
-      if (! document.getElementById(fragid)) {
-        var prefix = "rfc.";
-        var mapped = map[fragid];
-        if (mapped) {
-          window.location.hash = mapped;
-        } else if (fragid.indexOf("section-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(8);
-        } else if (fragid.indexOf("appendix-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(9);
-        } else if (fragid.indexOf("s-") == 0) {
-          var postfix = fragid.substring(2);
-          if (postfix.startsWith("abstract")) {
-            window.location.hash = prefix + postfix;
-          } else if (postfix.startsWith("note-")) {
-            window.location.hash = prefix + "note." + postfix.substring(5);
-          } else {
-            window.location.hash = prefix + "section." + postfix;
-          }
-        } else if (fragid.indexOf("p-") == 0) {
-          var r = fragid.substring(2);
-          var p = r.indexOf("-");
-          if (p >= 0) {
-            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
-          }
-        }
-      }
-    }  
-  }
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>The Proxy-Status HTTP Response Header Field</title>
+<meta content="Mark Nottingham" name="author">
+<meta content="Piotr Sikora" name="author">
+<meta content="
+       This document defines the Proxy-Status HTTP field to convey the details of intermediary handling of responses, including generated errors. 
+    " name="description">
+<meta content="xml2rfc 3.2.1" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-ietf-httpbis-proxy-status" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.2.1
+    Python 3.8.5
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.4.0
+    html5lib 1.1
+    intervaltree 3.0.2
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.5.0
+    pycountry 19.8.18
+    pyflakes 2.1.1
+    PyYAML 5.3.1
+    requests 2.22.0
+    setuptools 45.2.0
+    six 1.14.0
+-->
+<link href="draft-ietf-httpbis-proxy-status.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --small-font-size: 14.5px;
 }
-window.addEventListener('hashchange', anchorRewrite);
-window.addEventListener('DOMContentLoaded', anchorRewrite);
-</script><!--Specified as xml2rfc-ext-css-contents--><style>
 body {
-  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  color: #333;
-  font-size-adjust: 0.5;
-  line-height: 24px;
+  max-width: 600px;
   margin: 75px auto;
-  max-width: 624px;
   padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
 }
 
-.title, .filename, h1, h2, h3, h4, h5 {
-  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  font-size-adjust: 0.5;
-  font-weight: bold;
-  color: #333;
-  line-height: 100%;
-  margin: 1.2em 0 0.3em;
-}
-.title, #rfc\.title h1 { font-size: 32px; }
-h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
-h3, section h4, h4, section h5 { font-size: 16px; }
-h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
-  color: #333;
-}
-
-table {
-  margin-left: 0em;
-  border-collapse: collapse;
-}
-th {
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-td {
-  border-top: 1px solid #ddd;
-  vertical-align: top;
-}
-tr:nth-child(2n+1) > td,
-tr:nth-child(2n+1) > th {
-  background-color: #f9f9f9;
-}
-td.reference {
-  max-width: 200px;
-  border-top: none;
-  padding-right: 1em;
-}
-.right {
-  text-align: right;
-}
-
-
-table.header, table#rfc\.headerblock {
-  width: 100%;
-}
-table.header td, table#rfc\.headerblock td {
-  border: none;
-  background-color: transparent;
-  color: black;
-  padding: 0;
-}
-.filename {
-  display: block;
-  color: rgb(119, 119, 119);
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 100%;
-  margin: 10px 0 32px;
-}
-#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
-  font-size: 20px;
-  line-height: 28px;
-}
-
-samp, tt, code, pre, span.tt {
-  font-size: 13.5px;
-  font-family: Consolas, monospace;
-  font-size-adjust: none;
-}
-pre {
-  background-color: #eee;
-  border: 1px solid #ddd;
-  overflow-x: auto;
-  padding: 5px;
-  margin: 5px;
-}
-.figure, caption {
-  font-style: italic;
-  margin: 0 1.5em;
-  text-align: left;
-}
-
-address {
-  margin: 16px 2px;
-  line-height: 20px;
-}
-.vcard {
-  font-style: normal;
-}
-.vcardline {
-  display: block;
-}
-.vcardline .fn, address b {
-  font-weight: normal;
-}
-.vcardline .hidden {
+.ears {
   display: none;
 }
 
-dl {
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 26px;
+}
+h4, h5, h6 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
   margin-left: 1em;
 }
-dl.dl-horizontal: {
-  margin-left: 0;
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
 }
 dl > dt {
   float: left;
   margin-right: 1em;
 }
-dl.nohang > dt {
-  float: none;
-}
 dl > dd {
-  margin-bottom: .5em;
+  margin-bottom: .8em;
+  min-height: 1.3em;
 }
-dl.compact > dd {
+dl.compact > dd, .dlCompact > dd {
   margin-bottom: 0em;
 }
 dl > dd > dl {
   margin-top: 0.5em;
   margin-bottom: 0em;
 }
-ul.empty {
-  list-style-type: none;
-}
-ul.empty li {
-  margin-top: .5em;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid #eee;
-}
-hr.noprint {
+dd.break {
   display: none;
 }
 
-a {
+/* links */
+a, a[href].selfRef:hover {
   text-decoration: none;
 }
+a[href].selfRef {
+  color: var(--text-color);
+}
 a[href] {
-  color: #2a6496;
+  color: var(--link-color);
 }
 a[href]:hover {
-  background-color: #eee;
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
 }
 
-p, ol, ul, li {
-  padding: 0;
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
 }
-p {
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
   margin: 0.5em 0;
 }
-ol, ul {
-  margin: 0.2em 0 0.2em 2em;
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
 }
-li {
-  margin: 0.2em 0;
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
 }
-address {
-  font-style: normal;
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
 }
 
-ul.toc ul {
-  margin: 0 0 0 2em;
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
 }
-ul.toc li {
-  list-style: none;
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
   margin: 0;
 }
 
-@media screen and (min-width: 924px) {
-  body {
-    padding-right: 350px;
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  visibility: hidden;
+  user-select: none;
+}
+a.pilcrow[href] { color: #ddd; }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media screen {
+  :hover > a.pilcrow {
+    visibility: visible;
   }
-  body>ul.toc, body>#rfc\.toc {
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
     position: fixed;
     bottom: 0;
     right: 0;
-    right: calc(50vw - 500px);
-    width: 300px;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
     z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
     overflow: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
-  body>#rfc\.toc {
-    top: 55px;
+  #toc nav > ul  {
+    margin-bottom: 2em;
   }
-  body>ul.toc {
-    top: 100px;
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
   }
 
-  ul.toc {
-    margin: 0 0 0 4px;
-    font-size: 12px;
-    line-height: 20px;
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
   }
-  ul.toc ul {
-    margin-left: 1.2em;
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
   }
-}</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="License" href="#rfc.copyrightnotice"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 The Proxy-Status HTTP Field" href="#rfc.section.2"><link rel="Chapter" title="3 IANA Considerations" href="#rfc.section.3"><link rel="Chapter" title="4 Security Considerations" href="#rfc.section.4"><link rel="Chapter" title="5 References" href="#rfc.section.5"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.1327, 2020/09/24 11:13:36, XSLT vendor: libxslt http://xmlsoft.org/XSLT/, via: https://github.com/cabo/kramdown-rfc2629 version 1.3.10"><meta name="keywords" content="Internet-Draft"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Nottingham, M."><meta name="dcterms.creator" content="Sikora, P."><meta name="dcterms.issued" content="2020-10-05"><meta name="dcterms.abstract" content="This document defines the Proxy-Status HTTP field to convey the details of intermediary handling of responses, including generated errors."><meta name="description" content="This document defines the Proxy-Status HTTP field to convey the details of intermediary handling of responses, including generated errors."></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">HTTP Working Group</td><td class="right">M. Nottingham</td></tr><tr><td class="left">Internet-Draft</td><td class="right">Fastly</td></tr><tr><td class="left">Intended status: Standards Track</td><td class="right">P. Sikora</td></tr><tr><td class="left">Expires: April 8, 2021</td><td class="right">Google</td></tr><tr><td class="left"></td><td class="right">October 5, 2020</td></tr></tbody></table><div id="rfc.title"><h1>The Proxy-Status HTTP Response Header Field</h1><div class="filename"><a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-proxy-status" class="smpl">draft-ietf-httpbis-proxy-status-latest</a></div></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>This document defines the Proxy-Status HTTP field to convey the details of intermediary handling of responses, including generated errors.</p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Note to Readers</a></h2><div id="rfc.note.1.p.1"><p><em>RFC EDITOR: please remove this section before publication</em></p></div><div id="rfc.note.1.p.2"><p>Discussion of this draft takes place on the HTTP working group mailing list (ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.</p></div><div id="rfc.note.1.p.3"><p>Working Group information can be found at <a href="https://httpwg.org/">https://httpwg.org/</a>; source code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/proxy-status">https://github.com/httpwg/http-extensions/labels/proxy-status</a>.</p></div></section><section id="rfc.status"><h2><a href="#rfc.status">Status of this Memo</a></h2><div id="rfc.boilerplate.1.p.1"><p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p></div><div id="rfc.boilerplate.1.p.2"><p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p></div><div id="rfc.boilerplate.1.p.3"><p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as “work in progress”.</p></div><div id="rfc.boilerplate.1.p.4"><p>This Internet-Draft will expire on April 8, 2021.</p></div></section><section id="rfc.copyrightnotice"><h2><a href="#rfc.copyrightnotice">Copyright Notice</a></h2><div id="rfc.boilerplate.2.p.1"><p>Copyright (c) 2020 IETF Trust and the persons identified as the document authors. All rights reserved.</p></div><div id="rfc.boilerplate.2.p.2"><p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>   <a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>   <a href="#notational-conventions">Notational Conventions</a></li></ul></li><li><a href="#rfc.section.2">2.</a>   <a href="#header">The Proxy-Status HTTP Field</a><ul><li><a href="#rfc.section.2.1">2.1.</a>   <a href="#params">Proxy-Status Parameters</a><ul><li><a href="#rfc.section.2.1.1">2.1.1.</a>   <a href="#next-hop">next-hop</a></li><li><a href="#rfc.section.2.1.2">2.1.2.</a>   <a href="#next-protocol">next-protocol</a></li><li><a href="#rfc.section.2.1.3">2.1.3.</a>   <a href="#error">error</a></li><li><a href="#rfc.section.2.1.4">2.1.4.</a>   <a href="#details">details</a></li></ul></li><li><a href="#rfc.section.2.2">2.2.</a>   <a href="#register-param">Defining New Proxy-Status Parameters</a></li><li><a href="#rfc.section.2.3">2.3.</a>   <a href="#error-types">Proxy Error Types</a><ul><li><a href="#rfc.section.2.3.1">2.3.1.</a>   <a href="#dns-timeout">DNS Timeout</a></li><li><a href="#rfc.section.2.3.2">2.3.2.</a>   <a href="#dns-error">DNS Error</a></li><li><a href="#rfc.section.2.3.3">2.3.3.</a>   <a href="#destination-not-found">Destination Not Found</a></li><li><a href="#rfc.section.2.3.4">2.3.4.</a>   <a href="#destination-unavailable">Destination Unavailable</a></li><li><a href="#rfc.section.2.3.5">2.3.5.</a>   <a href="#destination-ip-prohibited">Destination IP Prohibited</a></li><li><a href="#rfc.section.2.3.6">2.3.6.</a>   <a href="#destination-ip-unroutable">Destination IP Unroutable</a></li><li><a href="#rfc.section.2.3.7">2.3.7.</a>   <a href="#connection-refused">Connection Refused</a></li><li><a href="#rfc.section.2.3.8">2.3.8.</a>   <a href="#connection-terminated">Connection Terminated</a></li><li><a href="#rfc.section.2.3.9">2.3.9.</a>   <a href="#connection-timeout">Connection Timeout</a></li><li><a href="#rfc.section.2.3.10">2.3.10.</a>   <a href="#connection-read-timeout">Connection Read Timeout</a></li><li><a href="#rfc.section.2.3.11">2.3.11.</a>   <a href="#connection-write-timeout">Connection Write Timeout</a></li><li><a href="#rfc.section.2.3.12">2.3.12.</a>   <a href="#connection-limit-reached">Connection Limit Reached</a></li><li><a href="#rfc.section.2.3.13">2.3.13.</a>   <a href="#tls-protocol-error">TLS Protocol Error</a></li><li><a href="#rfc.section.2.3.14">2.3.14.</a>   <a href="#tls-certificate-error">TLS Certificate Error</a></li><li><a href="#rfc.section.2.3.15">2.3.15.</a>   <a href="#tls-alert-received">TLS Alert Received</a></li><li><a href="#rfc.section.2.3.16">2.3.16.</a>   <a href="#http-request-error">HTTP Request Error</a></li><li><a href="#rfc.section.2.3.17">2.3.17.</a>   <a href="#http-request-denied">HTTP Request Denied</a></li><li><a href="#rfc.section.2.3.18">2.3.18.</a>   <a href="#http-incomplete-response">HTTP Incomplete Response</a></li><li><a href="#rfc.section.2.3.19">2.3.19.</a>   <a href="#http-response-header-block-too-large">HTTP Response Header Block Too Large</a></li><li><a href="#rfc.section.2.3.20">2.3.20.</a>   <a href="#http-response-header-too-large">HTTP Response Header Too Large</a></li><li><a href="#rfc.section.2.3.21">2.3.21.</a>   <a href="#http-response-body-too-large">HTTP Response Body Too Large</a></li><li><a href="#rfc.section.2.3.22">2.3.22.</a>   <a href="#http-response-transfer-coding-error">HTTP Response Transfer-Coding Error</a></li><li><a href="#rfc.section.2.3.23">2.3.23.</a>   <a href="#http-response-content-coding-error">HTTP Response Content-Coding Error</a></li><li><a href="#rfc.section.2.3.24">2.3.24.</a>   <a href="#http-response-timeout">HTTP Response Timeout</a></li><li><a href="#rfc.section.2.3.25">2.3.25.</a>   <a href="#http-upgrade-failed">HTTP Upgrade Failed</a></li><li><a href="#rfc.section.2.3.26">2.3.26.</a>   <a href="#http-protocol-error">HTTP Protocol Error</a></li><li><a href="#rfc.section.2.3.27">2.3.27.</a>   <a href="#proxy-internal-response">Proxy Internal Response</a></li><li><a href="#rfc.section.2.3.28">2.3.28.</a>   <a href="#proxy-internal-error">Proxy Internal Error</a></li><li><a href="#rfc.section.2.3.29">2.3.29.</a>   <a href="#proxy-configuration-error">Proxy Configuration Error</a></li><li><a href="#rfc.section.2.3.30">2.3.30.</a>   <a href="#proxy-loop-detected">Proxy Loop Detected</a></li></ul></li><li><a href="#rfc.section.2.4">2.4.</a>   <a href="#register-error">Defining New Proxy Error Types</a></li></ul></li><li><a href="#rfc.section.3">3.</a>   <a href="#iana-considerations">IANA Considerations</a></li><li><a href="#rfc.section.4">4.</a>   <a href="#security">Security Considerations</a></li><li><a href="#rfc.section.5">5.</a>   <a href="#rfc.references">References</a><ul><li><a href="#rfc.section.5.1">5.1.</a>   <a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.5.2">5.2.</a>   <a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.authors">Authors' Addresses</a></li></ul></nav><hr class="noprint"><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> <a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1"><p>HTTP intermediaries – including both forward proxies and gateways (also known as “reverse proxies”) – have become an increasingly significant part of HTTP deployments. In particular, reverse proxies and Content Delivery Networks (CDNs) form part of the critical infrastructure of many Web sites.</p></div><div id="rfc.section.1.p.2"><p>Typically, HTTP intermediaries forward requests towards the origin server and then forward their responses back to clients. However, if an error occurs before a response is obtained from upstream, the response is generated by the intermediary itself.</p></div><div id="rfc.section.1.p.3"><p>HTTP accommodates these types of errors with a few status codes; for example, 502 Bad Gateway and 504 Gateway Timeout. However, experience has shown that more information is necessary to aid debugging and communicate what’s happened to the client.</p></div><div id="rfc.section.1.p.4"><p>Additionally, intermediaries sometimes want to convey additional information about their handling of a response, even if they did not generate it.</p></div><div id="rfc.section.1.p.5"><p>To enable these uses, <a href="#header" title="The Proxy-Status HTTP Field">Section 2</a> defines a new HTTP response field to allow intermediaries to convey details of their handling of a response, <a href="#params" title="Proxy-Status Parameters">Section 2.1</a> enumerates the kind of information that can be conveyed, and <a href="#error-types" title="Proxy Error Types">Section 2.3</a> defines a set of error types for use when a proxy generates the response.</p></div><section id="notational-conventions"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a> <a href="#notational-conventions">Notational Conventions</a></h3><div id="rfc.section.1.1.p.1"><p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in BCP 14 <a href="#RFC2119"><cite title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</cite></a> <a href="#RFC8174"><cite title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">[RFC8174]</cite></a> when, and only when, they appear in all capitals, as shown here.</p></div><div id="rfc.section.1.1.p.2"><p>This specification uses Structured Headers <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a> to specify syntax. The terms sf-list, sf-item, sf-string, sf-token, sf-integer and key refer to the structured types defined therein.</p></div><div id="rfc.section.1.1.p.3"><p>Note that in this specification, “proxy” is used to indicate both forward and reverse proxies, otherwise known as gateways. “Next hop” indicates the connection in the direction leading to the origin server for the request.</p></div></section></section><hr class="noprint"><section id="header"><h2 id="rfc.section.2" class="np"><a href="#rfc.section.2">2.</a> <a href="#header">The Proxy-Status HTTP Field</a></h2><div id="rfc.section.2.p.1"><p>The Proxy-Status HTTP response field allows an intermediary to convey additional information about its handling of a response and its associated request.</p></div><div id="rfc.section.2.p.2" class="avoidbreakafter"><p>It is a List <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>:</p></div><div id="rfc.figure.u.1"><div><pre class="inline">
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">Proxy-Status</td>
+<td class="right">November 2020</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Nottingham &amp; Sikora</td>
+<td class="center">Expires 6 May 2021</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HTTP</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-httpbis-proxy-status</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2020-11-02" class="published">2 November 2020</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2021-05-06">6 May 2021</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">M. Nottingham</div>
+<div class="org">Fastly</div>
+</div>
+<div class="author">
+      <div class="author-name">P. Sikora</div>
+<div class="org">Google</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">The Proxy-Status HTTP Response Header Field</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines the Proxy-Status HTTP field to convey the details of intermediary handling of responses, including generated errors.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-note-to-readers">
+<a href="#name-note-to-readers" class="section-name selfRef">Note to Readers</a>
+      </h2>
+<p id="section-note.1-1"><em>RFC EDITOR: please remove this section before publication</em><a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this draft takes place on the HTTP working group mailing list
+(ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Working Group information can be found at <a href="https://httpwg.org/">https://httpwg.org/</a>; source
+code and issues list for this draft can be found at
+<a href="https://github.com/httpwg/http-extensions/labels/proxy-status">https://github.com/httpwg/http-extensions/labels/proxy-status</a>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 6 May 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2020 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-notational-conventions" class="xref">Notational Conventions</a><a href="#section-toc.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-the-proxy-status-http-field" class="xref">The Proxy-Status HTTP Field</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-proxy-status-parameters" class="xref">Proxy-Status Parameters</a><a href="#section-toc.1-1.2.2.1.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1.2.1">
+                    <p id="section-toc.1-1.2.2.1.2.1.1" class="keepWithNext"><a href="#section-2.1.1" class="xref">2.1.1</a>.  <a href="#name-next-hop" class="xref">next-hop</a><a href="#section-toc.1-1.2.2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1.2.2">
+                    <p id="section-toc.1-1.2.2.1.2.2.1"><a href="#section-2.1.2" class="xref">2.1.2</a>.  <a href="#name-next-protocol" class="xref">next-protocol</a><a href="#section-toc.1-1.2.2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1.2.3">
+                    <p id="section-toc.1-1.2.2.1.2.3.1"><a href="#section-2.1.3" class="xref">2.1.3</a>.  <a href="#name-error" class="xref">error</a><a href="#section-toc.1-1.2.2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1.2.4">
+                    <p id="section-toc.1-1.2.2.1.2.4.1"><a href="#section-2.1.4" class="xref">2.1.4</a>.  <a href="#name-details" class="xref">details</a><a href="#section-toc.1-1.2.2.1.2.4.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-defining-new-proxy-status-p" class="xref">Defining New Proxy-Status Parameters</a><a href="#section-toc.1-1.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-proxy-error-types" class="xref">Proxy Error Types</a><a href="#section-toc.1-1.2.2.3.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.1">
+                    <p id="section-toc.1-1.2.2.3.2.1.1"><a href="#section-2.3.1" class="xref">2.3.1</a>.  <a href="#name-dns-timeout" class="xref">DNS Timeout</a><a href="#section-toc.1-1.2.2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.2">
+                    <p id="section-toc.1-1.2.2.3.2.2.1"><a href="#section-2.3.2" class="xref">2.3.2</a>.  <a href="#name-dns-error" class="xref">DNS Error</a><a href="#section-toc.1-1.2.2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.3">
+                    <p id="section-toc.1-1.2.2.3.2.3.1"><a href="#section-2.3.3" class="xref">2.3.3</a>.  <a href="#name-destination-not-found" class="xref">Destination Not Found</a><a href="#section-toc.1-1.2.2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.4">
+                    <p id="section-toc.1-1.2.2.3.2.4.1"><a href="#section-2.3.4" class="xref">2.3.4</a>.  <a href="#name-destination-unavailable" class="xref">Destination Unavailable</a><a href="#section-toc.1-1.2.2.3.2.4.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.5">
+                    <p id="section-toc.1-1.2.2.3.2.5.1"><a href="#section-2.3.5" class="xref">2.3.5</a>.  <a href="#name-destination-ip-prohibited" class="xref">Destination IP Prohibited</a><a href="#section-toc.1-1.2.2.3.2.5.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.6">
+                    <p id="section-toc.1-1.2.2.3.2.6.1"><a href="#section-2.3.6" class="xref">2.3.6</a>.  <a href="#name-destination-ip-unroutable" class="xref">Destination IP Unroutable</a><a href="#section-toc.1-1.2.2.3.2.6.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.7">
+                    <p id="section-toc.1-1.2.2.3.2.7.1"><a href="#section-2.3.7" class="xref">2.3.7</a>.  <a href="#name-connection-refused" class="xref">Connection Refused</a><a href="#section-toc.1-1.2.2.3.2.7.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.8">
+                    <p id="section-toc.1-1.2.2.3.2.8.1"><a href="#section-2.3.8" class="xref">2.3.8</a>.  <a href="#name-connection-terminated" class="xref">Connection Terminated</a><a href="#section-toc.1-1.2.2.3.2.8.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.9">
+                    <p id="section-toc.1-1.2.2.3.2.9.1"><a href="#section-2.3.9" class="xref">2.3.9</a>.  <a href="#name-connection-timeout" class="xref">Connection Timeout</a><a href="#section-toc.1-1.2.2.3.2.9.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.10">
+                    <p id="section-toc.1-1.2.2.3.2.10.1"><a href="#section-2.3.10" class="xref">2.3.10</a>. <a href="#name-connection-read-timeout" class="xref">Connection Read Timeout</a><a href="#section-toc.1-1.2.2.3.2.10.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.11">
+                    <p id="section-toc.1-1.2.2.3.2.11.1"><a href="#section-2.3.11" class="xref">2.3.11</a>. <a href="#name-connection-write-timeout" class="xref">Connection Write Timeout</a><a href="#section-toc.1-1.2.2.3.2.11.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.12">
+                    <p id="section-toc.1-1.2.2.3.2.12.1"><a href="#section-2.3.12" class="xref">2.3.12</a>. <a href="#name-connection-limit-reached" class="xref">Connection Limit Reached</a><a href="#section-toc.1-1.2.2.3.2.12.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.13">
+                    <p id="section-toc.1-1.2.2.3.2.13.1"><a href="#section-2.3.13" class="xref">2.3.13</a>. <a href="#name-tls-protocol-error" class="xref">TLS Protocol Error</a><a href="#section-toc.1-1.2.2.3.2.13.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.14">
+                    <p id="section-toc.1-1.2.2.3.2.14.1"><a href="#section-2.3.14" class="xref">2.3.14</a>. <a href="#name-tls-certificate-error" class="xref">TLS Certificate Error</a><a href="#section-toc.1-1.2.2.3.2.14.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.15">
+                    <p id="section-toc.1-1.2.2.3.2.15.1"><a href="#section-2.3.15" class="xref">2.3.15</a>. <a href="#name-tls-alert-received" class="xref">TLS Alert Received</a><a href="#section-toc.1-1.2.2.3.2.15.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.16">
+                    <p id="section-toc.1-1.2.2.3.2.16.1"><a href="#section-2.3.16" class="xref">2.3.16</a>. <a href="#name-http-request-error" class="xref">HTTP Request Error</a><a href="#section-toc.1-1.2.2.3.2.16.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.17">
+                    <p id="section-toc.1-1.2.2.3.2.17.1"><a href="#section-2.3.17" class="xref">2.3.17</a>. <a href="#name-http-request-denied" class="xref">HTTP Request Denied</a><a href="#section-toc.1-1.2.2.3.2.17.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.18">
+                    <p id="section-toc.1-1.2.2.3.2.18.1"><a href="#section-2.3.18" class="xref">2.3.18</a>. <a href="#name-http-incomplete-response" class="xref">HTTP Incomplete Response</a><a href="#section-toc.1-1.2.2.3.2.18.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.19">
+                    <p id="section-toc.1-1.2.2.3.2.19.1"><a href="#section-2.3.19" class="xref">2.3.19</a>. <a href="#name-http-response-header-block-" class="xref">HTTP Response Header Block Too Large</a><a href="#section-toc.1-1.2.2.3.2.19.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.20">
+                    <p id="section-toc.1-1.2.2.3.2.20.1"><a href="#section-2.3.20" class="xref">2.3.20</a>. <a href="#name-http-response-header-too-la" class="xref">HTTP Response Header Too Large</a><a href="#section-toc.1-1.2.2.3.2.20.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.21">
+                    <p id="section-toc.1-1.2.2.3.2.21.1"><a href="#section-2.3.21" class="xref">2.3.21</a>. <a href="#name-http-response-body-too-larg" class="xref">HTTP Response Body Too Large</a><a href="#section-toc.1-1.2.2.3.2.21.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.22">
+                    <p id="section-toc.1-1.2.2.3.2.22.1"><a href="#section-2.3.22" class="xref">2.3.22</a>. <a href="#name-http-response-transfer-codi" class="xref">HTTP Response Transfer-Coding Error</a><a href="#section-toc.1-1.2.2.3.2.22.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.23">
+                    <p id="section-toc.1-1.2.2.3.2.23.1"><a href="#section-2.3.23" class="xref">2.3.23</a>. <a href="#name-http-response-content-codin" class="xref">HTTP Response Content-Coding Error</a><a href="#section-toc.1-1.2.2.3.2.23.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.24">
+                    <p id="section-toc.1-1.2.2.3.2.24.1"><a href="#section-2.3.24" class="xref">2.3.24</a>. <a href="#name-http-response-timeout" class="xref">HTTP Response Timeout</a><a href="#section-toc.1-1.2.2.3.2.24.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.25">
+                    <p id="section-toc.1-1.2.2.3.2.25.1"><a href="#section-2.3.25" class="xref">2.3.25</a>. <a href="#name-http-upgrade-failed" class="xref">HTTP Upgrade Failed</a><a href="#section-toc.1-1.2.2.3.2.25.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.26">
+                    <p id="section-toc.1-1.2.2.3.2.26.1"><a href="#section-2.3.26" class="xref">2.3.26</a>. <a href="#name-http-protocol-error" class="xref">HTTP Protocol Error</a><a href="#section-toc.1-1.2.2.3.2.26.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.27">
+                    <p id="section-toc.1-1.2.2.3.2.27.1"><a href="#section-2.3.27" class="xref">2.3.27</a>. <a href="#name-proxy-internal-response" class="xref">Proxy Internal Response</a><a href="#section-toc.1-1.2.2.3.2.27.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.28">
+                    <p id="section-toc.1-1.2.2.3.2.28.1"><a href="#section-2.3.28" class="xref">2.3.28</a>. <a href="#name-proxy-internal-error" class="xref">Proxy Internal Error</a><a href="#section-toc.1-1.2.2.3.2.28.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.29">
+                    <p id="section-toc.1-1.2.2.3.2.29.1"><a href="#section-2.3.29" class="xref">2.3.29</a>. <a href="#name-proxy-configuration-error" class="xref">Proxy Configuration Error</a><a href="#section-toc.1-1.2.2.3.2.29.1" class="pilcrow">¶</a></p>
+</li>
+                  <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.3.2.30">
+                    <p id="section-toc.1-1.2.2.3.2.30.1"><a href="#section-2.3.30" class="xref">2.3.30</a>. <a href="#name-proxy-loop-detected" class="xref">Proxy Loop Detected</a><a href="#section-toc.1-1.2.2.3.2.30.1" class="pilcrow">¶</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-defining-new-proxy-error-ty" class="xref">Defining New Proxy Error Types</a><a href="#section-toc.1-1.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.5.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.5.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">HTTP intermediaries - including both forward proxies and gateways (also known as "reverse
+proxies") - have become an increasingly significant part of HTTP deployments. In particular,
+reverse proxies and Content Delivery Networks (CDNs) form part of the critical infrastructure of
+many Web sites.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Typically, HTTP intermediaries forward requests towards the origin server and then forward their responses back to clients. However, if an error occurs before a response is obtained from upstream, the response is generated by the intermediary itself.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">HTTP accommodates these types of errors with a few status codes; for example, 502 Bad Gateway and 504 Gateway Timeout. However, experience has shown that more information is necessary to aid debugging and communicate what's happened to the client.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">Additionally, intermediaries sometimes want to convey additional information about their handling of a response, even if they did not generate it.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">To enable these uses, <a href="#header" class="xref">Section 2</a> defines a new HTTP response field to allow intermediaries to convey details of their handling of a response, <a href="#params" class="xref">Section 2.1</a> enumerates the kind of information that can be conveyed, and <a href="#error-types" class="xref">Section 2.3</a> defines a set of error types for use when a proxy generates the response.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<div id="notational-conventions">
+<section id="section-1.1">
+        <h3 id="name-notational-conventions">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT",
+"RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they appear in all capitals, as
+shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">This specification uses Structured Headers <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span> to specify syntax. The terms sf-list, sf-item, sf-string, sf-token, sf-integer and key refer to the structured types defined therein.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">Note that in this specification, "proxy" is used to indicate both forward and reverse proxies, otherwise known as gateways. "Next hop" indicates the connection in the direction leading to the origin server for the request.<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="header">
+<section id="section-2">
+      <h2 id="name-the-proxy-status-http-field">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-the-proxy-status-http-field" class="section-name selfRef">The Proxy-Status HTTP Field</a>
+      </h2>
+<p id="section-2-1">The Proxy-Status HTTP response field allows an intermediary to convey additional information about its handling of a response and its associated request.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">It is a List <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span>:<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-abnf" id="section-2-3">
+<pre>
 Proxy-Status   = sf-list
-</pre></div></div><div id="rfc.section.2.p.3"><p>Each member of the list represents an intermediary that has handled the response. The first member of the list represents the intermediary closest to the origin server, and the last member of the list represents the intermediary closest to the user agent.</p></div><div id="rfc.section.2.p.4" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.2"><div><pre class="text">
+</pre><a href="#section-2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2-4">Each member of the list represents an intermediary that has handled the response. The first member of the list represents the intermediary closest to the origin server, and the last member of the list represents the intermediary closest to the user agent.<a href="#section-2-4" class="pilcrow">¶</a></p>
+<p id="section-2-5">For example:<a href="#section-2-5" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2-6">
+<pre>
 Proxy-Status: FooProxy, ExampleCDN
-</pre></div></div><div id="rfc.section.2.p.5"><p>indicates that this response was handled first by FooProxy and then ExampleCDN.</p></div><div id="rfc.section.2.p.6"><p>Intermediaries determine when it is appropriate to add the Proxy-Status field to a response. Some might decide to add it to all responses, whereas others might only do so when specifically configured to, or when the request contains a header that activates a debugging mode.</p></div><div id="rfc.section.2.p.7"><p>The list members identify the intermediary that inserted the value, and MUST have a type of either sf-string or sf-token. Depending on the deployment, this might be a product or service name (e.g., ExampleProxy or “Example CDN”), a hostname (“proxy-3.example.com”), and IP address, or a generated string.</p></div><div id="rfc.section.2.p.8"><p>Parameters on each member convey additional information about that intermediary’s handling of the response; see <a href="#params" title="Proxy-Status Parameters">Section 2.1</a> for defined parameters. While all of these parameters are OPTIONAL, intermediaries are encouraged to provide as much information as possible.</p></div><div id="rfc.section.2.p.9"><p>When adding a value to the Proxy-Status field, intermediaries SHOULD preserve the existing contents of the field, to allow debugging of the entire chain of intermediaries handling the request.</p></div><div id="rfc.section.2.p.10"><p>Proxy-Status MAY be sent in HTTP trailers, but – as with all trailers – it might be silently discarded along the path to the user agent, so this SHOULD NOT be done unless it is not possible to send it in headers. For example, if an intermediary is streaming a response and the upstream connection suddenly terminates, Proxy-Status can be appended to the trailers of the outgoing message (since the headers have already been sent).</p></div><div id="rfc.section.2.p.11"><p>Note that there are various security considerations for intermediaries using the Proxy-Status field; see <a href="#security" title="Security Considerations">Section 4</a>.</p></div><div id="rfc.section.2.p.12"><p>Origin servers MUST NOT generate the Proxy-Status field.</p></div><section id="params"><h3 id="rfc.section.2.1"><a href="#rfc.section.2.1">2.1.</a> <a href="#params">Proxy-Status Parameters</a></h3><div id="rfc.section.2.1.p.1"><p>This section lists parameters that can be used on the members of Proxy-Status.</p></div><section id="next-hop"><h4 id="rfc.section.2.1.1"><a href="#rfc.section.2.1.1">2.1.1.</a> <a href="#next-hop">next-hop</a></h4><div id="rfc.section.2.1.1.p.1"><p>The <span class="tt">next-hop</span> parameter’s value is a sf-string or sf-token that identifies the intermediary or origin server selected (and used, if contacted) for this response. Its contents might be a hostname, IP address, or alias.</p></div><div id="rfc.section.2.1.1.p.2" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.3"><div><pre class="text">
+</pre><a href="#section-2-6" class="pilcrow">¶</a>
+</div>
+<p id="section-2-7">indicates that this response was handled first by FooProxy and then ExampleCDN.<a href="#section-2-7" class="pilcrow">¶</a></p>
+<p id="section-2-8">Intermediaries determine when it is appropriate to add the Proxy-Status field to a response. Some might decide to add it to all responses, whereas others might only do so when specifically configured to, or when the request contains a header that activates a debugging mode.<a href="#section-2-8" class="pilcrow">¶</a></p>
+<p id="section-2-9">The list members identify the intermediary that inserted the value, and MUST have a type of either sf-string or sf-token. Depending on the deployment, this might be a product or service name (e.g., ExampleProxy or "Example CDN"), a hostname ("proxy-3.example.com"), and IP address, or a generated string.<a href="#section-2-9" class="pilcrow">¶</a></p>
+<p id="section-2-10">Parameters on each member convey additional information about that intermediary's handling of the response; see <a href="#params" class="xref">Section 2.1</a> for defined parameters. While all of these parameters are OPTIONAL, intermediaries are encouraged to provide as much information as possible.<a href="#section-2-10" class="pilcrow">¶</a></p>
+<p id="section-2-11">When adding a value to the Proxy-Status field, intermediaries SHOULD preserve the existing contents of the field, to allow debugging of the entire chain of intermediaries handling the request.<a href="#section-2-11" class="pilcrow">¶</a></p>
+<p id="section-2-12">Proxy-Status MAY be sent in HTTP trailers, but - as with all trailers - it might be silently discarded along the path to the user agent, so this SHOULD NOT be done unless it is not possible to send it in headers. For example, if an intermediary is streaming a response and the upstream connection suddenly terminates, Proxy-Status can be appended to the trailers of the outgoing message (since the headers have already been sent).<a href="#section-2-12" class="pilcrow">¶</a></p>
+<p id="section-2-13">Note that there are various security considerations for intermediaries using the Proxy-Status field; see <a href="#security" class="xref">Section 4</a>.<a href="#section-2-13" class="pilcrow">¶</a></p>
+<p id="section-2-14">Origin servers MUST NOT generate the Proxy-Status field.<a href="#section-2-14" class="pilcrow">¶</a></p>
+<div id="params">
+<section id="section-2.1">
+        <h3 id="name-proxy-status-parameters">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-proxy-status-parameters" class="section-name selfRef">Proxy-Status Parameters</a>
+        </h3>
+<p id="section-2.1-1">This section lists parameters that can be used on the members of Proxy-Status.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<div id="next-hop">
+<section id="section-2.1.1">
+          <h4 id="name-next-hop">
+<a href="#section-2.1.1" class="section-number selfRef">2.1.1. </a><a href="#name-next-hop" class="section-name selfRef">next-hop</a>
+          </h4>
+<p id="section-2.1.1-1">The <code>next-hop</code> parameter's value is a sf-string or sf-token that identifies the intermediary or origin server selected (and used, if contacted) for this response. Its contents might be a hostname, IP address, or alias.<a href="#section-2.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-2">For example:<a href="#section-2.1.1-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2.1.1-3">
+<pre>
 Proxy-Status: cdn.example.org; next-hop=backend.example.org
-</pre></div></div></section><section id="next-protocol"><h4 id="rfc.section.2.1.2"><a href="#rfc.section.2.1.2">2.1.2.</a> <a href="#next-protocol">next-protocol</a></h4><div id="rfc.section.2.1.2.p.1"><p>The <span class="tt">next-protocol</span> parameter’s value indicates the ALPN protocol identifier <a href="#RFC7301"><cite title="Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension">[RFC7301]</cite></a> used by the intermediary to connect to the next hop. This is only applicable when that connection was actually established.</p></div><div id="rfc.section.2.1.2.p.2"><p>The value MUST be either a sf-token or sf-binary. If the protocol identifier is able to be expressed as a sf-token using UTF-8 encoding, that form MUST be used.</p></div><div id="rfc.section.2.1.2.p.3" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.4"><div><pre class="text">
+</pre><a href="#section-2.1.1-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="next-protocol">
+<section id="section-2.1.2">
+          <h4 id="name-next-protocol">
+<a href="#section-2.1.2" class="section-number selfRef">2.1.2. </a><a href="#name-next-protocol" class="section-name selfRef">next-protocol</a>
+          </h4>
+<p id="section-2.1.2-1">The <code>next-protocol</code> parameter's value indicates the ALPN protocol identifier <span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span> used by the intermediary to connect to the next hop. This is only applicable when that connection was actually established.<a href="#section-2.1.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.2-2">The value MUST be either a sf-token or sf-binary. If the protocol identifier is able to be expressed as a sf-token using UTF-8 encoding, that form MUST be used.<a href="#section-2.1.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.1.2-3">For example:<a href="#section-2.1.2-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2.1.2-4">
+<pre>
 Proxy-Status: "proxy.example.org"; next-protocol=h2
-</pre></div></div></section><section id="error"><h4 id="rfc.section.2.1.3"><a href="#rfc.section.2.1.3">2.1.3.</a> <a href="#error">error</a></h4><div id="rfc.section.2.1.3.p.1"><p>The <span class="tt">error</span> parameter’s value is a sf-token that is a Proxy Error Type. When present, it indicates that the response was generated by the proxy, not the origin server or any other upstream server.</p></div><div id="rfc.section.2.1.3.p.2"><p><a href="#error-types" title="Proxy Error Types">Section 2.3</a> lists the Proxy Error Types defined in this document; new ones can be defined using the procedure outlined in <a href="#register-error" title="Defining New Proxy Error Types">Section 2.4</a>.</p></div><div id="rfc.section.2.1.3.p.3" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.5"><div><pre class="text">
+</pre><a href="#section-2.1.2-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="error">
+<section id="section-2.1.3">
+          <h4 id="name-error">
+<a href="#section-2.1.3" class="section-number selfRef">2.1.3. </a><a href="#name-error" class="section-name selfRef">error</a>
+          </h4>
+<p id="section-2.1.3-1">The <code>error</code> parameter's value is a sf-token that is a Proxy Error Type. When present, it indicates that the response was generated by the proxy, not the origin server or any other upstream server.<a href="#section-2.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.3-2"><a href="#error-types" class="xref">Section 2.3</a> lists the Proxy Error Types defined in this document; new ones can be defined using the procedure outlined in <a href="#register-error" class="xref">Section 2.4</a>.<a href="#section-2.1.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.1.3-3">For example:<a href="#section-2.1.3-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2.1.3-4">
+<pre>
 HTTP/1.1 504 Gateway Timeout
 Proxy-Status: SomeCDN; error=connection_timeout
-</pre></div></div><div id="rfc.section.2.1.3.p.4"><p>indicates that this 504 response was generated by SomeCDN, due to a connection timeout when going forward.</p></div><div id="rfc.section.2.1.3.p.5" class="avoidbreakafter"><p>Or:</p></div><div id="rfc.figure.u.6"><div><pre class="text">
+</pre><a href="#section-2.1.3-4" class="pilcrow">¶</a>
+</div>
+<p id="section-2.1.3-5">indicates that this 504 response was generated by SomeCDN, due to a connection timeout when going forward.<a href="#section-2.1.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.1.3-6">Or:<a href="#section-2.1.3-6" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2.1.3-7">
+<pre>
 HTTP/1.1 429 Too Many Requests
 Proxy-Status: SomeReverseProxy; error=http_request_error
-</pre></div></div><div id="rfc.section.2.1.3.p.6"><p>indicates that this 429 Too Many Requests response was generated by the intermediary, not the origin.</p></div><div id="rfc.section.2.1.3.p.7"><p>When sending the error parameter, the most specific Proxy Error Type SHOULD be sent, provided that it accurately represents the error condition. If an appropriate Proxy Error Type is not defined, there are a number of generic error types (e.g., proxy_internal_error, http_protocol_error) that can be used. If they are not suitable, consider registering a new Proxy Error Type (see <a href="#register-error" title="Defining New Proxy Error Types">Section 2.4</a>).</p></div><div id="rfc.section.2.1.3.p.8"><p>Each Proxy Error Type has a Recommended HTTP Status Code. When generating a HTTP response containing <span class="tt">error</span>, its HTTP status code SHOULD be set to the Recommended HTTP Status Code. However, there may be circumstances (e.g., for backwards compatibility with previous behaviours) when another status code might be used.</p></div></section><section id="details"><h4 id="rfc.section.2.1.4"><a href="#rfc.section.2.1.4">2.1.4.</a> <a href="#details">details</a></h4><div id="rfc.section.2.1.4.p.1"><p>The <span class="tt">details</span> parameter’s value is a sf-string containing additional information not captured anywhere else. This can include implementation-specific or deployment-specific information.</p></div><div id="rfc.section.2.1.4.p.2" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.7"><div><pre class="text">
+</pre><a href="#section-2.1.3-7" class="pilcrow">¶</a>
+</div>
+<p id="section-2.1.3-8">indicates that this 429 Too Many Requests response was generated by the intermediary, not the origin.<a href="#section-2.1.3-8" class="pilcrow">¶</a></p>
+<p id="section-2.1.3-9">When sending the error parameter, the most specific Proxy Error Type SHOULD be sent, provided that it accurately represents the error condition. If an appropriate Proxy Error Type is not defined, there are a number of generic error types (e.g., proxy_internal_error, http_protocol_error) that can be used. If they are not suitable, consider registering a new Proxy Error Type (see <a href="#register-error" class="xref">Section 2.4</a>).<a href="#section-2.1.3-9" class="pilcrow">¶</a></p>
+<p id="section-2.1.3-10">Each Proxy Error Type has a Recommended HTTP Status Code. When generating a HTTP response containing <code>error</code>, its HTTP status code SHOULD be set to the Recommended HTTP Status Code. However, there may be circumstances (e.g., for backwards compatibility with previous behaviours) when another status code might be used.<a href="#section-2.1.3-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="details">
+<section id="section-2.1.4">
+          <h4 id="name-details">
+<a href="#section-2.1.4" class="section-number selfRef">2.1.4. </a><a href="#name-details" class="section-name selfRef">details</a>
+          </h4>
+<p id="section-2.1.4-1">The <code>details</code> parameter's value is a sf-string containing additional information not captured anywhere else. This can include implementation-specific or deployment-specific information.<a href="#section-2.1.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.1.4-2">For example:<a href="#section-2.1.4-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-2.1.4-3">
+<pre>
 Proxy-Status: ExampleProxy; error="http_protocol_error";
               details="Malformed response header - space before colon"
-</pre></div></div></section></section><section id="register-param"><h3 id="rfc.section.2.2"><a href="#rfc.section.2.2">2.2.</a> <a href="#register-param">Defining New Proxy-Status Parameters</a></h3><div id="rfc.section.2.2.p.1"><p>New Proxy-Status Parameters can be defined by registering them in the HTTP Proxy-Status Parameters registry.</p></div><div id="rfc.section.2.2.p.2"><p>Registration requests are reviewed and approved by a Designated Expert, as per <a href="#RFC8126"><cite title="Guidelines for Writing an IANA Considerations Section in RFCs">[RFC8126]</cite></a>, Section 4.5. A specification document is appreciated, but not required.</p></div><div id="rfc.section.2.2.p.3" class="avoidbreakafter"><p>The Expert(s) should consider the following factors when evaluating requests:</p></div><div id="rfc.section.2.2.p.4"><ul><li>Community feedback</li><li>If the value is sufficiently well-defined</li><li>Generic parameters are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the parameter’s name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).</li></ul></div><div id="rfc.section.2.2.p.5" class="avoidbreakafter"><p>Registration requests should use the following template:</p></div><div id="rfc.section.2.2.p.6"><ul><li>Name: [a name for the Proxy-Status Parameter that matches key]</li><li>Description: [a description of the parameter semantics and value]</li><li>Reference: [to a specification defining this parameter]</li></ul></div><div id="rfc.section.2.2.p.7"><p>See the registry at <a href="https://iana.org/assignments/http-proxy-status">https://iana.org/assignments/http-proxy-status</a> for details on where to send registration requests.</p></div></section><section id="error-types"><h3 id="rfc.section.2.3"><a href="#rfc.section.2.3">2.3.</a> <a href="#error-types">Proxy Error Types</a></h3><div id="rfc.section.2.3.p.1"><p>This section lists the Proxy Error Types defined by this document. See <a href="#register-error" title="Defining New Proxy Error Types">Section 2.4</a> for information about defining new Proxy Error Types.</p></div><section id="dns-timeout"><h4 id="rfc.section.2.3.1"><a href="#rfc.section.2.3.1">2.3.1.</a> <a href="#dns-timeout">DNS Timeout</a></h4><div id="rfc.section.2.3.1.p.1"><ul><li>Name: dns_timeout</li><li>Description: The intermediary encountered a timeout when trying to find an IP address for the next hop hostname.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 504</li></ul></div></section><section id="dns-error"><h4 id="rfc.section.2.3.2"><a href="#rfc.section.2.3.2">2.3.2.</a> <a href="#dns-error">DNS Error</a></h4><div id="rfc.section.2.3.2.p.1"><ul><li>Name: dns_error</li><li>Description: The intermediary encountered a DNS error when trying to find an IP address for the next hop hostname.</li><li>Extra Parameters: <ul><li>rcode: A sf-string conveying the DNS RCODE that indicates the error type. See <a href="#RFC8499"><cite title="DNS Terminology">[RFC8499]</cite></a>, Section 3.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="destination-not-found"><h4 id="rfc.section.2.3.3"><a href="#rfc.section.2.3.3">2.3.3.</a> <a href="#destination-not-found">Destination Not Found</a></h4><div id="rfc.section.2.3.3.p.1"><ul><li>Name: destination_not_found</li><li>Description: The intermediary cannot determine the appropriate next hop to use for this request; for example, it may not be configured. Note that this error is specific to gateways, which typically require specific configuration to identify the “backend” server; forward proxies use in-band information to identify the origin server.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 500</li></ul></div></section><section id="destination-unavailable"><h4 id="rfc.section.2.3.4"><a href="#rfc.section.2.3.4">2.3.4.</a> <a href="#destination-unavailable">Destination Unavailable</a></h4><div id="rfc.section.2.3.4.p.1"><ul><li>Name: destination_unavailable</li><li>Description: The intermediary considers the next hop to be unavailable; e.g., recent attempts to communicate with it may have failed, or a health check may indicate that it is down.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 503</li></ul></div></section><section id="destination-ip-prohibited"><h4 id="rfc.section.2.3.5"><a href="#rfc.section.2.3.5">2.3.5.</a> <a href="#destination-ip-prohibited">Destination IP Prohibited</a></h4><div id="rfc.section.2.3.5.p.1"><ul><li>Name: destination_ip_prohibited</li><li>Description: The intermediary is configured to prohibit connections to the next hop IP address.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="destination-ip-unroutable"><h4 id="rfc.section.2.3.6"><a href="#rfc.section.2.3.6">2.3.6.</a> <a href="#destination-ip-unroutable">Destination IP Unroutable</a></h4><div id="rfc.section.2.3.6.p.1"><ul><li>Name: destination_ip_unroutable</li><li>Description: The intermediary cannot find a route to the next hop IP address.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="connection-refused"><h4 id="rfc.section.2.3.7"><a href="#rfc.section.2.3.7">2.3.7.</a> <a href="#connection-refused">Connection Refused</a></h4><div id="rfc.section.2.3.7.p.1"><ul><li>Name: connection_refused</li><li>Description: The intermediary’s connection to the next hop was refused.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="connection-terminated"><h4 id="rfc.section.2.3.8"><a href="#rfc.section.2.3.8">2.3.8.</a> <a href="#connection-terminated">Connection Terminated</a></h4><div id="rfc.section.2.3.8.p.1"><ul><li>Name: connection_terminated</li><li>Description: The intermediary’s connection to the next hop was closed before any part of the response was received. If some part was received, see http_response_incomplete.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="connection-timeout"><h4 id="rfc.section.2.3.9"><a href="#rfc.section.2.3.9">2.3.9.</a> <a href="#connection-timeout">Connection Timeout</a></h4><div id="rfc.section.2.3.9.p.1"><ul><li>Name: connection_timeout</li><li>Description: The intermediary’s attempt to open a connection to the next hop timed out.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 504</li></ul></div></section><section id="connection-read-timeout"><h4 id="rfc.section.2.3.10"><a href="#rfc.section.2.3.10">2.3.10.</a> <a href="#connection-read-timeout">Connection Read Timeout</a></h4><div id="rfc.section.2.3.10.p.1"><ul><li>Name: connection_read_timeout</li><li>Description: The intermediary was expecting data on a connection (e.g., part of a response), but did not receive any new data in a configured time limit.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 504</li></ul></div></section><section id="connection-write-timeout"><h4 id="rfc.section.2.3.11"><a href="#rfc.section.2.3.11">2.3.11.</a> <a href="#connection-write-timeout">Connection Write Timeout</a></h4><div id="rfc.section.2.3.11.p.1"><ul><li>Name: connection_write_timeout</li><li>Description: The intermediary was attempting to write data to a connection, but was not able to (e.g., because its buffers were full).</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 504</li></ul></div></section><section id="connection-limit-reached"><h4 id="rfc.section.2.3.12"><a href="#rfc.section.2.3.12">2.3.12.</a> <a href="#connection-limit-reached">Connection Limit Reached</a></h4><div id="rfc.section.2.3.12.p.1"><ul><li>Name: connnection_limit_reached</li><li>Description: The intermediary is configured to limit the number of connections it has to the next hop, and that limit has been passed.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 503</li></ul></div></section><section id="tls-protocol-error"><h4 id="rfc.section.2.3.13"><a href="#rfc.section.2.3.13">2.3.13.</a> <a href="#tls-protocol-error">TLS Protocol Error</a></h4><div id="rfc.section.2.3.13.p.1"><ul><li>Name: tls_protocol_error</li><li>Description: The intermediary encountered a TLS error when communicating with the next hop, either during handshake or afterwards.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div><div id="rfc.section.2.3.13.p.2"><p>Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).</p></div></section><section id="tls-certificate-error"><h4 id="rfc.section.2.3.14"><a href="#rfc.section.2.3.14">2.3.14.</a> <a href="#tls-certificate-error">TLS Certificate Error</a></h4><div id="rfc.section.2.3.14.p.1"><ul><li>Name: tls_certificate_error</li><li>Description: The intermediary encountered an error when verifying the certificate presented by the next hop.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div><div id="rfc.section.2.3.14.p.2"><p>Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).</p></div></section><section id="tls-alert-received"><h4 id="rfc.section.2.3.15"><a href="#rfc.section.2.3.15">2.3.15.</a> <a href="#tls-alert-received">TLS Alert Received</a></h4><div id="rfc.section.2.3.15.p.1"><ul><li>Name: tls_alert_received</li><li>Description: The intermediary received a TLS alert from the next hop.</li><li>Extra Parameters: <ul><li>alert_message: a sf-token containing the applicable description string from the TLS Alerts registry.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-request-error"><h4 id="rfc.section.2.3.16"><a href="#rfc.section.2.3.16">2.3.16.</a> <a href="#http-request-error">HTTP Request Error</a></h4><div id="rfc.section.2.3.16.p.1"><ul><li>Name: http_request_error</li><li>Description: The intermediary is generating a client (4xx) response on the origin’s behalf. Applicable status codes include (but are not limited to) 400, 403, 405, 406, 408, 411, 413, 414, 415, 416, 417, 429.</li><li>Extra Parameters: <ul><li>status_code: a sf-integer containing the generated status code.</li><li>status_phrase: a sf-string containing the generated status phrase.</li></ul></li><li>Recommended HTTP status code: The applicable 4xx status code</li></ul></div><div id="rfc.section.2.3.16.p.2"><p>This type helps distinguish between responses generated by intermediaries from those generated by the origin.</p></div></section><section id="http-request-denied"><h4 id="rfc.section.2.3.17"><a href="#rfc.section.2.3.17">2.3.17.</a> <a href="#http-request-denied">HTTP Request Denied</a></h4><div id="rfc.section.2.3.17.p.1"><ul><li>Name: http_request_denied</li><li>Description: The intermediary rejected the HTTP request based on its configuration and/or policy settings. The request wasn’t forwarded to the next hop.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 403</li></ul></div></section><section id="http-incomplete-response"><h4 id="rfc.section.2.3.18"><a href="#rfc.section.2.3.18">2.3.18.</a> <a href="#http-incomplete-response">HTTP Incomplete Response</a></h4><div id="rfc.section.2.3.18.p.1"><ul><li>Name: http_response_incomplete</li><li>Description: The intermediary received an incomplete response to the request from the next hop.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-response-header-block-too-large"><h4 id="rfc.section.2.3.19"><a href="#rfc.section.2.3.19">2.3.19.</a> <a href="#http-response-header-block-too-large">HTTP Response Header Block Too Large</a></h4><div id="rfc.section.2.3.19.p.1"><ul><li>Name: http_response_header_block_size</li><li>Description: The intermediary received a response to the request whose header block was considered too large.</li><li>Extra Parameters: <ul><li>header_block_size: a sf-integer indicating how large the headers received were. Note that they might not be complete; i.e., the intermediary may have discarded or refused additional data.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-response-header-too-large"><h4 id="rfc.section.2.3.20"><a href="#rfc.section.2.3.20">2.3.20.</a> <a href="#http-response-header-too-large">HTTP Response Header Too Large</a></h4><div id="rfc.section.2.3.20.p.1"><ul><li>Name: http_response_header_size</li><li>Description: The intermediary received a response to the request containing an individual header line that was considered too large.</li><li>Extra Parameters: <ul><li>header_name: a sf-string indicating the name of the header that triggered the error.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-response-body-too-large"><h4 id="rfc.section.2.3.21"><a href="#rfc.section.2.3.21">2.3.21.</a> <a href="#http-response-body-too-large">HTTP Response Body Too Large</a></h4><div id="rfc.section.2.3.21.p.1"><ul><li>Name: http_response_body_size</li><li>Description: The intermediary received a response to the request whose body was considered too large.</li><li>Extra Parameters: <ul><li>body_size: a sf-integer indicating how large the body received was. Note that it may not have been complete; i.e., the intermediary may have discarded or refused additional data.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-response-transfer-coding-error"><h4 id="rfc.section.2.3.22"><a href="#rfc.section.2.3.22">2.3.22.</a> <a href="#http-response-transfer-coding-error">HTTP Response Transfer-Coding Error</a></h4><div id="rfc.section.2.3.22.p.1"><ul><li>Name: http_response_transfer_coding</li><li>Description: The intermediary encountered an error decoding the transfer-coding of the response.</li><li>Extra Parameters: <ul><li>coding: a sf-token containing the specific coding that caused the error.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-response-content-coding-error"><h4 id="rfc.section.2.3.23"><a href="#rfc.section.2.3.23">2.3.23.</a> <a href="#http-response-content-coding-error">HTTP Response Content-Coding Error</a></h4><div id="rfc.section.2.3.23.p.1"><ul><li>Name: http_response_content_coding</li><li>Description: The intermediary encountered an error decoding the content-coding of the response.</li><li>Extra Parameters: <ul><li>coding: a sf-token containing the specific coding that caused the error.</li></ul></li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-response-timeout"><h4 id="rfc.section.2.3.24"><a href="#rfc.section.2.3.24">2.3.24.</a> <a href="#http-response-timeout">HTTP Response Timeout</a></h4><div id="rfc.section.2.3.24.p.1"><ul><li>Name: http_response_timeout</li><li>Description: The intermediary reached a configured time limit waiting for the complete response.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 504</li></ul></div></section><section id="http-upgrade-failed"><h4 id="rfc.section.2.3.25"><a href="#rfc.section.2.3.25">2.3.25.</a> <a href="#http-upgrade-failed">HTTP Upgrade Failed</a></h4><div id="rfc.section.2.3.25.p.1"><ul><li>Name: http_upgrade_failed</li><li>Description: The HTTP Upgrade between the intermediary and the next hop failed.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section><section id="http-protocol-error"><h4 id="rfc.section.2.3.26"><a href="#rfc.section.2.3.26">2.3.26.</a> <a href="#http-protocol-error">HTTP Protocol Error</a></h4><div id="rfc.section.2.3.26.p.1"><ul><li>Name: http_protocol_error</li><li>Description: The intermediary encountered a HTTP protocol error when communicating with the next hop. This error should only be used when a more specific one is not defined.</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div><div id="rfc.section.2.3.26.p.2"><p>Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).</p></div></section><section id="proxy-internal-response"><h4 id="rfc.section.2.3.27"><a href="#rfc.section.2.3.27">2.3.27.</a> <a href="#proxy-internal-response">Proxy Internal Response</a></h4><div id="rfc.section.2.3.27.p.1" class="avoidbreakafter"><ul><li>Name: proxy_internal_response</li><li>Description: The intermediary generated the response locally, without attempting to connect to the next hop (e.g. in response to a request to a debug endpoint terminated at the intermediary).</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code:</li></ul></div></section><section id="proxy-internal-error"><h4 id="rfc.section.2.3.28"><a href="#rfc.section.2.3.28">2.3.28.</a> <a href="#proxy-internal-error">Proxy Internal Error</a></h4><div id="rfc.section.2.3.28.p.1"><ul><li>Name: proxy_internal_error</li><li>Description: The intermediary encountered an internal error unrelated to the origin.</li><li>Extra Parameters: None</li><li>Recommended HTTP status code: 500</li></ul></div><div id="rfc.section.2.3.28.p.2"><p>Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).</p></div></section><section id="proxy-configuration-error"><h4 id="rfc.section.2.3.29"><a href="#rfc.section.2.3.29">2.3.29.</a> <a href="#proxy-configuration-error">Proxy Configuration Error</a></h4><div id="rfc.section.2.3.29.p.1"><ul><li>Name: proxy_configuration_error</li><li>Description: The intermediary encountered an error regarding its configuration.</li><li>Extra Parameters: None</li><li>Recommended HTTP status code: 500</li></ul></div><div id="rfc.section.2.3.29.p.2"><p>Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).</p></div></section><section id="proxy-loop-detected"><h4 id="rfc.section.2.3.30"><a href="#rfc.section.2.3.30">2.3.30.</a> <a href="#proxy-loop-detected">Proxy Loop Detected</a></h4><div id="rfc.section.2.3.30.p.1"><ul><li>Name: proxy_loop_detected</li><li>Description: The intermediary tried to forward the request to itself, or a loop has been detected using different means (e.g. <a href="#RFC8586"><cite title="Loop Detection in Content Delivery Networks (CDNs)">[RFC8586]</cite></a>).</li><li>Extra Parameters: None.</li><li>Recommended HTTP status code: 502</li></ul></div></section></section><section id="register-error"><h3 id="rfc.section.2.4"><a href="#rfc.section.2.4">2.4.</a> <a href="#register-error">Defining New Proxy Error Types</a></h3><div id="rfc.section.2.4.p.1"><p>New Proxy Error Types can be defined by registering them in the HTTP Proxy Error Types registry.</p></div><div id="rfc.section.2.4.p.2"><p>Registration requests are reviewed and approved by a Designated Expert, as per <a href="#RFC8126"><cite title="Guidelines for Writing an IANA Considerations Section in RFCs">[RFC8126]</cite></a>, Section 4.5. A specification document is appreciated, but not required.</p></div><div id="rfc.section.2.4.p.3" class="avoidbreakafter"><p>The Expert(s) should consider the following factors when evaluating requests:</p></div><div id="rfc.section.2.4.p.4"><ul><li>Community feedback</li><li>If the value is sufficiently well-defined</li><li>Generic types are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the types’s name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).</li></ul></div><div id="rfc.section.2.4.p.5" class="avoidbreakafter"><p>Registration requests should use the following template:</p></div><div id="rfc.section.2.4.p.6"><ul><li>Name: [a name for the Proxy Error Type that matches sf-token]</li><li>Description: [a description of the conditions that generate the Proxy Error Type]</li><li>Extra Parameters: [zero or more optional parameters, along with their allowable type(s)]</li><li>Recommended HTTP status code: [the appropriate HTTP status code for this entry]</li></ul></div><div id="rfc.section.2.4.p.7"><p>See the registry at <a href="https://iana.org/assignments/http-proxy-status">https://iana.org/assignments/http-proxy-status</a> for details on where to send registration requests.</p></div></section></section><hr class="noprint"><section id="iana-considerations"><h2 id="rfc.section.3" class="np"><a href="#rfc.section.3">3.</a> <a href="#iana-considerations">IANA Considerations</a></h2><div id="rfc.section.3.p.1"><p>Upon publication, please create the HTTP Proxy-Status Parameters registry and the HTTP Proxy Error Types registry at <a href="https://iana.org/assignments/http-proxy-statuses">https://iana.org/assignments/http-proxy-statuses</a> and populate them with the types defined in <a href="#params" title="Proxy-Status Parameters">Section 2.1</a> and <a href="#error-types" title="Proxy Error Types">Section 2.3</a> respectively; see <a href="#register-param" title="Defining New Proxy-Status Parameters">Section 2.2</a> and <a href="#register-error" title="Defining New Proxy Error Types">Section 2.4</a> for its associated procedures.</p></div></section><hr class="noprint"><section id="security"><h2 id="rfc.section.4" class="np"><a href="#rfc.section.4">4.</a> <a href="#security">Security Considerations</a></h2><div id="rfc.section.4.p.1"><p>One of the primary security concerns when using Proxy-Status is leaking information that might aid an attacker. For example, information about the intermediary’s configuration and back-end topology can be exposed.</p></div><div id="rfc.section.4.p.2"><p>As a result, care needs to be taken when deciding to generate a Proxy-Status field. Note that intermediaries are not required to generate a Proxy-Status field in any response, and can conditionally generate them based upon request attributes (e.g., authentication tokens, IP address).</p></div><div id="rfc.section.4.p.3"><p>Likewise, generation of all parameters is optional.</p></div></section><hr class="noprint"><section id="rfc.references" class="np"><h2 id="rfc.section.5"><a href="#rfc.section.5">5.</a> References</h2><section class="np"><div id="rfc.references.1"><h3 id="rfc.section.5.1"><a href="#rfc.section.5.1">5.1.</a> Normative References</h3><dl class="reference"><dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt><dd>Nottingham, M. and P. Kamp, “<a href="https://tools.ietf.org/html/draft-ietf-httpbis-header-structure-19">Structured Field Values for HTTP</a>”, Internet-Draft draft-ietf-httpbis-header-structure-19 (<a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-header-structure">work in progress</a>), June 2020.</dd><dt id="RFC2119">[RFC2119]</dt><dd>Bradner, S., “<a href="https://www.rfc-editor.org/rfc/rfc2119.html">Key words for use in RFCs to Indicate Requirement Levels</a>”, BCP 14, RFC 2119, <a href="https://dx.doi.org/10.17487/RFC2119">DOI 10.17487/RFC2119</a>, March 1997, &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.</dd><dt id="RFC7301">[RFC7301]</dt><dd>Friedl, S., Popov, A., Langley, A., and E. Stephan, “<a href="https://www.rfc-editor.org/rfc/rfc7301.html">Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension</a>”, RFC 7301, <a href="https://dx.doi.org/10.17487/RFC7301">DOI 10.17487/RFC7301</a>, July 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7301">https://www.rfc-editor.org/info/rfc7301</a>&gt;.</dd><dt id="RFC8126">[RFC8126]</dt><dd>Cotton, M., Leiba, B., and T. Narten, “<a href="https://www.rfc-editor.org/rfc/rfc8126.html">Guidelines for Writing an IANA Considerations Section in RFCs</a>”, BCP 26, RFC 8126, <a href="https://dx.doi.org/10.17487/RFC8126">DOI 10.17487/RFC8126</a>, June 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;.</dd><dt id="RFC8174">[RFC8174]</dt><dd>Leiba, B., “<a href="https://www.rfc-editor.org/rfc/rfc8174.html">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>”, BCP 14, RFC 8174, <a href="https://dx.doi.org/10.17487/RFC8174">DOI 10.17487/RFC8174</a>, May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.</dd><dt id="RFC8499">[RFC8499]</dt><dd>Hoffman, P., Sullivan, A., and K. Fujiwara, “<a href="https://www.rfc-editor.org/rfc/rfc8499.html">DNS Terminology</a>”, BCP 219, RFC 8499, <a href="https://dx.doi.org/10.17487/RFC8499">DOI 10.17487/RFC8499</a>, January 2019, &lt;<a href="https://www.rfc-editor.org/info/rfc8499">https://www.rfc-editor.org/info/rfc8499</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.5.2"><a href="#rfc.section.5.2">5.2.</a> Informative References</h3><dl class="reference"><dt id="RFC8586">[RFC8586]</dt><dd>Ludin, S., Nottingham, M., and N. Sullivan, “<a href="https://www.rfc-editor.org/rfc/rfc8586.html">Loop Detection in Content Delivery Networks (CDNs)</a>”, RFC 8586, <a href="https://dx.doi.org/10.17487/RFC8586">DOI 10.17487/RFC8586</a>, April 2019, &lt;<a href="https://www.rfc-editor.org/info/rfc8586">https://www.rfc-editor.org/info/rfc8586</a>&gt;.</dd></dl></div></section></section><hr class="noprint"><section id="rfc.authors" class="np"><h2><a href="#rfc.authors">Authors' Addresses</a></h2><address><b>Mark Nottingham</b><br>Fastly<br>made in<br>Prahran, VIC<br>Australia<br>EMail: <a href="mailto:mnot@mnot.net">mnot@mnot.net</a><br>URI: <a href="https://www.mnot.net/">https://www.mnot.net/</a></address><address><b>Piotr Sikora</b><br>Google<br>EMail: <a href="mailto:piotrsikora@google.com">piotrsikora@google.com</a></address></section></body></html>
+</pre><a href="#section-2.1.4-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="register-param">
+<section id="section-2.2">
+        <h3 id="name-defining-new-proxy-status-p">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-defining-new-proxy-status-p" class="section-name selfRef">Defining New Proxy-Status Parameters</a>
+        </h3>
+<p id="section-2.2-1">New Proxy-Status Parameters can be defined by registering them in the HTTP Proxy-Status Parameters registry.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">Registration requests are reviewed and approved by a Designated Expert, as per <span>[<a href="#RFC8126" class="xref">RFC8126</a>]</span>, Section 4.5. A specification document is appreciated, but not required.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">The Expert(s) should consider the following factors when evaluating requests:<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-4.1">Community feedback<a href="#section-2.2-4.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-4.2">If the value is sufficiently well-defined<a href="#section-2.2-4.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-4.3">Generic parameters are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the parameter's name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).<a href="#section-2.2-4.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-2.2-5">Registration requests should use the following template:<a href="#section-2.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-6.1">Name: [a name for the Proxy-Status Parameter that matches key]<a href="#section-2.2-6.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-6.2">Description: [a description of the parameter semantics and value]<a href="#section-2.2-6.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.2-6.3">Reference: [to a specification defining this parameter]<a href="#section-2.2-6.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-2.2-7">See the registry at <a href="https://iana.org/assignments/http-proxy-status">https://iana.org/assignments/http-proxy-status</a> for details on where to send registration requests.<a href="#section-2.2-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="error-types">
+<section id="section-2.3">
+        <h3 id="name-proxy-error-types">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-proxy-error-types" class="section-name selfRef">Proxy Error Types</a>
+        </h3>
+<p id="section-2.3-1">This section lists the Proxy Error Types defined by this document. See <a href="#register-error" class="xref">Section 2.4</a> for information about defining new Proxy Error Types.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<div id="dns-timeout">
+<section id="section-2.3.1">
+          <h4 id="name-dns-timeout">
+<a href="#section-2.3.1" class="section-number selfRef">2.3.1. </a><a href="#name-dns-timeout" class="section-name selfRef">DNS Timeout</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.1-1.1">Name: dns_timeout<a href="#section-2.3.1-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.1-1.2">Description: The intermediary encountered a timeout when trying to find an IP address for the next hop hostname.<a href="#section-2.3.1-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.1-1.3">Extra Parameters: None.<a href="#section-2.3.1-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.1-1.4">Recommended HTTP status code: 504<a href="#section-2.3.1-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="dns-error">
+<section id="section-2.3.2">
+          <h4 id="name-dns-error">
+<a href="#section-2.3.2" class="section-number selfRef">2.3.2. </a><a href="#name-dns-error" class="section-name selfRef">DNS Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.2-1.1">Name: dns_error<a href="#section-2.3.2-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.2-1.2">Description: The intermediary encountered a DNS error when trying to find an IP address for the next hop hostname.<a href="#section-2.3.2-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.2-1.3">
+              <p id="section-2.3.2-1.3.1">Extra Parameters:<a href="#section-2.3.2-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.2-1.3.2.1">rcode: A sf-string conveying the DNS RCODE that indicates the error type. See <span>[<a href="#RFC8499" class="xref">RFC8499</a>]</span>, Section 3.<a href="#section-2.3.2-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.2-1.4">Recommended HTTP status code: 502<a href="#section-2.3.2-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="destination-not-found">
+<section id="section-2.3.3">
+          <h4 id="name-destination-not-found">
+<a href="#section-2.3.3" class="section-number selfRef">2.3.3. </a><a href="#name-destination-not-found" class="section-name selfRef">Destination Not Found</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.3-1.1">Name: destination_not_found<a href="#section-2.3.3-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.3-1.2">Description: The intermediary cannot determine the appropriate next hop to use for this request; for example, it may not be configured. Note that this error is specific to gateways, which typically require specific configuration to identify the "backend" server; forward proxies use in-band information to identify the origin server.<a href="#section-2.3.3-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.3-1.3">Extra Parameters: None.<a href="#section-2.3.3-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.3-1.4">Recommended HTTP status code: 500<a href="#section-2.3.3-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="destination-unavailable">
+<section id="section-2.3.4">
+          <h4 id="name-destination-unavailable">
+<a href="#section-2.3.4" class="section-number selfRef">2.3.4. </a><a href="#name-destination-unavailable" class="section-name selfRef">Destination Unavailable</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.4-1.1">Name: destination_unavailable<a href="#section-2.3.4-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.4-1.2">Description: The intermediary considers the next hop to be unavailable; e.g., recent attempts to communicate with it may have failed, or a health check may indicate that it is down.<a href="#section-2.3.4-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.4-1.3">Extra Parameters: None.<a href="#section-2.3.4-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.4-1.4">Recommended HTTP status code: 503<a href="#section-2.3.4-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="destination-ip-prohibited">
+<section id="section-2.3.5">
+          <h4 id="name-destination-ip-prohibited">
+<a href="#section-2.3.5" class="section-number selfRef">2.3.5. </a><a href="#name-destination-ip-prohibited" class="section-name selfRef">Destination IP Prohibited</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.5-1.1">Name: destination_ip_prohibited<a href="#section-2.3.5-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.5-1.2">Description: The intermediary is configured to prohibit connections to the next hop IP address.<a href="#section-2.3.5-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.5-1.3">Extra Parameters: None.<a href="#section-2.3.5-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.5-1.4">Recommended HTTP status code: 502<a href="#section-2.3.5-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="destination-ip-unroutable">
+<section id="section-2.3.6">
+          <h4 id="name-destination-ip-unroutable">
+<a href="#section-2.3.6" class="section-number selfRef">2.3.6. </a><a href="#name-destination-ip-unroutable" class="section-name selfRef">Destination IP Unroutable</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.6-1.1">Name: destination_ip_unroutable<a href="#section-2.3.6-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.6-1.2">Description: The intermediary cannot find a route to the next hop IP address.<a href="#section-2.3.6-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.6-1.3">Extra Parameters: None.<a href="#section-2.3.6-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.6-1.4">Recommended HTTP status code: 502<a href="#section-2.3.6-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="connection-refused">
+<section id="section-2.3.7">
+          <h4 id="name-connection-refused">
+<a href="#section-2.3.7" class="section-number selfRef">2.3.7. </a><a href="#name-connection-refused" class="section-name selfRef">Connection Refused</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.7-1.1">Name: connection_refused<a href="#section-2.3.7-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.7-1.2">Description: The intermediary's connection to the next hop was refused.<a href="#section-2.3.7-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.7-1.3">Extra Parameters: None.<a href="#section-2.3.7-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.7-1.4">Recommended HTTP status code: 502<a href="#section-2.3.7-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="connection-terminated">
+<section id="section-2.3.8">
+          <h4 id="name-connection-terminated">
+<a href="#section-2.3.8" class="section-number selfRef">2.3.8. </a><a href="#name-connection-terminated" class="section-name selfRef">Connection Terminated</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.8-1.1">Name: connection_terminated<a href="#section-2.3.8-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.8-1.2">Description: The intermediary's connection to the next hop was closed before any part of the response was received. If some part was received, see http_response_incomplete.<a href="#section-2.3.8-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.8-1.3">Extra Parameters: None.<a href="#section-2.3.8-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.8-1.4">Recommended HTTP status code: 502<a href="#section-2.3.8-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="connection-timeout">
+<section id="section-2.3.9">
+          <h4 id="name-connection-timeout">
+<a href="#section-2.3.9" class="section-number selfRef">2.3.9. </a><a href="#name-connection-timeout" class="section-name selfRef">Connection Timeout</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.9-1.1">Name: connection_timeout<a href="#section-2.3.9-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.9-1.2">Description: The intermediary's attempt to open a connection to the next hop timed out.<a href="#section-2.3.9-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.9-1.3">Extra Parameters: None.<a href="#section-2.3.9-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.9-1.4">Recommended HTTP status code: 504<a href="#section-2.3.9-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="connection-read-timeout">
+<section id="section-2.3.10">
+          <h4 id="name-connection-read-timeout">
+<a href="#section-2.3.10" class="section-number selfRef">2.3.10. </a><a href="#name-connection-read-timeout" class="section-name selfRef">Connection Read Timeout</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.10-1.1">Name: connection_read_timeout<a href="#section-2.3.10-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.10-1.2">Description: The intermediary was expecting data on a connection (e.g., part of a response), but did not receive any new data in a configured time limit.<a href="#section-2.3.10-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.10-1.3">Extra Parameters: None.<a href="#section-2.3.10-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.10-1.4">Recommended HTTP status code: 504<a href="#section-2.3.10-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="connection-write-timeout">
+<section id="section-2.3.11">
+          <h4 id="name-connection-write-timeout">
+<a href="#section-2.3.11" class="section-number selfRef">2.3.11. </a><a href="#name-connection-write-timeout" class="section-name selfRef">Connection Write Timeout</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.11-1.1">Name: connection_write_timeout<a href="#section-2.3.11-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.11-1.2">Description: The intermediary was attempting to write data to a connection, but was not able to (e.g., because its buffers were full).<a href="#section-2.3.11-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.11-1.3">Extra Parameters: None.<a href="#section-2.3.11-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.11-1.4">Recommended HTTP status code: 504<a href="#section-2.3.11-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="connection-limit-reached">
+<section id="section-2.3.12">
+          <h4 id="name-connection-limit-reached">
+<a href="#section-2.3.12" class="section-number selfRef">2.3.12. </a><a href="#name-connection-limit-reached" class="section-name selfRef">Connection Limit Reached</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.12-1.1">Name: connnection_limit_reached<a href="#section-2.3.12-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.12-1.2">Description: The intermediary is configured to limit the number of connections it has to the next hop, and that limit has been passed.<a href="#section-2.3.12-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.12-1.3">Extra Parameters: None.<a href="#section-2.3.12-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.12-1.4">Recommended HTTP status code: 503<a href="#section-2.3.12-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="tls-protocol-error">
+<section id="section-2.3.13">
+          <h4 id="name-tls-protocol-error">
+<a href="#section-2.3.13" class="section-number selfRef">2.3.13. </a><a href="#name-tls-protocol-error" class="section-name selfRef">TLS Protocol Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.13-1.1">Name: tls_protocol_error<a href="#section-2.3.13-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.13-1.2">Description: The intermediary encountered a TLS error when communicating with the next hop, either during handshake or afterwards.<a href="#section-2.3.13-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.13-1.3">Extra Parameters: None.<a href="#section-2.3.13-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.13-1.4">Recommended HTTP status code: 502<a href="#section-2.3.13-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.13-2">Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).<a href="#section-2.3.13-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="tls-certificate-error">
+<section id="section-2.3.14">
+          <h4 id="name-tls-certificate-error">
+<a href="#section-2.3.14" class="section-number selfRef">2.3.14. </a><a href="#name-tls-certificate-error" class="section-name selfRef">TLS Certificate Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.14-1.1">Name: tls_certificate_error<a href="#section-2.3.14-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.14-1.2">Description: The intermediary encountered an error when verifying the certificate presented by the next hop.<a href="#section-2.3.14-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.14-1.3">Extra Parameters: None.<a href="#section-2.3.14-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.14-1.4">Recommended HTTP status code: 502<a href="#section-2.3.14-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.14-2">Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).<a href="#section-2.3.14-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="tls-alert-received">
+<section id="section-2.3.15">
+          <h4 id="name-tls-alert-received">
+<a href="#section-2.3.15" class="section-number selfRef">2.3.15. </a><a href="#name-tls-alert-received" class="section-name selfRef">TLS Alert Received</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.15-1.1">Name: tls_alert_received<a href="#section-2.3.15-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.15-1.2">Description: The intermediary received a TLS alert from the next hop.<a href="#section-2.3.15-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.15-1.3">
+              <p id="section-2.3.15-1.3.1">Extra Parameters:<a href="#section-2.3.15-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.15-1.3.2.1">alert_message: a sf-token containing the applicable description string from the TLS Alerts registry.<a href="#section-2.3.15-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.15-1.4">Recommended HTTP status code: 502<a href="#section-2.3.15-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-request-error">
+<section id="section-2.3.16">
+          <h4 id="name-http-request-error">
+<a href="#section-2.3.16" class="section-number selfRef">2.3.16. </a><a href="#name-http-request-error" class="section-name selfRef">HTTP Request Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.16-1.1">Name: http_request_error<a href="#section-2.3.16-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.16-1.2">Description: The intermediary is generating a client (4xx) response on the origin's behalf. Applicable status codes include (but are not limited to) 400, 403, 405, 406, 408, 411, 413, 414, 415, 416, 417, 429.<a href="#section-2.3.16-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.16-1.3">
+              <p id="section-2.3.16-1.3.1">Extra Parameters:<a href="#section-2.3.16-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.16-1.3.2.1">status_code: a sf-integer containing the generated status code.<a href="#section-2.3.16-1.3.2.1" class="pilcrow">¶</a>
+</li>
+                <li class="normal" id="section-2.3.16-1.3.2.2">status_phrase: a sf-string containing the generated status phrase.<a href="#section-2.3.16-1.3.2.2" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.16-1.4">Recommended HTTP status code: The applicable 4xx status code<a href="#section-2.3.16-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.16-2">This type helps distinguish between responses generated by intermediaries from those generated by the origin.<a href="#section-2.3.16-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="http-request-denied">
+<section id="section-2.3.17">
+          <h4 id="name-http-request-denied">
+<a href="#section-2.3.17" class="section-number selfRef">2.3.17. </a><a href="#name-http-request-denied" class="section-name selfRef">HTTP Request Denied</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.17-1.1">Name: http_request_denied<a href="#section-2.3.17-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.17-1.2">Description: The intermediary rejected the HTTP request based on its configuration and/or policy settings. The request wasn't forwarded to the next hop.<a href="#section-2.3.17-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.17-1.3">Extra Parameters: None.<a href="#section-2.3.17-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.17-1.4">Recommended HTTP status code: 403<a href="#section-2.3.17-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-incomplete-response">
+<section id="section-2.3.18">
+          <h4 id="name-http-incomplete-response">
+<a href="#section-2.3.18" class="section-number selfRef">2.3.18. </a><a href="#name-http-incomplete-response" class="section-name selfRef">HTTP Incomplete Response</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.18-1.1">Name: http_response_incomplete<a href="#section-2.3.18-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.18-1.2">Description: The intermediary received an incomplete response to the request from the next hop.<a href="#section-2.3.18-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.18-1.3">Extra Parameters: None.<a href="#section-2.3.18-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.18-1.4">Recommended HTTP status code: 502<a href="#section-2.3.18-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-response-header-block-too-large">
+<section id="section-2.3.19">
+          <h4 id="name-http-response-header-block-">
+<a href="#section-2.3.19" class="section-number selfRef">2.3.19. </a><a href="#name-http-response-header-block-" class="section-name selfRef">HTTP Response Header Block Too Large</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.19-1.1">Name: http_response_header_block_size<a href="#section-2.3.19-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.19-1.2">Description: The intermediary received a response to the request whose header block was considered too large.<a href="#section-2.3.19-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.19-1.3">
+              <p id="section-2.3.19-1.3.1">Extra Parameters:<a href="#section-2.3.19-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.19-1.3.2.1">header_block_size: a sf-integer indicating how large the headers received were. Note that they might not be complete; i.e., the intermediary may have discarded or refused additional data.<a href="#section-2.3.19-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.19-1.4">Recommended HTTP status code: 502<a href="#section-2.3.19-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-response-header-too-large">
+<section id="section-2.3.20">
+          <h4 id="name-http-response-header-too-la">
+<a href="#section-2.3.20" class="section-number selfRef">2.3.20. </a><a href="#name-http-response-header-too-la" class="section-name selfRef">HTTP Response Header Too Large</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.20-1.1">Name: http_response_header_size<a href="#section-2.3.20-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.20-1.2">Description: The intermediary received a response to the request containing an individual header line that was considered too large.<a href="#section-2.3.20-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.20-1.3">
+              <p id="section-2.3.20-1.3.1">Extra Parameters:<a href="#section-2.3.20-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.20-1.3.2.1">header_name: a sf-string indicating the name of the header that triggered the error.<a href="#section-2.3.20-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.20-1.4">Recommended HTTP status code: 502<a href="#section-2.3.20-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-response-body-too-large">
+<section id="section-2.3.21">
+          <h4 id="name-http-response-body-too-larg">
+<a href="#section-2.3.21" class="section-number selfRef">2.3.21. </a><a href="#name-http-response-body-too-larg" class="section-name selfRef">HTTP Response Body Too Large</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.21-1.1">Name: http_response_body_size<a href="#section-2.3.21-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.21-1.2">Description: The intermediary received a response to the request whose body was considered too large.<a href="#section-2.3.21-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.21-1.3">
+              <p id="section-2.3.21-1.3.1">Extra Parameters:<a href="#section-2.3.21-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.21-1.3.2.1">body_size: a sf-integer indicating how large the body received was. Note that it may not have been complete; i.e., the intermediary may have discarded or refused additional data.<a href="#section-2.3.21-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.21-1.4">Recommended HTTP status code: 502<a href="#section-2.3.21-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-response-transfer-coding-error">
+<section id="section-2.3.22">
+          <h4 id="name-http-response-transfer-codi">
+<a href="#section-2.3.22" class="section-number selfRef">2.3.22. </a><a href="#name-http-response-transfer-codi" class="section-name selfRef">HTTP Response Transfer-Coding Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.22-1.1">Name: http_response_transfer_coding<a href="#section-2.3.22-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.22-1.2">Description: The intermediary encountered an error decoding the transfer-coding of the response.<a href="#section-2.3.22-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.22-1.3">
+              <p id="section-2.3.22-1.3.1">Extra Parameters:<a href="#section-2.3.22-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.22-1.3.2.1">coding: a sf-token containing the specific coding that caused the error.<a href="#section-2.3.22-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.22-1.4">Recommended HTTP status code: 502<a href="#section-2.3.22-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-response-content-coding-error">
+<section id="section-2.3.23">
+          <h4 id="name-http-response-content-codin">
+<a href="#section-2.3.23" class="section-number selfRef">2.3.23. </a><a href="#name-http-response-content-codin" class="section-name selfRef">HTTP Response Content-Coding Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.23-1.1">Name: http_response_content_coding<a href="#section-2.3.23-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.23-1.2">Description: The intermediary encountered an error decoding the content-coding of the response.<a href="#section-2.3.23-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.23-1.3">
+              <p id="section-2.3.23-1.3.1">Extra Parameters:<a href="#section-2.3.23-1.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.3.23-1.3.2.1">coding: a sf-token containing the specific coding that caused the error.<a href="#section-2.3.23-1.3.2.1" class="pilcrow">¶</a>
+</li>
+              </ul>
+</li>
+            <li class="normal" id="section-2.3.23-1.4">Recommended HTTP status code: 502<a href="#section-2.3.23-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-response-timeout">
+<section id="section-2.3.24">
+          <h4 id="name-http-response-timeout">
+<a href="#section-2.3.24" class="section-number selfRef">2.3.24. </a><a href="#name-http-response-timeout" class="section-name selfRef">HTTP Response Timeout</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.24-1.1">Name: http_response_timeout<a href="#section-2.3.24-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.24-1.2">Description: The intermediary reached a configured time limit waiting for the complete response.<a href="#section-2.3.24-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.24-1.3">Extra Parameters: None.<a href="#section-2.3.24-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.24-1.4">Recommended HTTP status code: 504<a href="#section-2.3.24-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-upgrade-failed">
+<section id="section-2.3.25">
+          <h4 id="name-http-upgrade-failed">
+<a href="#section-2.3.25" class="section-number selfRef">2.3.25. </a><a href="#name-http-upgrade-failed" class="section-name selfRef">HTTP Upgrade Failed</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.25-1.1">Name: http_upgrade_failed<a href="#section-2.3.25-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.25-1.2">Description: The HTTP Upgrade between the intermediary and the next hop failed.<a href="#section-2.3.25-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.25-1.3">Extra Parameters: None.<a href="#section-2.3.25-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.25-1.4">Recommended HTTP status code: 502<a href="#section-2.3.25-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="http-protocol-error">
+<section id="section-2.3.26">
+          <h4 id="name-http-protocol-error">
+<a href="#section-2.3.26" class="section-number selfRef">2.3.26. </a><a href="#name-http-protocol-error" class="section-name selfRef">HTTP Protocol Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.26-1.1">Name: http_protocol_error<a href="#section-2.3.26-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.26-1.2">Description: The intermediary encountered a HTTP protocol error when communicating with the next hop. This error should only be used when a more specific one is not defined.<a href="#section-2.3.26-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.26-1.3">Extra Parameters: None.<a href="#section-2.3.26-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.26-1.4">Recommended HTTP status code: 502<a href="#section-2.3.26-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.26-2">Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).<a href="#section-2.3.26-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proxy-internal-response">
+<section id="section-2.3.27">
+          <h4 id="name-proxy-internal-response">
+<a href="#section-2.3.27" class="section-number selfRef">2.3.27. </a><a href="#name-proxy-internal-response" class="section-name selfRef">Proxy Internal Response</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.27-1.1">Name: proxy_internal_response<a href="#section-2.3.27-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.27-1.2">Description: The intermediary generated the response locally, without attempting to connect to the next hop (e.g. in response to a request to a debug endpoint terminated at the intermediary).<a href="#section-2.3.27-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.27-1.3">Extra Parameters: None.<a href="#section-2.3.27-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.27-1.4">Recommended HTTP status code:<a href="#section-2.3.27-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+<div id="proxy-internal-error">
+<section id="section-2.3.28">
+          <h4 id="name-proxy-internal-error">
+<a href="#section-2.3.28" class="section-number selfRef">2.3.28. </a><a href="#name-proxy-internal-error" class="section-name selfRef">Proxy Internal Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.28-1.1">Name: proxy_internal_error<a href="#section-2.3.28-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.28-1.2">Description: The intermediary encountered an internal error unrelated to the origin.<a href="#section-2.3.28-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.28-1.3">Extra Parameters: None<a href="#section-2.3.28-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.28-1.4">Recommended HTTP status code: 500<a href="#section-2.3.28-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.28-2">Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).<a href="#section-2.3.28-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proxy-configuration-error">
+<section id="section-2.3.29">
+          <h4 id="name-proxy-configuration-error">
+<a href="#section-2.3.29" class="section-number selfRef">2.3.29. </a><a href="#name-proxy-configuration-error" class="section-name selfRef">Proxy Configuration Error</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.29-1.1">Name: proxy_configuration_error<a href="#section-2.3.29-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.29-1.2">Description: The intermediary encountered an error regarding its configuration.<a href="#section-2.3.29-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.29-1.3">Extra Parameters: None<a href="#section-2.3.29-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.29-1.4">Recommended HTTP status code: 500<a href="#section-2.3.29-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.3.29-2">Note that additional information about the error can be recorded in the details parameter (as is the case for all errors).<a href="#section-2.3.29-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="proxy-loop-detected">
+<section id="section-2.3.30">
+          <h4 id="name-proxy-loop-detected">
+<a href="#section-2.3.30" class="section-number selfRef">2.3.30. </a><a href="#name-proxy-loop-detected" class="section-name selfRef">Proxy Loop Detected</a>
+          </h4>
+<ul class="normal">
+<li class="normal" id="section-2.3.30-1.1">Name: proxy_loop_detected<a href="#section-2.3.30-1.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.30-1.2">Description: The intermediary tried to forward the request to itself, or a loop has been detected using different means (e.g. <span>[<a href="#RFC8586" class="xref">RFC8586</a>]</span>).<a href="#section-2.3.30-1.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.30-1.3">Extra Parameters: None.<a href="#section-2.3.30-1.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.3.30-1.4">Recommended HTTP status code: 502<a href="#section-2.3.30-1.4" class="pilcrow">¶</a>
+</li>
+          </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="register-error">
+<section id="section-2.4">
+        <h3 id="name-defining-new-proxy-error-ty">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-defining-new-proxy-error-ty" class="section-name selfRef">Defining New Proxy Error Types</a>
+        </h3>
+<p id="section-2.4-1">New Proxy Error Types can be defined by registering them in the HTTP Proxy Error Types registry.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-2">Registration requests are reviewed and approved by a Designated Expert, as per <span>[<a href="#RFC8126" class="xref">RFC8126</a>]</span>, Section 4.5. A specification document is appreciated, but not required.<a href="#section-2.4-2" class="pilcrow">¶</a></p>
+<p id="section-2.4-3">The Expert(s) should consider the following factors when evaluating requests:<a href="#section-2.4-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.4-4.1">Community feedback<a href="#section-2.4-4.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.4-4.2">If the value is sufficiently well-defined<a href="#section-2.4-4.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.4-4.3">Generic types are preferred over vendor-specific, application-specific or deployment-specific values. If a generic value cannot be agreed upon in the community, the types's name should be correspondingly specific (e.g., with a prefix that identifies the vendor, application or deployment).<a href="#section-2.4-4.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-2.4-5">Registration requests should use the following template:<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.4-6.1">Name: [a name for the Proxy Error Type that matches sf-token]<a href="#section-2.4-6.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.4-6.2">Description: [a description of the conditions that generate the Proxy Error Type]<a href="#section-2.4-6.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.4-6.3">Extra Parameters: [zero or more optional parameters, along with their allowable type(s)]<a href="#section-2.4-6.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-2.4-6.4">Recommended HTTP status code: [the appropriate HTTP status code for this entry]<a href="#section-2.4-6.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-2.4-7">See the registry at <a href="https://iana.org/assignments/http-proxy-status">https://iana.org/assignments/http-proxy-status</a> for details on where to send registration requests.<a href="#section-2.4-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-3">
+      <h2 id="name-iana-considerations">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-3-1">Upon publication, please create the HTTP Proxy-Status Parameters registry and the HTTP Proxy Error Types registry at <a href="https://iana.org/assignments/http-proxy-statuses">https://iana.org/assignments/http-proxy-statuses</a> and populate them with the types defined in <a href="#params" class="xref">Section 2.1</a> and <a href="#error-types" class="xref">Section 2.3</a> respectively; see <a href="#register-param" class="xref">Section 2.2</a> and <a href="#register-error" class="xref">Section 2.4</a> for its associated procedures.<a href="#section-3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-4-1">One of the primary security concerns when using Proxy-Status is leaking information that might aid an attacker. For example, information about the intermediary's configuration and back-end topology can be exposed.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">As a result, care needs to be taken when deciding to generate a Proxy-Status field. Note that intermediaries are not required to generate a Proxy-Status field in any response, and can conditionally generate them based upon request attributes (e.g., authentication tokens, IP address).<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">Likewise, generation of all parameters is optional.<a href="#section-4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-5">
+      <h2 id="name-references">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-5.1">
+        <h3 id="name-normative-references">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span><span class="refAuthor"> and P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-header-structure-19</span>, <time datetime="2020-06-03" class="refDate">3 June 2020</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-httpbis-header-structure-19.txt">http://www.ietf.org/internet-drafts/draft-ietf-httpbis-header-structure-19.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7301">[RFC7301]</dt>
+        <dd>
+<span class="refAuthor">Friedl, S.</span><span class="refAuthor">, Popov, A.</span><span class="refAuthor">, Langley, A.</span><span class="refAuthor">, and E. Stephan</span>, <span class="refTitle">"Transport Layer Security (TLS) Application-Layer Protocol Negotiation Extension"</span>, <span class="seriesInfo">RFC 7301</span>, <span class="seriesInfo">DOI 10.17487/RFC7301</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7301">https://www.rfc-editor.org/info/rfc7301</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+        <dd>
+<span class="refAuthor">Cotton, M.</span><span class="refAuthor">, Leiba, B.</span><span class="refAuthor">, and T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8499">[RFC8499]</dt>
+      <dd>
+<span class="refAuthor">Hoffman, P.</span><span class="refAuthor">, Sullivan, A.</span><span class="refAuthor">, and K. Fujiwara</span>, <span class="refTitle">"DNS Terminology"</span>, <span class="seriesInfo">BCP 219</span>, <span class="seriesInfo">RFC 8499</span>, <span class="seriesInfo">DOI 10.17487/RFC8499</span>, <time datetime="2019-01" class="refDate">January 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8499">https://www.rfc-editor.org/info/rfc8499</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-5.2">
+        <h3 id="name-informative-references">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC8586">[RFC8586]</dt>
+      <dd>
+<span class="refAuthor">Ludin, S.</span><span class="refAuthor">, Nottingham, M.</span><span class="refAuthor">, and N. Sullivan</span>, <span class="refTitle">"Loop Detection in Content Delivery Networks (CDNs)"</span>, <span class="seriesInfo">RFC 8586</span>, <span class="seriesInfo">DOI 10.17487/RFC8586</span>, <time datetime="2019-04" class="refDate">April 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8586">https://www.rfc-editor.org/info/rfc8586</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="authors-addresses">
+<section id="section-appendix.a">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Mark Nottingham</span></div>
+<div dir="auto" class="left"><span class="org">Fastly</span></div>
+<div dir="auto" class="left"><span class="street-address">made in</span></div>
+<div dir="auto" class="left">
+<span class="locality">Prahran</span> <span class="region">VIC</span> </div>
+<div dir="auto" class="left"><span class="country-name">Australia</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mnot@mnot.net" class="email">mnot@mnot.net</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://www.mnot.net/" class="url">https://www.mnot.net/</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Piotr Sikora</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:piotrsikora@google.com" class="email">piotrsikora@google.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

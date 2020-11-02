@@ -1,257 +1,1602 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>HTTP Client Hints</title><script>
-function anchorRewrite() {
-  map = { };
-  if (window.location.hash.length >= 1) {
-    var fragid = window.location.hash.substr(1);
-    if (fragid) {
-      if (! document.getElementById(fragid)) {
-        var prefix = "rfc.";
-        var mapped = map[fragid];
-        if (mapped) {
-          window.location.hash = mapped;
-        } else if (fragid.indexOf("section-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(8);
-        } else if (fragid.indexOf("appendix-") == 0) {
-          window.location.hash = prefix + "section." + fragid.substring(9);
-        } else if (fragid.indexOf("s-") == 0) {
-          var postfix = fragid.substring(2);
-          if (postfix.startsWith("abstract")) {
-            window.location.hash = prefix + postfix;
-          } else if (postfix.startsWith("note-")) {
-            window.location.hash = prefix + "note." + postfix.substring(5);
-          } else {
-            window.location.hash = prefix + "section." + postfix;
-          }
-        } else if (fragid.indexOf("p-") == 0) {
-          var r = fragid.substring(2);
-          var p = r.indexOf("-");
-          if (p >= 0) {
-            window.location.hash = prefix + "section." + r.substring(0, p) + ".p." + r.substring(p + 1);
-          }
-        }
-      }
-    }  
-  }
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>HTTP Client Hints</title>
+<meta content="Ilya Grigorik" name="author">
+<meta content="Yoav Weiss" name="author">
+<meta content="
+       HTTP defines proactive content negotiation to allow servers to select the appropriate response for a given request, based upon the user agent's characteristics, as expressed in request headers. In practice, user agents are often unwilling to send those request headers, because it is not clear whether they will be used, and sending them impacts both performance and privacy. 
+       This document defines an Accept-CH response header that servers can use to advertise their use of request headers for proactive content negotiation, along with a set of guidelines for the creation of such headers, colloquially known as &quot;Client Hints.&quot; 
+    " name="description">
+<meta content="xml2rfc 3.2.1" name="generator">
+<meta content="Content Negotiation" name="keyword">
+<meta content="draft-ietf-httpbis-client-hints" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.2.1
+    Python 3.8.5
+    appdirs 1.4.4
+    ConfigArgParse 1.2.3
+    google-i18n-address 2.4.0
+    html5lib 1.1
+    intervaltree 3.0.2
+    Jinja2 2.11.2
+    kitchen 1.2.6
+    lxml 4.5.0
+    pycountry 19.8.18
+    pyflakes 2.1.1
+    PyYAML 5.3.1
+    requests 2.22.0
+    setuptools 45.2.0
+    six 1.14.0
+-->
+<link href="draft-ietf-httpbis-client-hints.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
+
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --small-font-size: 14.5px;
 }
-window.addEventListener('hashchange', anchorRewrite);
-window.addEventListener('DOMContentLoaded', anchorRewrite);
-</script><!--Specified as xml2rfc-ext-css-contents--><style>
 body {
-  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  color: #333;
-  font-size-adjust: 0.5;
-  line-height: 24px;
+  max-width: 600px;
   margin: 75px auto;
-  max-width: 624px;
   padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
 }
 
-.title, .filename, h1, h2, h3, h4, h5 {
-  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  font-size-adjust: 0.5;
-  font-weight: bold;
-  color: #333;
-  line-height: 100%;
-  margin: 1.2em 0 0.3em;
-}
-.title, #rfc\.title h1 { font-size: 32px; }
-h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
-h3, section h4, h4, section h5 { font-size: 16px; }
-h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
-  color: #333;
-}
-
-table {
-  margin-left: 0em;
-  border-collapse: collapse;
-}
-th {
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-td {
-  border-top: 1px solid #ddd;
-  vertical-align: top;
-}
-tr:nth-child(2n+1) > td,
-tr:nth-child(2n+1) > th {
-  background-color: #f9f9f9;
-}
-td.reference {
-  max-width: 200px;
-  border-top: none;
-  padding-right: 1em;
-}
-.right {
-  text-align: right;
-}
-
-
-table.header, table#rfc\.headerblock {
-  width: 100%;
-}
-table.header td, table#rfc\.headerblock td {
-  border: none;
-  background-color: transparent;
-  color: black;
-  padding: 0;
-}
-.filename {
-  display: block;
-  color: rgb(119, 119, 119);
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 100%;
-  margin: 10px 0 32px;
-}
-#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
-  font-size: 20px;
-  line-height: 28px;
-}
-
-samp, tt, code, pre, span.tt {
-  font-size: 13.5px;
-  font-family: Consolas, monospace;
-  font-size-adjust: none;
-}
-pre {
-  background-color: #eee;
-  border: 1px solid #ddd;
-  overflow-x: auto;
-  padding: 5px;
-  margin: 5px;
-}
-.figure, caption {
-  font-style: italic;
-  margin: 0 1.5em;
-  text-align: left;
-}
-
-address {
-  margin: 16px 2px;
-  line-height: 20px;
-}
-.vcard {
-  font-style: normal;
-}
-.vcardline {
-  display: block;
-}
-.vcardline .fn, address b {
-  font-weight: normal;
-}
-.vcardline .hidden {
+.ears {
   display: none;
 }
 
-dl {
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 26px;
+}
+h4, h5, h6 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
   margin-left: 1em;
 }
-dl.dl-horizontal: {
-  margin-left: 0;
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
 }
 dl > dt {
   float: left;
   margin-right: 1em;
 }
-dl.nohang > dt {
-  float: none;
-}
 dl > dd {
-  margin-bottom: .5em;
+  margin-bottom: .8em;
+  min-height: 1.3em;
 }
-dl.compact > dd {
+dl.compact > dd, .dlCompact > dd {
   margin-bottom: 0em;
 }
 dl > dd > dl {
   margin-top: 0.5em;
   margin-bottom: 0em;
 }
-ul.empty {
-  list-style-type: none;
-}
-ul.empty li {
-  margin-top: .5em;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid #eee;
-}
-hr.noprint {
+dd.break {
   display: none;
 }
 
-a {
+/* links */
+a, a[href].selfRef:hover {
   text-decoration: none;
 }
+a[href].selfRef {
+  color: var(--text-color);
+}
 a[href] {
-  color: #2a6496;
+  color: var(--link-color);
 }
 a[href]:hover {
-  background-color: #eee;
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
 }
 
-p, ol, ul, li {
-  padding: 0;
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
 }
-p {
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
   margin: 0.5em 0;
 }
-ol, ul {
-  margin: 0.2em 0 0.2em 2em;
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
 }
-li {
-  margin: 0.2em 0;
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
 }
-address {
-  font-style: normal;
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
 }
 
-ul.toc ul {
-  margin: 0 0 0 2em;
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
 }
-ul.toc li {
-  list-style: none;
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody > tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
   margin: 0;
 }
 
-@media screen and (min-width: 924px) {
-  body {
-    padding-right: 350px;
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  visibility: hidden;
+  user-select: none;
+}
+a.pilcrow[href] { color: #ddd; }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media screen {
+  :hover > a.pilcrow {
+    visibility: visible;
   }
-  body>ul.toc, body>#rfc\.toc {
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
     position: fixed;
     bottom: 0;
     right: 0;
-    right: calc(50vw - 500px);
-    width: 300px;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
     z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
     overflow: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
-  body>#rfc\.toc {
-    top: 55px;
+  #toc nav > ul  {
+    margin-bottom: 2em;
   }
-  body>ul.toc {
-    top: 100px;
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
   }
 
-  ul.toc {
-    margin: 0 0 0 4px;
-    font-size: 12px;
-    line-height: 20px;
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
   }
-  ul.toc ul {
-    margin-left: 1.2em;
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
   }
-}</style><link rel="Contents" href="#rfc.toc"><link rel="Author" href="#rfc.authors"><link rel="License" href="#rfc.copyrightnotice"><link rel="Chapter" title="1 Introduction" href="#rfc.section.1"><link rel="Chapter" title="2 Client Hint Request Header Fields" href="#rfc.section.2"><link rel="Chapter" title="3 Advertising Server Support" href="#rfc.section.3"><link rel="Chapter" title="4 Security Considerations" href="#rfc.section.4"><link rel="Chapter" title="5 Cost of Sending Hints" href="#rfc.section.5"><link rel="Chapter" title="6 IANA Considerations" href="#rfc.section.6"><link rel="Chapter" title="7 References" href="#rfc.section.7"><link rel="Appendix" title="A Changes" href="#rfc.section.A"><link rel="Appendix" title="Acknowledgements" href="#rfc.section.unnumbered-1"><meta name="viewport" content="initial-scale=1"><meta name="generator" content="http://greenbytes.de/tech/webdav/rfc2629.xslt, Revision 1.1327, 2020/09/24 11:13:36, XSLT vendor: libxslt http://xmlsoft.org/XSLT/, via: https://github.com/cabo/kramdown-rfc2629 version 1.3.10"><meta name="keywords" content="Content Negotiation"><link rel="schema.dcterms" href="http://purl.org/dc/terms/"><meta name="dcterms.creator" content="Grigorik, I."><meta name="dcterms.creator" content="Weiss, Y."><meta name="dcterms.issued" content="2020-10-05"><meta name="dcterms.abstract" content="HTTP defines proactive content negotiation to allow servers to select the appropriate response for a given request, based upon the user agent’s characteristics, as expressed in request headers. In practice, user agents are often unwilling to send those request headers, because it is not clear whether they will be used, and sending them impacts both performance and privacy.This document defines an Accept-CH response header that servers can use to advertise their use of request headers for proactive content negotiation, along with a set of guidelines for the creation of such headers, colloquially known as “Client Hints.”"><meta name="description" content="HTTP defines proactive content negotiation to allow servers to select the appropriate response for a given request, based upon the user agent’s characteristics, as expressed in request headers. In practice, user agents are often unwilling to send those request headers, because it is not clear whether they will be used, and sending them impacts both performance and privacy.This document defines an Accept-CH response header that servers can use to advertise their use of request headers for proactive content negotiation, along with a set of guidelines for the creation of such headers, colloquially known as “Client Hints.”"></head><body><header><table class="header" id="rfc.headerblock"><tbody><tr><td class="left">HTTP Working Group</td><td class="right">I. Grigorik</td></tr><tr><td class="left">Internet-Draft</td><td class="right">Y. Weiss</td></tr><tr><td class="left">Intended status: Experimental</td><td class="right">Google</td></tr><tr><td class="left">Expires: April 8, 2021</td><td class="right">October 5, 2020</td></tr></tbody></table><div id="rfc.title"><h1>HTTP Client Hints</h1><div class="filename"><a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-client-hints" class="smpl">draft-ietf-httpbis-client-hints-latest</a></div></div></header><section><h2 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h2><div id="rfc.abstract.p.1"><p>HTTP defines proactive content negotiation to allow servers to select the appropriate response for a given request, based upon the user agent’s characteristics, as expressed in request headers. In practice, user agents are often unwilling to send those request headers, because it is not clear whether they will be used, and sending them impacts both performance and privacy.</p></div><div id="rfc.abstract.p.2"><p>This document defines an Accept-CH response header that servers can use to advertise their use of request headers for proactive content negotiation, along with a set of guidelines for the creation of such headers, colloquially known as “Client Hints.”</p></div></section><section class="note"><h2 id="rfc.note.1"><a href="#rfc.note.1">Note to Readers</a></h2><div id="rfc.note.1.p.1"><p>Discussion of this draft takes place on the HTTP working group mailing list (ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.</p></div><div id="rfc.note.1.p.2"><p>Working Group information can be found at <a href="http://httpwg.github.io/">http://httpwg.github.io/</a>; source code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/client-hints">https://github.com/httpwg/http-extensions/labels/client-hints</a>.</p></div></section><section id="rfc.status"><h2><a href="#rfc.status">Status of this Memo</a></h2><div id="rfc.boilerplate.1.p.1"><p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p></div><div id="rfc.boilerplate.1.p.2"><p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF). Note that other groups may also distribute working documents as Internet-Drafts. The list of current Internet-Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.</p></div><div id="rfc.boilerplate.1.p.3"><p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to use Internet-Drafts as reference material or to cite them other than as “work in progress”.</p></div><div id="rfc.boilerplate.1.p.4"><p>This Internet-Draft will expire on April 8, 2021.</p></div></section><section id="rfc.copyrightnotice"><h2><a href="#rfc.copyrightnotice">Copyright Notice</a></h2><div id="rfc.boilerplate.2.p.1"><p>Copyright (c) 2020 IETF Trust and the persons identified as the document authors. All rights reserved.</p></div><div id="rfc.boilerplate.2.p.2"><p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p></div></section><hr class="noprint"><nav id="rfc.toc"><h2 class="np"><a href="#rfc.toc">Table of Contents</a></h2><ul class="toc"><li><a href="#rfc.section.1">1.</a>   <a href="#introduction">Introduction</a><ul><li><a href="#rfc.section.1.1">1.1.</a>   <a href="#notational-conventions">Notational Conventions</a></li></ul></li><li><a href="#rfc.section.2">2.</a>   <a href="#client-hint-request-header-fields">Client Hint Request Header Fields</a><ul><li><a href="#rfc.section.2.1">2.1.</a>   <a href="#sending-client-hints">Sending Client Hints</a></li><li><a href="#rfc.section.2.2">2.2.</a>   <a href="#server-processing-of-client-hints">Server Processing of Client Hints</a></li></ul></li><li><a href="#rfc.section.3">3.</a>   <a href="#advertising-server-support">Advertising Server Support</a><ul><li><a href="#rfc.section.3.1">3.1.</a>   <a href="#accept-ch">The Accept-CH Response Header Field</a></li><li><a href="#rfc.section.3.2">3.2.</a>   <a href="#interaction-with-caches">Interaction with Caches</a></li></ul></li><li><a href="#rfc.section.4">4.</a>   <a href="#security-considerations">Security Considerations</a><ul><li><a href="#rfc.section.4.1">4.1.</a>   <a href="#information-exposure">Information Exposure</a></li><li><a href="#rfc.section.4.2">4.2.</a>   <a href="#deployment-and-security-risks">Deployment and Security Risks</a></li><li><a href="#rfc.section.4.3">4.3.</a>   <a href="#abuse-detection">Abuse Detection</a></li></ul></li><li><a href="#rfc.section.5">5.</a>   <a href="#cost-of-sending-hints">Cost of Sending Hints</a></li><li><a href="#rfc.section.6">6.</a>   <a href="#iana-considerations">IANA Considerations</a><ul><li><a href="#rfc.section.6.1">6.1.</a>   <a href="#iana-accept-ch">Accept-CH</a></li></ul></li><li><a href="#rfc.section.7">7.</a>   <a href="#rfc.references">References</a><ul><li><a href="#rfc.section.7.1">7.1.</a>   <a href="#rfc.references.1">Normative References</a></li><li><a href="#rfc.section.7.2">7.2.</a>   <a href="#rfc.references.2">Informative References</a></li></ul></li><li><a href="#rfc.section.A">Appendix A.</a>   <a href="#changes">Changes</a><ul><li><a href="#rfc.section.A.1">A.1.</a>   <a href="#since-00">Since -00</a></li><li><a href="#rfc.section.A.2">A.2.</a>   <a href="#since-01">Since -01</a></li><li><a href="#rfc.section.A.3">A.3.</a>   <a href="#since-02">Since -02</a></li><li><a href="#rfc.section.A.4">A.4.</a>   <a href="#since-03">Since -03</a></li><li><a href="#rfc.section.A.5">A.5.</a>   <a href="#since-04">Since -04</a></li><li><a href="#rfc.section.A.6">A.6.</a>   <a href="#since-05">Since -05</a></li><li><a href="#rfc.section.A.7">A.7.</a>   <a href="#since-06">Since -06</a></li><li><a href="#rfc.section.A.8">A.8.</a>   <a href="#since-07">Since -07</a></li><li><a href="#rfc.section.A.9">A.9.</a>   <a href="#since-08">Since -08</a></li><li><a href="#rfc.section.A.10">A.10.</a>   <a href="#since-09">Since -09</a></li><li><a href="#rfc.section.A.11">A.11.</a>   <a href="#since-10">Since -10</a></li><li><a href="#rfc.section.A.12">A.12.</a>   <a href="#since-11">Since -11</a></li><li><a href="#rfc.section.A.13">A.13.</a>   <a href="#since-12">Since -12</a></li><li><a href="#rfc.section.A.14">A.14.</a>   <a href="#since-13">Since -13</a></li><li><a href="#rfc.section.A.15">A.15.</a>   <a href="#since-14">Since -14</a></li></ul></li><li><a href="#acknowledgements">Acknowledgements</a></li><li><a href="#rfc.authors">Authors' Addresses</a></li></ul></nav><section id="introduction"><h2 id="rfc.section.1" class="np"><a href="#rfc.section.1">1.</a> <a href="#introduction">Introduction</a></h2><div id="rfc.section.1.p.1"><p>There are thousands of different devices accessing the web, each with different device capabilities and preference information. These device capabilities include hardware and software characteristics, as well as dynamic user and user agent preferences. Historically, applications that wanted the server to optimize content delivery and user experience based on such capabilities had to rely on passive identification (e.g., by matching the User-Agent header field (Section 5.5.3 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>) against an established database of user agent signatures), use HTTP cookies <a href="#RFC6265"><cite title="HTTP State Management Mechanism">[RFC6265]</cite></a> and URL parameters, or use some combination of these and similar mechanisms to enable ad hoc content negotiation.</p></div><div id="rfc.section.1.p.2" class="avoidbreakafter"><p>Such techniques are expensive to set up and maintain, and are not portable across both applications and servers. They also make it hard for both user agent and server to understand which data are required and is in use during the negotiation:</p></div><div id="rfc.section.1.p.3"><ul><li>User agent detection cannot reliably identify all static variables, cannot infer dynamic user agent preferences, requires an external device database, is not cache friendly, and is reliant on a passive fingerprinting surface.</li><li>Cookie-based approaches are not portable across applications and servers, impose additional client-side latency by requiring JavaScript execution, and are not cache friendly.</li><li>URL parameters, similar to cookie-based approaches, suffer from lack of portability, and are hard to deploy due to a requirement to encode content negotiation data inside of the URL of each resource.</li></ul></div><div id="rfc.section.1.p.4"><p>Proactive content negotiation (Section 3.4.1 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>) offers an alternative approach; user agents use specified, well-defined request headers to advertise their capabilities and characteristics, so that servers can select (or formulate) an appropriate response based on those request headers (or on other, implicit characteristics).</p></div><div id="rfc.section.1.p.5"><p>However, traditional proactive content negotiation techniques often mean that user agents send these request headers prolifically. This causes performance concerns (because it creates “bloat” in requests), as well as privacy issues; passively providing such information allows servers to silently fingerprint the user.</p></div><div id="rfc.section.1.p.6"><p>This document defines Client Hints, a framework that enables servers to opt-in to specific proactive content negotiation features, adapting their content accordingly, as well as guidelines for content negotiation mechanisms that use the framework. This document also defines a new response header, Accept-CH, that allows an origin server to explicitly ask that user agents send these headers in requests.</p></div><div id="rfc.section.1.p.7"><p>Client Hints mitigate performance concerns by assuring that user agents will only send the request headers when they’re actually going to be used, and privacy concerns of passive fingerprinting by requiring explicit opt-in and disclosure of required headers by the server through the use of the Accept-CH response header, turning passive fingerprinting vectors into active ones.</p></div><div id="rfc.section.1.p.8"><p>The document does not define specific usages of Client Hints. Such usages need to be defined in their respective specifications.</p></div><div id="rfc.section.1.p.9"><p>One example of such usage is the User Agent Client Hints <a href="#UA-CH"><cite title="User Agent Client Hints">[UA-CH]</cite></a>.</p></div><section id="notational-conventions"><h3 id="rfc.section.1.1"><a href="#rfc.section.1.1">1.1.</a> <a href="#notational-conventions">Notational Conventions</a></h3><div id="rfc.section.1.1.p.1"><p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in BCP 14 <a href="#RFC2119"><cite title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</cite></a> <a href="#RFC8174"><cite title="Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words">[RFC8174]</cite></a> when, and only when, they appear in all capitals, as shown here.</p></div><div id="rfc.section.1.1.p.2"><p>This document uses the Augmented Backus-Naur Form (ABNF) notation of <a href="#RFC5234"><cite title="Augmented BNF for Syntax Specifications: ABNF">[RFC5234]</cite></a>.</p></div></section></section><section id="client-hint-request-header-fields"><h2 id="rfc.section.2"><a href="#rfc.section.2">2.</a> <a href="#client-hint-request-header-fields">Client Hint Request Header Fields</a></h2><div id="rfc.section.2.p.1"><p>A Client Hint request header field is a HTTP header field that is used by HTTP user agents to indicate data that can be used by the server to select an appropriate response. Each one conveys user agent preferences that the server can use to adapt and optimize the response.</p></div><section id="sending-client-hints"><h3 id="rfc.section.2.1"><a href="#rfc.section.2.1">2.1.</a> <a href="#sending-client-hints">Sending Client Hints</a></h3><div id="rfc.section.2.1.p.1"><p>User agents choose what Client Hints to send in a request based on their default settings, user configuration, and server preferences expressed in <span class="tt">Accept-CH</span>. The user agent and server can use an opt-in mechanism outlined below to negotiate which header fields need to be sent to allow for efficient content adaption, and optionally use additional mechanisms (e.g., as outlined in <a href="#CLIENT-HINTS-INFRASTRUCTURE"><cite title="Client Hints Infrastructure">[CLIENT-HINTS-INFRASTRUCTURE]</cite></a>) to negotiate delegation policies that control access of third parties to those same header fields. User agents SHOULD require an opt-in to send any hints that are not listed in the low-entropy hint table at <a href="#CLIENT-HINTS-INFRASTRUCTURE"><cite title="Client Hints Infrastructure">[CLIENT-HINTS-INFRASTRUCTURE]</cite></a>.</p></div><div id="rfc.section.2.1.p.2"><p>Implementers need to be aware of the fingerprinting implications when implementing support for Client Hints, and follow the considerations outlined in the Security Considerations (<a href="#security-considerations" title="Security Considerations">Section 4</a>) section of this document.</p></div></section><section id="server-processing-of-client-hints"><h3 id="rfc.section.2.2"><a href="#rfc.section.2.2">2.2.</a> <a href="#server-processing-of-client-hints">Server Processing of Client Hints</a></h3><div id="rfc.section.2.2.p.1"><p>When presented with a request that contains one or more Client Hint header fields, servers can optimize the response based upon the information in them. When doing so, and if the resource is cacheable, the server MUST also generate a Vary response header field (Section 7.1.4 of <a href="#RFC7231"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content">[RFC7231]</cite></a>) to indicate which hints can affect the selected response and whether the selected response is appropriate for a later request.</p></div><div id="rfc.section.2.2.p.2"><p>Servers MUST ignore hints they do not understand nor support. There is no mechanism for servers to indicate to user agents that hints were ignored.</p></div><div id="rfc.section.2.2.p.3"><p>Furthermore, the server can generate additional response header fields (as specified by the hint or hints in use) that convey related values to aid client processing.</p></div></section></section><section id="advertising-server-support"><h2 id="rfc.section.3"><a href="#rfc.section.3">3.</a> <a href="#advertising-server-support">Advertising Server Support</a></h2><div id="rfc.section.3.p.1"><p>Servers can advertise support for Client Hints using the mechanism described below.</p></div><section id="accept-ch"><h3 id="rfc.section.3.1"><a href="#rfc.section.3.1">3.1.</a> <a href="#accept-ch">The Accept-CH Response Header Field</a></h3><div id="rfc.section.3.1.p.1"><p>The Accept-CH response header field indicates server support for the hints indicated in its value. Servers wishing to receive user agent information through Client Hints SHOULD add Accept-CH response header to their responses as early as possible.</p></div><div id="rfc.section.3.1.p.2" class="avoidbreakafter"><p>Accept-CH is a Structured Header <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>. Its value MUST be an sf-list (Section 3.1 of <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>) whose members are tokens (Section 3.3.4 of <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>). Its ABNF is:</p></div><div id="rfc.figure.u.1"><div><pre class="inline">
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+
+</head>
+<body>
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">HTTP Client Hints</td>
+<td class="right">November 2020</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Grigorik &amp; Weiss</td>
+<td class="center">Expires 6 May 2021</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">HTTP</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-httpbis-client-hints</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2020-11-02" class="published">2 November 2020</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Experimental</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2021-05-06">6 May 2021</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">I. Grigorik</div>
+<div class="org">Google</div>
+</div>
+<div class="author">
+      <div class="author-name">Y. Weiss</div>
+<div class="org">Google</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">HTTP Client Hints</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">HTTP defines proactive content negotiation to allow servers to select the appropriate response for a given request, based upon the user agent's characteristics, as expressed in request headers. In practice, user agents are often unwilling to send those request headers, because it is not clear whether they will be used, and sending them impacts both performance and privacy.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">This document defines an Accept-CH response header that servers can use to advertise their use of request headers for proactive content negotiation, along with a set of guidelines for the creation of such headers, colloquially known as "Client Hints."<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+</section>
+<section class="note" id="section-note.1">
+      <h2 id="name-note-to-readers">
+<a href="#name-note-to-readers" class="section-name selfRef">Note to Readers</a>
+      </h2>
+<p id="section-note.1-1">Discussion of this draft takes place on the HTTP working group mailing list
+(ietf-http-wg@w3.org), which is archived at <a href="https://lists.w3.org/Archives/Public/ietf-http-wg/">https://lists.w3.org/Archives/Public/ietf-http-wg/</a>.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Working Group information can be found at <a href="http://httpwg.github.io/">http://httpwg.github.io/</a>; source
+code and issues list for this draft can be found at <a href="https://github.com/httpwg/http-extensions/labels/client-hints">https://github.com/httpwg/http-extensions/labels/client-hints</a>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 6 May 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2020 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-notational-conventions" class="xref">Notational Conventions</a><a href="#section-toc.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-client-hint-request-header-" class="xref">Client Hint Request Header Fields</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-sending-client-hints" class="xref">Sending Client Hints</a><a href="#section-toc.1-1.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-server-processing-of-client" class="xref">Server Processing of Client Hints</a><a href="#section-toc.1-1.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-advertising-server-support" class="xref">Advertising Server Support</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-the-accept-ch-response-head" class="xref">The Accept-CH Response Header Field</a><a href="#section-toc.1-1.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-interaction-with-caches" class="xref">Interaction with Caches</a><a href="#section-toc.1-1.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-information-exposure" class="xref">Information Exposure</a><a href="#section-toc.1-1.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-deployment-and-security-ris" class="xref">Deployment and Security Risks</a><a href="#section-toc.1-1.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-abuse-detection" class="xref">Abuse Detection</a><a href="#section-toc.1-1.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-cost-of-sending-hints" class="xref">Cost of Sending Hints</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-accept-ch" class="xref">Accept-CH</a><a href="#section-toc.1-1.6.2.1.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.7.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-appendix.a" class="xref">Appendix A</a>.  <a href="#name-changes" class="xref">Changes</a><a href="#section-toc.1-1.8.1" class="pilcrow">¶</a></p>
+<ul class="compact ulEmpty toc">
+<li class="compact ulEmpty toc" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-a.1" class="xref">A.1</a>.  <a href="#name-since-00" class="xref">Since -00</a><a href="#section-toc.1-1.8.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-a.2" class="xref">A.2</a>.  <a href="#name-since-01" class="xref">Since -01</a><a href="#section-toc.1-1.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-a.3" class="xref">A.3</a>.  <a href="#name-since-02" class="xref">Since -02</a><a href="#section-toc.1-1.8.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.4">
+                <p id="section-toc.1-1.8.2.4.1"><a href="#section-a.4" class="xref">A.4</a>.  <a href="#name-since-03" class="xref">Since -03</a><a href="#section-toc.1-1.8.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.5">
+                <p id="section-toc.1-1.8.2.5.1"><a href="#section-a.5" class="xref">A.5</a>.  <a href="#name-since-04" class="xref">Since -04</a><a href="#section-toc.1-1.8.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.6">
+                <p id="section-toc.1-1.8.2.6.1"><a href="#section-a.6" class="xref">A.6</a>.  <a href="#name-since-05" class="xref">Since -05</a><a href="#section-toc.1-1.8.2.6.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.7">
+                <p id="section-toc.1-1.8.2.7.1"><a href="#section-a.7" class="xref">A.7</a>.  <a href="#name-since-06" class="xref">Since -06</a><a href="#section-toc.1-1.8.2.7.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.8">
+                <p id="section-toc.1-1.8.2.8.1"><a href="#section-a.8" class="xref">A.8</a>.  <a href="#name-since-07" class="xref">Since -07</a><a href="#section-toc.1-1.8.2.8.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.9">
+                <p id="section-toc.1-1.8.2.9.1"><a href="#section-a.9" class="xref">A.9</a>.  <a href="#name-since-08" class="xref">Since -08</a><a href="#section-toc.1-1.8.2.9.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.10">
+                <p id="section-toc.1-1.8.2.10.1"><a href="#section-a.10" class="xref">A.10</a>. <a href="#name-since-09" class="xref">Since -09</a><a href="#section-toc.1-1.8.2.10.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.11">
+                <p id="section-toc.1-1.8.2.11.1"><a href="#section-a.11" class="xref">A.11</a>. <a href="#name-since-10" class="xref">Since -10</a><a href="#section-toc.1-1.8.2.11.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.12">
+                <p id="section-toc.1-1.8.2.12.1"><a href="#section-a.12" class="xref">A.12</a>. <a href="#name-since-11" class="xref">Since -11</a><a href="#section-toc.1-1.8.2.12.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.13">
+                <p id="section-toc.1-1.8.2.13.1"><a href="#section-a.13" class="xref">A.13</a>. <a href="#name-since-12" class="xref">Since -12</a><a href="#section-toc.1-1.8.2.13.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.14">
+                <p id="section-toc.1-1.8.2.14.1"><a href="#section-a.14" class="xref">A.14</a>. <a href="#name-since-13" class="xref">Since -13</a><a href="#section-toc.1-1.8.2.14.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="compact ulEmpty toc" id="section-toc.1-1.8.2.15">
+                <p id="section-toc.1-1.8.2.15.1"><a href="#section-a.15" class="xref">A.15</a>. <a href="#name-since-14" class="xref">Since -14</a><a href="#section-toc.1-1.8.2.15.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-appendix.b" class="xref"></a><a href="#name-acknowledgements" class="xref">Acknowledgements</a><a href="#section-toc.1-1.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="compact ulEmpty toc" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-appendix.c" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a><a href="#section-toc.1-1.10.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">There are thousands of different devices accessing the web, each with different device capabilities and preference information. These device capabilities include hardware and software characteristics, as well as dynamic user and user agent preferences. Historically, applications that wanted the server to optimize content delivery and user experience based on such capabilities had to rely on passive identification (e.g., by matching the User-Agent header field (Section 5.5.3 of <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span>) against an established database of user agent signatures), use HTTP cookies <span>[<a href="#RFC6265" class="xref">RFC6265</a>]</span> and URL parameters, or use some combination of these and similar mechanisms to enable ad hoc content negotiation.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Such techniques are expensive to set up and maintain, and are not portable across both applications and servers. They also make it hard for both user agent and server to understand which data are required and is in use during the negotiation:<a href="#section-1-2" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-1-3.1">User agent detection cannot reliably identify all static variables, cannot infer dynamic user agent preferences, requires an external device database, is not cache friendly, and is reliant on a passive fingerprinting surface.<a href="#section-1-3.1" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-1-3.2">Cookie-based approaches are not portable across applications and servers, impose additional client-side latency by requiring JavaScript execution, and are not cache friendly.<a href="#section-1-3.2" class="pilcrow">¶</a>
+</li>
+        <li class="compact" id="section-1-3.3">URL parameters, similar to cookie-based approaches, suffer from lack of portability, and are hard to deploy due to a requirement to encode content negotiation data inside of the URL of each resource.<a href="#section-1-3.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-1-4">Proactive content negotiation (Section 3.4.1 of <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span>) offers an alternative approach; user agents use specified, well-defined request headers to advertise their capabilities and characteristics, so that servers can select (or formulate) an appropriate response based on those request headers (or on other, implicit characteristics).<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">However, traditional proactive content negotiation techniques often mean that user agents send these request headers prolifically. This causes performance concerns (because it creates "bloat" in requests), as well as privacy issues; passively providing such information allows servers to silently fingerprint the user.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">This document defines Client Hints, a framework that enables servers to opt-in to specific proactive content negotiation features, adapting their content accordingly, as well as guidelines for content negotiation mechanisms that use the framework.
+This document also defines a new response header, Accept-CH, that allows an origin server to explicitly ask that user agents send these headers in requests.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">Client Hints mitigate performance concerns by assuring that user agents will only send the request headers when they're actually going to be used, and privacy concerns of passive fingerprinting by requiring explicit opt-in and disclosure of required headers by the server through the use of the Accept-CH response header, turning passive fingerprinting vectors into active ones.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-8">The document does not define specific usages of Client Hints. Such usages need to be defined in their respective specifications.<a href="#section-1-8" class="pilcrow">¶</a></p>
+<p id="section-1-9">One example of such usage is the User Agent Client Hints <span>[<a href="#UA-CH" class="xref">UA-CH</a>]</span>.<a href="#section-1-9" class="pilcrow">¶</a></p>
+<div id="notational-conventions">
+<section id="section-1.1">
+        <h3 id="name-notational-conventions">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">This document uses the Augmented Backus-Naur Form (ABNF) notation of <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span>.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="client-hint-request-header-fields">
+<section id="section-2">
+      <h2 id="name-client-hint-request-header-">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-client-hint-request-header-" class="section-name selfRef">Client Hint Request Header Fields</a>
+      </h2>
+<p id="section-2-1">A Client Hint request header field is a HTTP header field that is used by HTTP user agents to indicate data that can be used by the server to select an appropriate response. Each one conveys user agent preferences that the server can use to adapt and optimize the response.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="sending-client-hints">
+<section id="section-2.1">
+        <h3 id="name-sending-client-hints">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-sending-client-hints" class="section-name selfRef">Sending Client Hints</a>
+        </h3>
+<p id="section-2.1-1">User agents choose what Client Hints to send in a request based on their default settings, user configuration, and server preferences expressed in <code>Accept-CH</code>.
+The user agent and server can use an opt-in mechanism outlined below to negotiate which header fields need to be sent to allow for efficient content adaption, and optionally use additional mechanisms (e.g., as outlined in <span>[<a href="#CLIENT-HINTS-INFRASTRUCTURE" class="xref">CLIENT-HINTS-INFRASTRUCTURE</a>]</span>) to negotiate delegation policies that control access of third parties to those same header fields.
+User agents SHOULD require an opt-in to send any hints that are not listed in the low-entropy hint table at <span>[<a href="#CLIENT-HINTS-INFRASTRUCTURE" class="xref">CLIENT-HINTS-INFRASTRUCTURE</a>]</span>.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">Implementers need to be aware of the fingerprinting implications when implementing support for Client Hints, and follow the considerations outlined in the <span><a href="#security-considerations" class="xref">Security Considerations</a> (<a href="#security-considerations" class="xref">Section 4</a>)</span> section of this document.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="server-processing-of-client-hints">
+<section id="section-2.2">
+        <h3 id="name-server-processing-of-client">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-server-processing-of-client" class="section-name selfRef">Server Processing of Client Hints</a>
+        </h3>
+<p id="section-2.2-1">When presented with a request that contains one or more Client Hint header fields, servers can optimize the response based upon the information in them. When doing so, and if the resource is cacheable, the server MUST also generate a Vary response header field (Section 7.1.4 of <span>[<a href="#RFC7231" class="xref">RFC7231</a>]</span>) to indicate which hints can affect the selected response and whether the selected response is appropriate for a later request.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">Servers MUST ignore hints they do not understand nor support. There is no mechanism for servers to indicate to user agents that hints were ignored.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">Furthermore, the server can generate additional response header fields (as specified by the hint or hints in use) that convey related values to aid client processing.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="advertising-server-support">
+<section id="section-3">
+      <h2 id="name-advertising-server-support">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-advertising-server-support" class="section-name selfRef">Advertising Server Support</a>
+      </h2>
+<p id="section-3-1">Servers can advertise support for Client Hints using the mechanism described below.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="accept-ch">
+<section id="section-3.1">
+        <h3 id="name-the-accept-ch-response-head">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-the-accept-ch-response-head" class="section-name selfRef">The Accept-CH Response Header Field</a>
+        </h3>
+<p id="section-3.1-1">The Accept-CH response header field indicates server support for the hints indicated in its value.
+Servers wishing to receive user agent information through Client Hints SHOULD add Accept-CH response header to their responses as early as possible.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Accept-CH is a Structured Header <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span>. Its value MUST be an sf-list (Section 3.1 of <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span>) whose members are tokens (Section 3.3.4 of <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span>). Its ABNF is:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-abnf" id="section-3.1-3">
+<pre>
   Accept-CH = sf-list
-</pre></div></div><div id="rfc.section.3.1.p.3" class="avoidbreakafter"><p>For example:</p></div><div id="rfc.figure.u.2"><div><pre class="text">
-  Accept-CH: Sec-CH-Example, Sec-CH-Example-2
-</pre></div></div><div id="rfc.section.3.1.p.4"><p>When a user agent receives an HTTP response containing <span class="tt">Accept-CH</span>, that indicates that the origin opts-in to receive the indicated request header fields for subsequent same-origin requests. The opt-in MUST be ignored if delivered over non-secure transport (using a scheme different from HTTPS). It SHOULD be persisted and bound to the origin to enable delivery of Client Hints on subsequent requests to the server’s origin, for the duration of the user’s session (as defined by the user agent). An opt-in overrides previous persisted opt-in values and SHOULD be persisted in its stead.</p></div><div id="rfc.section.3.1.p.5"><p>Based on the Accept-CH example above, which is received in response to a user agent navigating to “https://site.example”, and delivered over a secure transport, persisted Accept-CH preferences will be bound to “https://site.example”. It will then use it for navigations to e.g., “https://site.example/foobar.html”, but not to e.g., “https://foobar.site.example/”. It will similarly use the preference for any same-origin resource requests (e.g., to “https://site.example/image.jpg”) initiated by the page constructed from the navigation’s response, but not to cross-origin resource requests (e.g., “https://thirdparty.example/resource.js”). This preference will not extend to resource requests initiated to “https://site.example” from other origins (e.g., from navigations to “https://other.example/”).</p></div></section><section id="interaction-with-caches"><h3 id="rfc.section.3.2"><a href="#rfc.section.3.2">3.2.</a> <a href="#interaction-with-caches">Interaction with Caches</a></h3><div id="rfc.section.3.2.p.1"><p>When selecting a response based on one or more Client Hints, and if the resource is cacheable, the server needs to generate a Vary response header field (<a href="#RFC7234"><cite title="Hypertext Transfer Protocol (HTTP/1.1): Caching">[RFC7234]</cite></a>) to indicate which hints can affect the selected response and whether the selected response is appropriate for a later request.</p></div><div id="rfc.figure.u.3"><div><pre class="text">
-  Vary: Sec-CH-Example
-</pre></div></div><div id="rfc.section.3.2.p.2"><p>The above example indicates that the cache key needs to include the Sec-CH-Example header field.</p></div><div id="rfc.figure.u.4"><div><pre class="text">
-  Vary: Sec-CH-Example, Sec-CH-Example-2
-</pre></div></div><div id="rfc.section.3.2.p.3"><p>The above example indicates that the cache key needs to include the Sec-CH-Example and Sec-CH-Example-2 header fields.</p></div></section></section><section id="security-considerations"><h2 id="rfc.section.4"><a href="#rfc.section.4">4.</a> <a href="#security-considerations">Security Considerations</a></h2><section id="information-exposure"><h3 id="rfc.section.4.1"><a href="#rfc.section.4.1">4.1.</a> <a href="#information-exposure">Information Exposure</a></h3><div id="rfc.section.4.1.p.1"><p>Request header fields used in features relying on this document expose information about the user’s environment to enable privacy-preserving proactive content negotiation, and avoid exposing passive fingerprinting vectors. However, implementers need to bear in mind that in the worst case, uncontrolled and unmonitored active fingerprinting is not better than passive fingerprinting. In order to provide user privacy benefits, user agents need to apply further policies that prevent abuse of the information exposed by features using Client Hints.</p></div><div id="rfc.section.4.1.p.2"><p>The information exposed by features might reveal new information about the user and implementers ought to consider the following considerations, recommendations, and best practices.</p></div><div id="rfc.section.4.1.p.3"><p>The underlying assumption is that exposing information about the user as a request header is equivalent (from a security perspective) to exposing this information by other means. (For example, if the request’s origin can access that information using JavaScript APIs, and transmit it to its servers).</p></div><div id="rfc.section.4.1.p.4"><p>Because Client Hints is an explicit opt-in mechanism, that means that servers that want access to information about the user’s environment need to actively ask for it, enabling clients and privacy researchers to keep track of which origins collect that data, and potentially act upon it. The header-based opt-in means that removal of passive fingerprinting vectors is possible. As an example, the user agent can reduce the information exposed by the User-Agent string, while enabling active access to that information through User-Agent Client Hints (<a href="#UA-CH"><cite title="User Agent Client Hints">[UA-CH]</cite></a>). Otherwise, the user agent can expose information already available through script (e.g., the <a href="https://wicg.github.io/savedata/#save-data-request-header-field">Save-Data Client Hint</a>), without increasing the passive fingerprinting surface. User agents supporting Client Hints features which send certain information to opted-in servers SHOULD avoid sending the equivalent information passively.</p></div><div id="rfc.section.4.1.p.5"><p>Therefore, features relying on this document to define Client Hint headers MUST NOT provide new information that is otherwise not made available to the application by the user agent, such as existing request headers, HTML, CSS, or JavaScript.</p></div><div id="rfc.section.4.1.p.6" class="avoidbreakafter"><p>Such features need to take into account the following aspects of the information exposed:</p></div><div id="rfc.section.4.1.p.7"><ul><li>Entropy - Exposing highly granular data can be used to help identify users across multiple requests to different origins. Reducing the set of header field values that can be expressed, or restricting them to an enumerated range where the advertised value is close to but is not an exact representation of the current value, can improve privacy and reduce risk of linkability by ensuring that the same value is sent by multiple users.</li><li>Sensitivity - The feature SHOULD NOT expose user-sensitive information. To that end, information available to the application, but gated behind specific user actions (e.g., a permission prompt or user activation) SHOULD NOT be exposed as a Client Hint.</li><li>Change over time - The feature SHOULD NOT expose user information that changes over time, unless the state change itself is also exposed (e.g., through JavaScript callbacks).</li></ul></div><div id="rfc.section.4.1.p.8"><p>Different features will be positioned in different points in the space between low-entropy, non-sensitive and static information (e.g., user agent information), and high-entropy, sensitive and dynamic information (e.g., geolocation). User agents need to consider the value provided by a particular feature vs these considerations, and may wish to have different policies regarding that tradeoff on a per-feature or other fine-grained basis.</p></div><div id="rfc.section.4.1.p.9" class="avoidbreakafter"><p>Implementers ought to consider both user- and server- controlled mechanisms and policies to control which Client Hints header fields are advertised:</p></div><div id="rfc.section.4.1.p.10"><ul><li>Implementers SHOULD restrict delivery of some or all Client Hints header fields to the opt-in origin only, unless the opt-in origin has explicitly delegated permission to another origin to request Client Hints header fields.</li><li>Implementers considering providing user choice mechanisms that allow users to balance privacy concerns against bandwidth limitations need to also consider that explaining to users the privacy implications involved, such as the risks of passive fingerprinting, may be challenging or even impractical.</li><li>Implementations specific to certain use cases or threat models MAY avoid transmitting some or all of Client Hints header fields. For example, avoid transmission of header fields that can carry higher risks of linkability.</li></ul></div><div id="rfc.section.4.1.p.11"><p>User agents MUST clear persisted opt-in preferences when any one of site data, browsing history, browsing cache, cookies, or similar, are cleared.</p></div></section><section id="deployment-and-security-risks"><h3 id="rfc.section.4.2"><a href="#rfc.section.4.2">4.2.</a> <a href="#deployment-and-security-risks">Deployment and Security Risks</a></h3><div id="rfc.section.4.2.p.1" class="avoidbreakafter"><p>Deployment of new request headers requires several considerations:</p></div><div id="rfc.section.4.2.p.2"><ul><li>Potential conflicts due to existing use of header field name</li><li>Properties of the data communicated in header field value</li></ul></div><div id="rfc.section.4.2.p.3"><p>Authors of new Client Hints are advised to carefully consider whether they need to be able to be added by client-side content (e.g., scripts), or whether they need to be exclusively set by the user agent. In the latter case, the Sec- prefix on the header field name has the effect of preventing scripts and other application content from setting them in user agents. Using the “Sec-“ prefix signals to servers that the user agent - and not application content - generated the values. See <a href="#FETCH"><cite title="Fetch">[FETCH]</cite></a> for more information.</p></div><div id="rfc.section.4.2.p.4"><p>By convention, request headers that are Client Hints are encouraged to use a CH- prefix, to make them easier to identify as using this framework; for example, CH-Foo or, with a “Sec-“ prefix, Sec-CH-Foo. Doing so makes them easier to identify programmatically (e.g., for stripping unrecognised hints from requests by privacy filters).</p></div><div id="rfc.section.4.2.p.5"><p>A Client Hints request header negotiated using the Accept-CH opt-in mechanism MUST have a field name that matches sf-token (Section 3.3.4 of <a href="#I-D.ietf-httpbis-header-structure"><cite title="Structured Field Values for HTTP">[I-D.ietf-httpbis-header-structure]</cite></a>).</p></div></section><section id="abuse-detection"><h3 id="rfc.section.4.3"><a href="#rfc.section.4.3">4.3.</a> <a href="#abuse-detection">Abuse Detection</a></h3><div id="rfc.section.4.3.p.1"><p>A user agent that tracks access to active fingerprinting information SHOULD consider emission of Client Hints headers similarly to the way it would consider access to the equivalent API.</p></div><div id="rfc.section.4.3.p.2"><p>Research into abuse of Client Hints might look at how HTTP responses to requests that contain Client Hints differ from those with different values, and from those without. This might be used to reveal which Client Hints are in use, allowing researchers to further analyze that use.</p></div></section></section><section id="cost-of-sending-hints"><h2 id="rfc.section.5"><a href="#rfc.section.5">5.</a> <a href="#cost-of-sending-hints">Cost of Sending Hints</a></h2><div id="rfc.section.5.p.1"><p>Sending Client Hints to the server incurs an increase in request byte size. Some of this increase can be mitigated by HTTP header compression schemes, but each new hint sent will still lead to some increased bandwidth usage. Servers SHOULD take that into account when opting in to receive Client Hints, and SHOULD NOT opt-in to receive hints unless they are to be used for content adaptation purposes.</p></div><div id="rfc.section.5.p.2"><p>Due to request byte size increase, features relying on this document to define Client Hints MAY consider restricting sending those hints to certain request destinations <a href="#FETCH"><cite title="Fetch">[FETCH]</cite></a>, where they are more likely to be useful.</p></div></section><section id="iana-considerations"><h2 id="rfc.section.6"><a href="#rfc.section.6">6.</a> <a href="#iana-considerations">IANA Considerations</a></h2><div id="rfc.section.6.p.1"><p>Features relying on this document are expected to register added request header fields in the Permanent Message Header Fields registry (<a href="#RFC3864"><cite title="Registration Procedures for Message Header Fields">[RFC3864]</cite></a>).</p></div><div id="rfc.section.6.p.2"><p>This document defines the “Accept-CH” HTTP response header field, and registers it in the same registry.</p></div><section id="iana-accept-ch"><h3 id="rfc.section.6.1"><a href="#rfc.section.6.1">6.1.</a> <a href="#iana-accept-ch">Accept-CH</a></h3><div id="rfc.section.6.1.p.1"><ul><li>Header field name: Accept-CH</li><li>Applicable protocol: HTTP</li><li>Status: experimental</li><li>Author/Change controller: IETF</li><li>Specification document(s): <a href="#accept-ch" title="The Accept-CH Response Header Field">Section 3.1</a> of this document</li><li>Related information: for Client Hints</li></ul></div></section></section><section id="rfc.references"><h2 id="rfc.section.7"><a href="#rfc.section.7">7.</a> References</h2><section><div id="rfc.references.1"><h3 id="rfc.section.7.1"><a href="#rfc.section.7.1">7.1.</a> Normative References</h3><dl class="reference"><dt id="CLIENT-HINTS-INFRASTRUCTURE">[CLIENT-HINTS-INFRASTRUCTURE]</dt><dd>Weiss, Y., “<a href="https://wicg.github.io/client-hints-infrastructure/">Client Hints Infrastructure</a>”, n.d., &lt;<a href="https://wicg.github.io/client-hints-infrastructure/">https://wicg.github.io/client-hints-infrastructure/</a>&gt;.</dd><dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt><dd>Nottingham, M. and P. Kamp, “<a href="https://tools.ietf.org/html/draft-ietf-httpbis-header-structure-19">Structured Field Values for HTTP</a>”, Internet-Draft draft-ietf-httpbis-header-structure-19 (<a href="https://datatracker.ietf.org/doc/draft-ietf-httpbis-header-structure">work in progress</a>), June 2020.</dd><dt id="RFC2119">[RFC2119]</dt><dd>Bradner, S., “<a href="https://www.rfc-editor.org/rfc/rfc2119.html">Key words for use in RFCs to Indicate Requirement Levels</a>”, BCP 14, RFC 2119, <a href="https://dx.doi.org/10.17487/RFC2119">DOI 10.17487/RFC2119</a>, March 1997, &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.</dd><dt id="RFC3864">[RFC3864]</dt><dd>Klyne, G., Nottingham, M., and J. Mogul, “<a href="https://www.rfc-editor.org/rfc/rfc3864.html">Registration Procedures for Message Header Fields</a>”, BCP 90, RFC 3864, <a href="https://dx.doi.org/10.17487/RFC3864">DOI 10.17487/RFC3864</a>, September 2004, &lt;<a href="https://www.rfc-editor.org/info/rfc3864">https://www.rfc-editor.org/info/rfc3864</a>&gt;.</dd><dt id="RFC5234">[RFC5234]</dt><dd>Crocker, D., Ed. and P. Overell, “<a href="https://www.rfc-editor.org/rfc/rfc5234.html">Augmented BNF for Syntax Specifications: ABNF</a>”, STD 68, RFC 5234, <a href="https://dx.doi.org/10.17487/RFC5234">DOI 10.17487/RFC5234</a>, January 2008, &lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;.</dd><dt id="RFC7231">[RFC7231]</dt><dd>Fielding, R., Ed. and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7231.html">Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content</a>”, RFC 7231, <a href="https://dx.doi.org/10.17487/RFC7231">DOI 10.17487/RFC7231</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7231">https://www.rfc-editor.org/info/rfc7231</a>&gt;.</dd><dt id="RFC7234">[RFC7234]</dt><dd>Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke, Ed., “<a href="https://www.rfc-editor.org/rfc/rfc7234.html">Hypertext Transfer Protocol (HTTP/1.1): Caching</a>”, RFC 7234, <a href="https://dx.doi.org/10.17487/RFC7234">DOI 10.17487/RFC7234</a>, June 2014, &lt;<a href="https://www.rfc-editor.org/info/rfc7234">https://www.rfc-editor.org/info/rfc7234</a>&gt;.</dd><dt id="RFC8174">[RFC8174]</dt><dd>Leiba, B., “<a href="https://www.rfc-editor.org/rfc/rfc8174.html">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>”, BCP 14, RFC 8174, <a href="https://dx.doi.org/10.17487/RFC8174">DOI 10.17487/RFC8174</a>, May 2017, &lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;.</dd></dl></div></section><section><div id="rfc.references.2"><h3 id="rfc.section.7.2"><a href="#rfc.section.7.2">7.2.</a> Informative References</h3><dl class="reference"><dt id="FETCH">[FETCH]</dt><dd>van Kesteren, A., “<a href="https://fetch.spec.whatwg.org/">Fetch</a>”, n.d., &lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;.</dd><dt id="RFC6265">[RFC6265]</dt><dd>Barth, A., “<a href="https://www.rfc-editor.org/rfc/rfc6265.html">HTTP State Management Mechanism</a>”, RFC 6265, <a href="https://dx.doi.org/10.17487/RFC6265">DOI 10.17487/RFC6265</a>, April 2011, &lt;<a href="https://www.rfc-editor.org/info/rfc6265">https://www.rfc-editor.org/info/rfc6265</a>&gt;.</dd><dt id="UA-CH">[UA-CH]</dt><dd>West, M. and Y. Weiss, “<a href="https://wicg.github.io/ua-client-hints/">User Agent Client Hints</a>”, n.d., &lt;<a href="https://wicg.github.io/ua-client-hints/">https://wicg.github.io/ua-client-hints/</a>&gt;.</dd></dl></div></section></section><section id="changes"><h2 id="rfc.section.A" class="np"><a href="#rfc.section.A">Appendix A.</a> <a href="#changes">Changes</a></h2><section id="since-00"><h3 id="rfc.section.A.1"><a href="#rfc.section.A.1">A.1.</a> <a href="#since-00">Since -00</a></h3><div id="rfc.section.A.1.p.1"><ul><li>Issue 168 (make Save-Data extensible) updated ABNF.</li><li>Issue 163 (CH review feedback) editorial feedback from httpwg list.</li><li>Issue 153 (NetInfo API citation) added normative reference.</li></ul></div></section><section id="since-01"><h3 id="rfc.section.A.2"><a href="#rfc.section.A.2">A.2.</a> <a href="#since-01">Since -01</a></h3><div id="rfc.section.A.2.p.1"><ul><li>Issue 200: Moved Key reference to informative.</li><li>Issue 215: Extended passive fingerprinting and mitigation considerations.</li><li>Changed document status to experimental.</li></ul></div></section><section id="since-02"><h3 id="rfc.section.A.3"><a href="#rfc.section.A.3">A.3.</a> <a href="#since-02">Since -02</a></h3><div id="rfc.section.A.3.p.1"><ul><li>Issue 239: Updated reference to CR-css-values-3</li><li>Issue 240: Updated reference for Network Information API</li><li>Issue 241: Consistency in IANA considerations</li><li>Issue 250: Clarified Accept-CH</li></ul></div></section><section id="since-03"><h3 id="rfc.section.A.4"><a href="#rfc.section.A.4">A.4.</a> <a href="#since-03">Since -03</a></h3><div id="rfc.section.A.4.p.1"><ul><li>Issue 284: Extended guidance for Accept-CH</li><li>Issue 308: Editorial cleanup</li><li>Issue 306: Define Accept-CH-Lifetime</li></ul></div></section><section id="since-04"><h3 id="rfc.section.A.5"><a href="#rfc.section.A.5">A.5.</a> <a href="#since-04">Since -04</a></h3><div id="rfc.section.A.5.p.1"><ul><li>Issue 361: Removed Downlink</li><li>Issue 361: Moved Key to appendix, plus other editorial feedback</li></ul></div></section><section id="since-05"><h3 id="rfc.section.A.6"><a href="#rfc.section.A.6">A.6.</a> <a href="#since-05">Since -05</a></h3><div id="rfc.section.A.6.p.1"><ul><li>Issue 372: Scoped CH opt-in and delivery to secure transports</li><li>Issue 373: Bind CH opt-in to origin</li></ul></div></section><section id="since-06"><h3 id="rfc.section.A.7"><a href="#rfc.section.A.7">A.7.</a> <a href="#since-06">Since -06</a></h3><div id="rfc.section.A.7.p.1"><ul><li>Issue 524: Save-Data is now defined by NetInfo spec, dropping</li><li>PR 775: Removed specific features to be defined in other specifications</li></ul></div></section><section id="since-07"><h3 id="rfc.section.A.8"><a href="#rfc.section.A.8">A.8.</a> <a href="#since-07">Since -07</a></h3><div id="rfc.section.A.8.p.1"><ul><li>Issue 761: Clarified that the defined headers are response headers.</li><li>Issue 730: Replaced Key reference with Variants.</li><li>Issue 700: Replaced ABNF with structured headers.</li><li>PR 878: Removed Accept-CH-Lifetime based on feedback at IETF 105</li></ul></div></section><section id="since-08"><h3 id="rfc.section.A.9"><a href="#rfc.section.A.9">A.9.</a> <a href="#since-08">Since -08</a></h3><div id="rfc.section.A.9.p.1"><ul><li>PR 985: Describe the bytesize cost of hints.</li><li>PR 776: Add Sec- and CH- prefix considerations.</li><li>PR 1001: Clear CH persistence when cookies are cleared.</li></ul></div></section><section id="since-09"><h3 id="rfc.section.A.10"><a href="#rfc.section.A.10">A.10.</a> <a href="#since-09">Since -09</a></h3><div id="rfc.section.A.10.p.1"><ul><li>PR 1064: Fix merge issues with “cost of sending hints”.</li></ul></div></section><section id="since-10"><h3 id="rfc.section.A.11"><a href="#rfc.section.A.11">A.11.</a> <a href="#since-10">Since -10</a></h3><div id="rfc.section.A.11.p.1"><ul><li>PR 1072: LC feedback from Julian Reschke.</li><li>PR 1080: Improve list style.</li><li>PR 1082: Remove section mentioning Variants.</li><li>PR 1097: Editorial feedback from mnot.</li><li>PR 1131: Remove unused references.</li><li>PR 1132: Remove nested list.</li></ul></div></section><section id="since-11"><h3 id="rfc.section.A.12"><a href="#rfc.section.A.12">A.12.</a> <a href="#since-11">Since -11</a></h3><div id="rfc.section.A.12.p.1"><ul><li>PR 1134: Re-insert back section.</li></ul></div></section><section id="since-12"><h3 id="rfc.section.A.13"><a href="#rfc.section.A.13">A.13.</a> <a href="#since-12">Since -12</a></h3><div id="rfc.section.A.13.p.1"><ul><li>PR 1160: AD review.</li></ul></div></section><section id="since-13"><h3 id="rfc.section.A.14"><a href="#rfc.section.A.14">A.14.</a> <a href="#since-13">Since -13</a></h3><div id="rfc.section.A.14.p.1"><ul><li>PR 1171: Genart review.</li></ul></div></section><section id="since-14"><h3 id="rfc.section.A.15"><a href="#rfc.section.A.15">A.15.</a> <a href="#since-14">Since -14</a></h3><div id="rfc.section.A.15.p.1"><ul><li>PR 1220: AD review.</li></ul></div></section></section><section id="acknowledgements"><h2 id="rfc.section.unnumbered-1"><a href="#acknowledgements">Acknowledgements</a></h2><div id="rfc.section.unnumbered-1.p.1"><p>Thanks to Mark Nottingham, Julian Reschke, Chris Bentzel, Ben Greenstein, Tarun Bansal, Roy Fielding, Vasiliy Faronov, Ted Hardie, Jonas Sicking, Martin Thomson, and numerous other members of the IETF HTTP Working Group for invaluable help and feedback.</p></div></section><section id="rfc.authors" class="avoidbreakinside"><h2><a href="#rfc.authors">Authors' Addresses</a></h2><address><b>Ilya Grigorik</b><br>Google<br>EMail: <a href="mailto:ilya@igvita.com">ilya@igvita.com</a><br>URI: <a href="https://www.igvita.com/">https://www.igvita.com/</a></address><address><b>Yoav Weiss</b><br>Google<br>EMail: <a href="mailto:yoav@yoav.ws">yoav@yoav.ws</a><br>URI: <a href="https://blog.yoav.ws/">https://blog.yoav.ws/</a></address></section></body></html>
+</pre><a href="#section-3.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-4">For example:<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3.1-5">
+<pre>
+Accept-CH: Sec-CH-Example, Sec-CH-Example-2
+</pre><a href="#section-3.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-6">When a user agent receives an HTTP response containing <code>Accept-CH</code>, that indicates that the origin opts-in to receive the indicated request header fields for subsequent same-origin requests.
+The opt-in MUST be ignored if delivered over non-secure transport (using a scheme different from HTTPS).
+It SHOULD be persisted and bound to the origin to enable delivery of Client Hints on subsequent requests to the server's origin, for the duration of the user's session (as defined by the user agent).
+An opt-in overrides previous persisted opt-in values and SHOULD be persisted in its stead.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.1-7">Based on the Accept-CH example above, which is received in response to a user agent navigating to "https://site.example", and delivered over a secure transport, persisted Accept-CH preferences will be bound to "https://site.example".
+It will then use it for navigations to e.g., "https://site.example/foobar.html", but not to e.g., "https://foobar.site.example/".
+It will similarly use the preference for any same-origin resource requests (e.g., to "https://site.example/image.jpg") initiated by the page constructed from the navigation's response, but not to cross-origin resource requests (e.g., "https://thirdparty.example/resource.js").
+This preference will not extend to resource requests initiated to "https://site.example" from other origins (e.g., from navigations to "https://other.example/").<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="interaction-with-caches">
+<section id="section-3.2">
+        <h3 id="name-interaction-with-caches">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-interaction-with-caches" class="section-name selfRef">Interaction with Caches</a>
+        </h3>
+<p id="section-3.2-1">When selecting a response based on one or more Client Hints, and if the resource is cacheable, the server needs to generate a Vary response header field (<span>[<a href="#RFC7234" class="xref">RFC7234</a>]</span>) to indicate which hints can affect the selected response and whether the selected response is appropriate for a later request.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3.2-2">
+<pre>
+Vary: Sec-CH-Example
+</pre><a href="#section-3.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-3">The above example indicates that the cache key needs to include the Sec-CH-Example header field.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft art-http-message" id="section-3.2-4">
+<pre>
+Vary: Sec-CH-Example, Sec-CH-Example-2
+</pre><a href="#section-3.2-4" class="pilcrow">¶</a>
+</div>
+<p id="section-3.2-5">The above example indicates that the cache key needs to include the Sec-CH-Example and Sec-CH-Example-2 header fields.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="information-exposure">
+<section id="section-4.1">
+        <h3 id="name-information-exposure">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-information-exposure" class="section-name selfRef">Information Exposure</a>
+        </h3>
+<p id="section-4.1-1">Request header fields used in features relying on this document expose information about the user's environment to enable privacy-preserving proactive content negotiation, and avoid exposing passive fingerprinting vectors.
+However, implementers need to bear in mind that in the worst case, uncontrolled and unmonitored active fingerprinting is not better than passive fingerprinting. In order to provide user privacy benefits, user agents need to apply further policies that prevent abuse of the information exposed by features using Client Hints.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">The information exposed by features might reveal new information about the user and implementers ought to consider the following considerations, recommendations, and best practices.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">The underlying assumption is that exposing information about the user as a request header is equivalent (from a security perspective) to exposing this information by other means. (For example, if the request's origin can access that information using JavaScript APIs, and transmit it to its servers).<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">Because Client Hints is an explicit opt-in mechanism, that means that servers that want access to information about the user's environment need to actively ask for it, enabling clients and privacy researchers to keep track of which origins collect that data, and potentially act upon it.
+The header-based opt-in means that removal of passive fingerprinting vectors is possible, such as the User-Agent string (enabling active access to that information through User-Agent Client Hints (<span>[<a href="#UA-CH" class="xref">UA-CH</a>]</span>) or otherwise expose information already available through script (e.g., the <a href="https://wicg.github.io/savedata/#save-data-request-header-field">Save-Data Client Hint</a>), without increasing the passive fingerprinting surface. User agents supporting Client Hints features which send certain information to opted-in servers SHOULD avoid sending the equivalent information passively.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">Therefore, features relying on this document to define Client Hint headers MUST NOT provide new information that is otherwise not made available to the application by the user agent, such as existing request headers, HTML, CSS, or JavaScript.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">Such features need to take into account the following aspects of the information exposed:<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-4.1-7.1">Entropy - Exposing highly granular data can be used to help identify users across multiple requests to different origins. Reducing the set of header field values that can be expressed, or restricting them to an enumerated range where the advertised value is close to but is not an exact representation of the current value, can improve privacy and reduce risk of linkability by ensuring that the same value is sent by multiple users.<a href="#section-4.1-7.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.1-7.2">Sensitivity -  The feature SHOULD NOT expose user-sensitive information. To that end, information available to the application, but gated behind specific user actions (e.g., a permission prompt or user activation) SHOULD NOT be exposed as a Client Hint.<a href="#section-4.1-7.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.1-7.3">Change over time - The feature SHOULD NOT expose user information that changes over time, unless the state change itself is also exposed (e.g., through JavaScript callbacks).<a href="#section-4.1-7.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-4.1-8">Different features will be positioned in different points in the space between low-entropy, non-sensitive and static information (e.g., user agent information), and high-entropy, sensitive and dynamic information (e.g., geolocation). User agents need to consider the value provided by a particular feature vs these considerations, and may wish to have different policies regarding that tradeoff on a per-feature or other fine-grained basis.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
+<p id="section-4.1-9">Implementers ought to consider both user- and server- controlled mechanisms and policies to control which Client Hints header fields are advertised:<a href="#section-4.1-9" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-4.1-10.1">Implementers SHOULD restrict delivery of some or all Client Hints header fields to the opt-in origin only, unless the opt-in origin has explicitly delegated permission to another origin to request Client Hints header fields.<a href="#section-4.1-10.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.1-10.2">Implementers considering providing user choice mechanisms that allow users to balance privacy concerns against bandwidth limitations need to also consider that explaining to users the privacy implications involved, such as the risks of passive fingerprinting, may be  challenging or even impractical.<a href="#section-4.1-10.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.1-10.3">Implementations specific to certain use cases or threat models MAY avoid transmitting some or all of Client Hints header fields. For example, avoid transmission of header fields that can carry higher risks of linkability.<a href="#section-4.1-10.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-4.1-11">User agents MUST clear persisted opt-in preferences when any one of site data, browsing history, browsing cache, cookies, or similar, are cleared.<a href="#section-4.1-11" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="deployment-and-security-risks">
+<section id="section-4.2">
+        <h3 id="name-deployment-and-security-ris">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-deployment-and-security-ris" class="section-name selfRef">Deployment and Security Risks</a>
+        </h3>
+<p id="section-4.2-1">Deployment of new request headers requires several considerations:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<ul class="compact">
+<li class="compact" id="section-4.2-2.1">Potential conflicts due to existing use of header field name<a href="#section-4.2-2.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-4.2-2.2">Properties of the data communicated in header field value<a href="#section-4.2-2.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+<p id="section-4.2-3">Authors of new Client Hints are advised to carefully consider whether they need to be able to be added by client-side content (e.g., scripts), or whether they need to be exclusively set by the user agent. In the latter case, the Sec- prefix on the header field name has the effect of preventing scripts and other application content from setting them in user agents.
+Using the "Sec-" prefix signals to servers that the user agent - and not application content - generated the values. See <span>[<a href="#FETCH" class="xref">FETCH</a>]</span> for more information.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">By convention, request headers that are Client Hints are encouraged to use a CH- prefix, to make them easier to identify as using this framework; for example, CH-Foo or, with a "Sec-" prefix, Sec-CH-Foo. Doing so makes them easier to identify programmatically (e.g., for stripping unrecognised hints from requests by privacy filters).<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">A Client Hints request header negotiated using the Accept-CH opt-in mechanism MUST have a field name that matches sf-token (Section 3.3.4 of <span>[<a href="#I-D.ietf-httpbis-header-structure" class="xref">I-D.ietf-httpbis-header-structure</a>]</span>).<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="abuse-detection">
+<section id="section-4.3">
+        <h3 id="name-abuse-detection">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-abuse-detection" class="section-name selfRef">Abuse Detection</a>
+        </h3>
+<p id="section-4.3-1">A user agent that tracks access to active fingerprinting information SHOULD consider emission of Client Hints headers similarly to the way it would consider access to the equivalent API.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">Research into abuse of Client Hints might look at how HTTP responses to requests that contain Client Hints differ from those with different values, and from those without. This might be used to reveal which Client Hints are in use, allowing researchers to further analyze that use.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="cost-of-sending-hints">
+<section id="section-5">
+      <h2 id="name-cost-of-sending-hints">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-cost-of-sending-hints" class="section-name selfRef">Cost of Sending Hints</a>
+      </h2>
+<p id="section-5-1">Sending Client Hints to the server incurs an increase in request byte size. Some of this increase can be mitigated by HTTP header compression schemes, but each new hint sent will still lead to some increased bandwidth usage.
+Servers SHOULD take that into account when opting in to receive Client Hints, and SHOULD NOT opt-in to receive hints unless they are to be used for content adaptation purposes.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">Due to request byte size increase, features relying on this document to define Client Hints MAY consider restricting sending those hints to certain request destinations <span>[<a href="#FETCH" class="xref">FETCH</a>]</span>, where they are more likely to be useful.<a href="#section-5-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-6">
+      <h2 id="name-iana-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-6-1">Features relying on this document are expected to register added request header fields in the Permanent Message Header Fields registry (<span>[<a href="#RFC3864" class="xref">RFC3864</a>]</span>).<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-2">This document defines the "Accept-CH" HTTP response header field, and registers it in the same registry.<a href="#section-6-2" class="pilcrow">¶</a></p>
+<div id="iana-accept-ch">
+<section id="section-6.1">
+        <h3 id="name-accept-ch">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-accept-ch" class="section-name selfRef">Accept-CH</a>
+        </h3>
+<ul class="compact">
+<li class="compact" id="section-6.1-1.1">Header field name: Accept-CH<a href="#section-6.1-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-6.1-1.2">Applicable protocol: HTTP<a href="#section-6.1-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-6.1-1.3">Status: experimental<a href="#section-6.1-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-6.1-1.4">Author/Change controller: IETF<a href="#section-6.1-1.4" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-6.1-1.5">Specification document(s): <a href="#accept-ch" class="xref">Section 3.1</a> of this document<a href="#section-6.1-1.5" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-6.1-1.6">Related information: for Client Hints<a href="#section-6.1-1.6" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="CLIENT-HINTS-INFRASTRUCTURE">[CLIENT-HINTS-INFRASTRUCTURE]</dt>
+        <dd>
+<span class="refAuthor">Weiss, Y.</span>, <span class="refTitle">"Client Hints Infrastructure"</span>, <span>n.d.</span>, <span>&lt;<a href="https://wicg.github.io/client-hints-infrastructure/">https://wicg.github.io/client-hints-infrastructure/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-httpbis-header-structure">[I-D.ietf-httpbis-header-structure]</dt>
+        <dd>
+<span class="refAuthor">Nottingham, M.</span><span class="refAuthor"> and P. Kamp</span>, <span class="refTitle">"Structured Field Values for HTTP"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-header-structure-19</span>, <time datetime="2020-06-03" class="refDate">3 June 2020</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-ietf-httpbis-header-structure-19.txt">http://www.ietf.org/internet-drafts/draft-ietf-httpbis-header-structure-19.txt</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3864">[RFC3864]</dt>
+        <dd>
+<span class="refAuthor">Klyne, G.</span><span class="refAuthor">, Nottingham, M.</span><span class="refAuthor">, and J. Mogul</span>, <span class="refTitle">"Registration Procedures for Message Header Fields"</span>, <span class="seriesInfo">BCP 90</span>, <span class="seriesInfo">RFC 3864</span>, <span class="seriesInfo">DOI 10.17487/RFC3864</span>, <time datetime="2004-09" class="refDate">September 2004</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3864">https://www.rfc-editor.org/info/rfc3864</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span><span class="refAuthor"> and P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5234">https://www.rfc-editor.org/info/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7231">[RFC7231]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span><span class="refAuthor"> and J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content"</span>, <span class="seriesInfo">RFC 7231</span>, <span class="seriesInfo">DOI 10.17487/RFC7231</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7231">https://www.rfc-editor.org/info/rfc7231</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7234">[RFC7234]</dt>
+        <dd>
+<span class="refAuthor">Fielding, R., Ed.</span><span class="refAuthor">, Nottingham, M., Ed.</span><span class="refAuthor">, and J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Caching"</span>, <span class="seriesInfo">RFC 7234</span>, <span class="seriesInfo">DOI 10.17487/RFC7234</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7234">https://www.rfc-editor.org/info/rfc7234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="FETCH">[FETCH]</dt>
+        <dd>
+<span class="refAuthor">van Kesteren, A.</span>, <span class="refTitle">"Fetch"</span>, <span>n.d.</span>, <span>&lt;<a href="https://fetch.spec.whatwg.org/">https://fetch.spec.whatwg.org/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6265">[RFC6265]</dt>
+        <dd>
+<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"HTTP State Management Mechanism"</span>, <span class="seriesInfo">RFC 6265</span>, <span class="seriesInfo">DOI 10.17487/RFC6265</span>, <time datetime="2011-04" class="refDate">April 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6265">https://www.rfc-editor.org/info/rfc6265</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="UA-CH">[UA-CH]</dt>
+      <dd>
+<span class="refAuthor">West, M.</span><span class="refAuthor"> and Y. Weiss</span>, <span class="refTitle">"User Agent Client Hints"</span>, <span>n.d.</span>, <span>&lt;<a href="https://wicg.github.io/ua-client-hints/">https://wicg.github.io/ua-client-hints/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="changes">
+<section id="section-appendix.a">
+      <h2 id="name-changes">
+<a href="#section-appendix.a" class="section-number selfRef">Appendix A. </a><a href="#name-changes" class="section-name selfRef">Changes</a>
+      </h2>
+<div id="since-00">
+<section id="section-a.1">
+        <h2 id="name-since-00">
+<a href="#section-a.1" class="section-number selfRef">A.1. </a><a href="#name-since-00" class="section-name selfRef">Since -00</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.1-1.1">Issue 168 (make Save-Data extensible) updated ABNF.<a href="#section-a.1-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.1-1.2">Issue 163 (CH review feedback) editorial feedback from httpwg list.<a href="#section-a.1-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.1-1.3">Issue 153 (NetInfo API citation) added normative reference.<a href="#section-a.1-1.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-01">
+<section id="section-a.2">
+        <h2 id="name-since-01">
+<a href="#section-a.2" class="section-number selfRef">A.2. </a><a href="#name-since-01" class="section-name selfRef">Since -01</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.2-1.1">Issue 200: Moved Key reference to informative.<a href="#section-a.2-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.2-1.2">Issue 215: Extended passive fingerprinting and mitigation considerations.<a href="#section-a.2-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.2-1.3">Changed document status to experimental.<a href="#section-a.2-1.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-02">
+<section id="section-a.3">
+        <h2 id="name-since-02">
+<a href="#section-a.3" class="section-number selfRef">A.3. </a><a href="#name-since-02" class="section-name selfRef">Since -02</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.3-1.1">Issue 239: Updated reference to CR-css-values-3<a href="#section-a.3-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.3-1.2">Issue 240: Updated reference for Network Information API<a href="#section-a.3-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.3-1.3">Issue 241: Consistency in IANA considerations<a href="#section-a.3-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.3-1.4">Issue 250: Clarified Accept-CH<a href="#section-a.3-1.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-03">
+<section id="section-a.4">
+        <h2 id="name-since-03">
+<a href="#section-a.4" class="section-number selfRef">A.4. </a><a href="#name-since-03" class="section-name selfRef">Since -03</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.4-1.1">Issue 284: Extended guidance for Accept-CH<a href="#section-a.4-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.4-1.2">Issue 308: Editorial cleanup<a href="#section-a.4-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.4-1.3">Issue 306: Define Accept-CH-Lifetime<a href="#section-a.4-1.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-04">
+<section id="section-a.5">
+        <h2 id="name-since-04">
+<a href="#section-a.5" class="section-number selfRef">A.5. </a><a href="#name-since-04" class="section-name selfRef">Since -04</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.5-1.1">Issue 361: Removed Downlink<a href="#section-a.5-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.5-1.2">Issue 361: Moved Key to appendix, plus other editorial feedback<a href="#section-a.5-1.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-05">
+<section id="section-a.6">
+        <h2 id="name-since-05">
+<a href="#section-a.6" class="section-number selfRef">A.6. </a><a href="#name-since-05" class="section-name selfRef">Since -05</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.6-1.1">Issue 372: Scoped CH opt-in and delivery to secure transports<a href="#section-a.6-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.6-1.2">Issue 373: Bind CH opt-in to origin<a href="#section-a.6-1.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-06">
+<section id="section-a.7">
+        <h2 id="name-since-06">
+<a href="#section-a.7" class="section-number selfRef">A.7. </a><a href="#name-since-06" class="section-name selfRef">Since -06</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.7-1.1">Issue 524: Save-Data is now defined by NetInfo spec, dropping<a href="#section-a.7-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.7-1.2">PR 775: Removed specific features to be defined in other specifications<a href="#section-a.7-1.2" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-07">
+<section id="section-a.8">
+        <h2 id="name-since-07">
+<a href="#section-a.8" class="section-number selfRef">A.8. </a><a href="#name-since-07" class="section-name selfRef">Since -07</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.8-1.1">Issue 761: Clarified that the defined headers are response headers.<a href="#section-a.8-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.8-1.2">Issue 730: Replaced Key reference with Variants.<a href="#section-a.8-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.8-1.3">Issue 700: Replaced ABNF with structured headers.<a href="#section-a.8-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.8-1.4">PR 878: Removed Accept-CH-Lifetime based on feedback at IETF 105<a href="#section-a.8-1.4" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-08">
+<section id="section-a.9">
+        <h2 id="name-since-08">
+<a href="#section-a.9" class="section-number selfRef">A.9. </a><a href="#name-since-08" class="section-name selfRef">Since -08</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.9-1.1">PR 985: Describe the bytesize cost of hints.<a href="#section-a.9-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.9-1.2">PR 776: Add Sec- and CH- prefix considerations.<a href="#section-a.9-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.9-1.3">PR 1001: Clear CH persistence when cookies are cleared.<a href="#section-a.9-1.3" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-09">
+<section id="section-a.10">
+        <h2 id="name-since-09">
+<a href="#section-a.10" class="section-number selfRef">A.10. </a><a href="#name-since-09" class="section-name selfRef">Since -09</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.10-1.1">PR 1064: Fix merge issues with "cost of sending hints".<a href="#section-a.10-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-10">
+<section id="section-a.11">
+        <h2 id="name-since-10">
+<a href="#section-a.11" class="section-number selfRef">A.11. </a><a href="#name-since-10" class="section-name selfRef">Since -10</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.11-1.1">PR 1072: LC feedback from Julian Reschke.<a href="#section-a.11-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.11-1.2">PR 1080: Improve list style.<a href="#section-a.11-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.11-1.3">PR 1082: Remove section mentioning Variants.<a href="#section-a.11-1.3" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.11-1.4">PR 1097: Editorial feedback from mnot.<a href="#section-a.11-1.4" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.11-1.5">PR 1131: Remove unused references.<a href="#section-a.11-1.5" class="pilcrow">¶</a>
+</li>
+          <li class="compact" id="section-a.11-1.6">PR 1132: Remove nested list.<a href="#section-a.11-1.6" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-11">
+<section id="section-a.12">
+        <h2 id="name-since-11">
+<a href="#section-a.12" class="section-number selfRef">A.12. </a><a href="#name-since-11" class="section-name selfRef">Since -11</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.12-1.1">PR 1134: Re-insert back section.<a href="#section-a.12-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-12">
+<section id="section-a.13">
+        <h2 id="name-since-12">
+<a href="#section-a.13" class="section-number selfRef">A.13. </a><a href="#name-since-12" class="section-name selfRef">Since -12</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.13-1.1">PR 1160: AD review.<a href="#section-a.13-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-13">
+<section id="section-a.14">
+        <h2 id="name-since-13">
+<a href="#section-a.14" class="section-number selfRef">A.14. </a><a href="#name-since-13" class="section-name selfRef">Since -13</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.14-1.1">PR 1171: Genart review.<a href="#section-a.14-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+<div id="since-14">
+<section id="section-a.15">
+        <h2 id="name-since-14">
+<a href="#section-a.15" class="section-number selfRef">A.15. </a><a href="#name-since-14" class="section-name selfRef">Since -14</a>
+        </h2>
+<ul class="compact">
+<li class="compact" id="section-a.15-1.1">PR 1220: AD review.<a href="#section-a.15-1.1" class="pilcrow">¶</a>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="section-appendix.b">
+      <h2 id="name-acknowledgements">
+<a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="section-appendix.b-1">Thanks to Mark Nottingham, Julian Reschke, Chris Bentzel, Ben Greenstein, Tarun Bansal, Roy Fielding, Vasiliy Faronov, Ted Hardie, Jonas Sicking, Martin Thomson, and numerous other members of the IETF HTTP Working Group for invaluable help and feedback.<a href="#section-appendix.b-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="section-appendix.c">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Ilya Grigorik</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ilya@igvita.com" class="email">ilya@igvita.com</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://www.igvita.com/" class="url">https://www.igvita.com/</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Yoav Weiss</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:yoav@yoav.ws" class="email">yoav@yoav.ws</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://blog.yoav.ws/" class="url">https://blog.yoav.ws/</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
