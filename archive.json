@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2020-10-29T00:42:37.436792+00:00",
+  "timestamp": "2025-06-17T00:08:53.240907+00:00",
   "repo": "yoavweiss/http-extensions",
   "labels": [
     {
@@ -19,14 +19,14 @@
       "color": "84b6eb"
     },
     {
-      "name": "help wanted",
-      "description": null,
-      "color": "33aa3f"
-    },
-    {
       "name": "good first issue",
       "description": null,
       "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": null,
+      "color": "33aa3f"
     },
     {
       "name": "invalid",
