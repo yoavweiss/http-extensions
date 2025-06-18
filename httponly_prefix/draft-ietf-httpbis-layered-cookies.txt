@@ -686,11 +686,11 @@ Table of Contents
 
    Set-Cookie: __Host-SID=12345; Secure; Path=/
 
-4.1.3.3.  The "__HttpOnly-" Prefix
+4.1.3.3.  The "__Http-" Prefix
 
    If a cookie's name begins with a case sensitive match for the string
-   __HttpOnly, then the cookie will have been set with a Secure
-   attribute, and an HttpOnly attribute.
+   __Http, then the cookie will have been set with a Secure attribute,
+   and an HttpOnly attribute.
 
    This helps developers and server operators to know that the cookie
    was set using a Set-Cookie header, and is limited in scope to HTTP
@@ -1371,7 +1371,7 @@ Table of Contents
 
         *  _cookie_'s value, byte-lowercased, starts with __host-,
 
-        *  _cookie_'s value, byte-lowercased, starts with __httponly-
+        *  _cookie_'s value, byte-lowercased, starts with __http-
 
         then return null.
 
