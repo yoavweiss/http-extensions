@@ -1371,11 +1371,7 @@ Table of Contents
 
         *  _cookie_'s value, byte-lowercased, starts with __host-,
 
-        *  _cookie_'s value, byte-lowercased, starts with __httponly-,
-           or
-
-        *  _cookie_'s value, byte-lowercased, starts with
-           __hosthttponly-
+        *  _cookie_'s value, byte-lowercased, starts with __httponly-
 
         then return null.
 
