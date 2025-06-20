@@ -1278,7 +1278,7 @@ Table of Contents
 
 5.4.3.  Store a Cookie
 
-   A cookie _cookie_ is *Host prefix compatible* if:
+   A cookie _cookie_ is *Host-prefix compatible* if:
 
    1.  _cookie_'s secure-only is true;
 
