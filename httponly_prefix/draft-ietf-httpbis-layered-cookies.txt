@@ -1399,9 +1399,9 @@ Table of Contents
 
         *  _cookie_'s value, byte-lowercased, starts with __host-,
 
-        *  _cookie_'s value, byte-lowercased, starts with __http-
+        *  _cookie_'s value, byte-lowercased, starts with __http-, or
 
-        *  _cookie_'s value, byte-lowercased, starts with __hosthttp-
+        *  _cookie_'s value, byte-lowercased, starts with __hosthttp-,
 
         then return null.
 
