@@ -1389,7 +1389,7 @@ Table of Contents
         _cookie_ is not *Http-prefix compatible*, then return null.
 
    16.  If _cookie_'s name, byte-lowercased, starts with __hosthttp- and
-        it is not both *Host prefix compatible* and _*Http prefix
+        _cookie_ is not both *Host-prefix compatible* and _*Http-prefix
         compatible_, then return null.
 
    17.  If _cookie_'s name is the empty byte sequence and one of the
