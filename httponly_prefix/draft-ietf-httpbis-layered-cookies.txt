@@ -1287,7 +1287,7 @@ Table of Contents
    3.  _cookie_'s path's size is 1 and _cookie_'s path[0] is the empty
        string,
 
-   A cookie _cookie_ is *Http prefix compatible* if:
+   A cookie _cookie_ is *Http-prefix compatible* if:
 
    1.  _cookie_'s secure-only is true; and
 
