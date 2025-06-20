@@ -2897,7 +2897,7 @@ then return null.<a href="#section-5.4.3-2.13.1" class="pilcrow">¶</a></p>
 Note: The check here and those below are with a byte-lowercased value in order to protect servers that process these values in a case-insensitive manner.<a href="#section-5.4.3-2.13.2" class="pilcrow">¶</a></p>
 </li>
             <li id="section-5.4.3-2.14">
-              <p id="section-5.4.3-2.14.1">If <em>cookie</em>'s name, byte-lowercased, starts with <code>__host-</code> and it is not <strong>Host prefix compatible</strong>, then return null.<a href="#section-5.4.3-2.14.1" class="pilcrow">¶</a></p>
+              <p id="section-5.4.3-2.14.1">If <em>cookie</em>'s name, byte-lowercased, starts with <code>__host-</code> and <em>cookie</em> is not <strong>Host-prefix compatible</strong>, then return null.<a href="#section-5.4.3-2.14.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-5.4.3-2.15">
               <p id="section-5.4.3-2.15.1">If <em>cookie</em>'s name, byte-lowercased, starts with <code>__http-</code> and it is not <strong>Http prefix compatible</strong>, then return null.<a href="#section-5.4.3-2.15.1" class="pilcrow">¶</a></p>

@@ -1382,8 +1382,8 @@ Table of Contents
         value in order to protect servers that process these values in a
         case-insensitive manner.
 
-   14.  If _cookie_'s name, byte-lowercased, starts with __host- and it
-        is not *Host prefix compatible*, then return null.
+   14.  If _cookie_'s name, byte-lowercased, starts with __host- and
+        _cookie_ is not *Host-prefix compatible*, then return null.
 
    15.  If _cookie_'s name, byte-lowercased, starts with __http- and it
         is not *Http prefix compatible*, then return null.
