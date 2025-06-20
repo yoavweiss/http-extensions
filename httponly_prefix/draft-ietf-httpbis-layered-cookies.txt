@@ -849,6 +849,21 @@ Table of Contents
    A cookie is *expired* if its expiry-time is non-null and its expiry-
    time is in the past.
 
+   A cookie _cookie_ is *Host-prefix compatible* if:
+
+   1.  _cookie_'s secure-only is true;
+
+   2.  _cookie_'s host-only is true; and
+
+   3.  _cookie_'s path's size is 1 and _cookie_'s path[0] is the empty
+       string,
+
+   A cookie _cookie_ is *Http-prefix compatible* if:
+
+   1.  _cookie_'s secure-only is true; and
+
+   2.  _cookie_'s http-only is false,
+
 5.2.  Cookie Store Eviction
 
 5.2.1.  Remove Expired Cookies
@@ -1277,21 +1292,6 @@ Table of Contents
    generally the last specified cookie attribute "wins".
 
 5.4.3.  Store a Cookie
-
-   A cookie _cookie_ is *Host-prefix compatible* if:
-
-   1.  _cookie_'s secure-only is true;
-
-   2.  _cookie_'s host-only is true; and
-
-   3.  _cookie_'s path's size is 1 and _cookie_'s path[0] is the empty
-       string,
-
-   A cookie _cookie_ is *Http-prefix compatible* if:
-
-   1.  _cookie_'s secure-only is true; and
-
-   2.  _cookie_'s http-only is false,
 
    To *Store a Cookie* given a cookie _cookie_, boolean _isSecure_,
    domain or IP address _host_, boolean _httpOnlyAllowed_, boolean
