@@ -709,15 +709,15 @@ Table of Contents
 
    This combination yields a cookie that hews as closely as a cookie can
    to treating the origin as a security boundary, while at the same time
-   ensuring developers and server operators that its scope is limited to
-   HTTP requests.  The lack of a Domain attribute ensures that cookie's
-   host-only is true, locking the cookie to a particular host, rather
-   than allowing it to span subdomains.  Setting the Path to / means
-   that the cookie is effective for the entire host, and won't be
-   overridden for specific paths.  The Secure attribute ensures that the
-   cookie is unaltered by non-secure origins, and won't span protocols.
-   The HttpOnly attribute ensures that the cookie is not exposed by the
-   user agent to non-HTTP APIs.
+   ensuring developers and server operators know that its scope is
+   limited to HTTP requests.  The lack of a Domain attribute ensures
+   that cookie's host-only is true, locking the cookie to a particular
+   host, rather than allowing it to span subdomains.  Setting the Path
+   to / means that the cookie is effective for the entire host, and
+   won't be overridden for specific paths.  The Secure attribute ensures
+   that the cookie is unaltered by non-secure origins, and won't span
+   protocols.  The HttpOnly attribute ensures that the cookie is not
+   exposed by the user agent to non-HTTP APIs.
 
 4.2.  Cookie
 
