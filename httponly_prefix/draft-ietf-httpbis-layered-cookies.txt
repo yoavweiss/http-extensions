@@ -829,6 +829,8 @@ Table of Contents
 
    A cookie's *path* is a URL path.
 
+   A cookie's *path-attribute* is a boolean.  It is initially false.
+
    A cookie's *same-site* is "strict", "lax", "unset", or "none".  It is
    initially "unset".
 
@@ -853,9 +855,11 @@ Table of Contents
 
    1.  _cookie_'s secure-only is true;
 
-   2.  _cookie_'s host-only is true; and
+   2.  _cookie_'s host-only is true;
 
-   3.  _cookie_'s path's size is 1 and _cookie_'s path[0] is the empty
+   3.  _cookie_'s path-attribute is true; and
+
+   4.  _cookie_'s path's size is 1 and _cookie_'s path[0] is the empty
        string,
 
    A cookie _cookie_ is *Http-prefix compatible* if:
@@ -1056,14 +1060,16 @@ Table of Contents
    To determine the *Cookie Default Path*, given a URL path _path_, run
    these steps.  They return a URL path.
 
-   1.  Assert: _path_ is a non-empty list.
+   1.  Assert: _path_ is non-empty and starts with 0x2f (/).
 
-   2.  If _path_'s size is greater than 1, then remove _path_'s last
-       item.
+   2.  Let _splitPath_ be _path_ split on 0x2F (/).
 
-   3.  Otherwise, set _path_[0] to the empty string.
+   3.  If _splitPath_'s size is greater than 1, then remove
+       _splitPath_'s last item.
 
-   4.  Return _path_.
+   4.  Otherwise, set _splitPath_[0] to the empty string.
+
+   5.  Return _splitPath_.
 
 5.3.4.  Path Matching
 
@@ -1259,8 +1265,12 @@ Table of Contents
              Path:
 
              1.  If _attributeValue_ is not empty and if the first byte
-                 of _attributeValue_ is 0x2F (/), then set _cookie_'s
-                 path to _attributeValue_ split on 0x2F (/).
+                 of _attributeValue_ is 0x2F (/), then:
+
+                 1.  Set _cookie_'s path to _attributeValue_ split on
+                     0x2F (/).
+
+                 2.  Set _cookie_'s path-attribute to true.
 
         17.  If _attributeName_ is a byte-case-insensitive match for
              Secure:
