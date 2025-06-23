@@ -698,7 +698,7 @@ Table of Contents
 
 4.1.3.4.  The "__HostHttp-" prefix
 
-   If a cookie's name begins with a case sensitive match for the string
+   If a cookie's name begins with a case-sensitive match for the string
    __HostHttp-, then the cookie will have been set with a Secure
    attribute, an HttpOnly attribute, a Path attribute with a value of /,
    and no Domain attribute.
