@@ -2145,7 +2145,7 @@ server.<a href="#section-5.1.2-1" class="pilcrow">¶</a></p>
 cookie is in the user agent's cookie store its host is a domain or IP address.<a href="#section-5.1.2-5" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-6">A cookie's <strong>host-only</strong> is a boolean. It is initially false.<a href="#section-5.1.2-6" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-7">A cookie's <strong>path</strong> is a URL path.<a href="#section-5.1.2-7" class="pilcrow">¶</a></p>
-<p id="section-5.1.2-8">A cookie's <strong>path-attribute</strong> is a boolean. It is initially false.<a href="#section-5.1.2-8" class="pilcrow">¶</a></p>
+<p id="section-5.1.2-8">A cookie's <strong>has path attribute</strong> is a boolean. It is initially false.<a href="#section-5.1.2-8" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-9">A cookie's <strong>same-site</strong> is "<code>strict</code>", "<code>lax</code>", "<code>unset</code>", or "<code>none</code>". It is initially "<code>unset</code>".<a href="#section-5.1.2-9" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-10">A cookie's <strong>http-only</strong> is a boolean. It is initially false.<a href="#section-5.1.2-10" class="pilcrow">¶</a></p>
 <p id="section-5.1.2-11">A cookie's <strong>creation-time</strong> is a time. It is initially the current time.<a href="#section-5.1.2-11" class="pilcrow">¶</a></p>
@@ -2167,7 +2167,7 @@ specification referred to null with a distinct "persistent-flag" field being fal
                 <p id="section-5.1.2.1-3.2.1"><em>cookie</em>'s host-only is true;<a href="#section-5.1.2.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-5.1.2.1-3.3">
-                <p id="section-5.1.2.1-3.3.1"><em>cookie</em>'s path-attribute is true; and<a href="#section-5.1.2.1-3.3.1" class="pilcrow">¶</a></p>
+                <p id="section-5.1.2.1-3.3.1"><em>cookie</em>'s has path attribute is true; and<a href="#section-5.1.2.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
               <li id="section-5.1.2.1-3.4">
                 <p id="section-5.1.2.1-3.4.1"><em>cookie</em>'s path's size is 1 and <em>cookie</em>'s path[0] is the empty string,<a href="#section-5.1.2.1-3.4.1" class="pilcrow">¶</a></p>
@@ -2748,7 +2748,7 @@ without its leading U+002E (.).<a href="#section-5.4.2-2.15.2.15.2.2.2.2.1" clas
                           <p id="section-5.4.2-2.15.2.16.2.1.2.1.1">Set <em>cookie</em>'s path to <em>attributeValue</em> split on 0x2F (/).<a href="#section-5.4.2-2.15.2.16.2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
                         <li id="section-5.4.2-2.15.2.16.2.1.2.2">
-                          <p id="section-5.4.2-2.15.2.16.2.1.2.2.1">Set <em>cookie</em>'s path-attribute to true.<a href="#section-5.4.2-2.15.2.16.2.1.2.2.1" class="pilcrow">¶</a></p>
+                          <p id="section-5.4.2-2.15.2.16.2.1.2.2.1">Set <em>cookie</em>'s has path attribute to true.<a href="#section-5.4.2-2.15.2.16.2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
                       </ol>
 </li>

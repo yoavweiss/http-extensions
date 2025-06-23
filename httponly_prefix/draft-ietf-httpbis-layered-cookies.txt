@@ -829,7 +829,7 @@ Table of Contents
 
    A cookie's *path* is a URL path.
 
-   A cookie's *path-attribute* is a boolean.  It is initially false.
+   A cookie's *has path attribute* is a boolean.  It is initially false.
 
    A cookie's *same-site* is "strict", "lax", "unset", or "none".  It is
    initially "unset".
@@ -857,7 +857,7 @@ Table of Contents
 
    2.  _cookie_'s host-only is true;
 
-   3.  _cookie_'s path-attribute is true; and
+   3.  _cookie_'s has path attribute is true; and
 
    4.  _cookie_'s path's size is 1 and _cookie_'s path[0] is the empty
        string,
@@ -1268,7 +1268,7 @@ Table of Contents
                  1.  Set _cookie_'s path to _attributeValue_ split on
                      0x2F (/).
 
-                 2.  Set _cookie_'s path-attribute to true.
+                 2.  Set _cookie_'s has path attribute to true.
 
         17.  If _attributeName_ is a byte-case-insensitive match for
              Secure:
