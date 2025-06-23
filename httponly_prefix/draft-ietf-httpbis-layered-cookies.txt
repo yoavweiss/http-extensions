@@ -6,7 +6,7 @@ HTTP                                                A. van Kesteren, Ed.
 Internet-Draft                                                     Apple
 Obsoletes: [6265] (if approved)                          J. Hofmann, Ed.
 Intended status: Standards Track                                  Google
-Expires: 22 December 2025                                   20 June 2025
+Expires: 25 December 2025                                   23 June 2025
 
 
                 Cookies: HTTP State Management Mechanism
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 December 2025.
+   This Internet-Draft will expire on 25 December 2025.
 
 Copyright Notice
 
@@ -688,7 +688,7 @@ Table of Contents
 
 4.1.3.3.  The "__Http-" Prefix
 
-   If a cookie's name begins with a case sensitive match for the string
+   If a cookie's name begins with a case-sensitive match for the string
    __Http-, then the cookie will have been set with a Secure attribute,
    and an HttpOnly attribute.
 
