@@ -2482,19 +2482,16 @@ exists, abort these steps and fail to parse the cookie-date.<a href="#section-5.
 They return a URL path.<a href="#section-5.3.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.3.3-2">
 <li id="section-5.3.3-2.1">
-              <p id="section-5.3.3-2.1.1">Assert: <em>path</em> is non-empty and starts with 0x2f (/).<a href="#section-5.3.3-2.1.1" class="pilcrow">¶</a></p>
+              <p id="section-5.3.3-2.1.1">Assert: <em>path</em> is a non-empty list.<a href="#section-5.3.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-5.3.3-2.2">
-              <p id="section-5.3.3-2.2.1">Let <em>splitPath</em> be <em>path</em> split on 0x2F (/).<a href="#section-5.3.3-2.2.1" class="pilcrow">¶</a></p>
+              <p id="section-5.3.3-2.2.1">If <em>path</em>'s size is greater than 1, then remove <em>path</em>'s last item.<a href="#section-5.3.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-5.3.3-2.3">
-              <p id="section-5.3.3-2.3.1">If <em>splitPath</em>'s size is greater than 1, then remove <em>splitPath</em>'s last item.<a href="#section-5.3.3-2.3.1" class="pilcrow">¶</a></p>
+              <p id="section-5.3.3-2.3.1">Otherwise, set <em>path</em>[0] to the empty string.<a href="#section-5.3.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
             <li id="section-5.3.3-2.4">
-              <p id="section-5.3.3-2.4.1">Otherwise, set <em>splitPath</em>[0] to the empty string.<a href="#section-5.3.3-2.4.1" class="pilcrow">¶</a></p>
-</li>
-            <li id="section-5.3.3-2.5">
-              <p id="section-5.3.3-2.5.1">Return <em>splitPath</em>.<a href="#section-5.3.3-2.5.1" class="pilcrow">¶</a></p>
+              <p id="section-5.3.3-2.4.1">Return <em>path</em>.<a href="#section-5.3.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           </ol>
 </section>

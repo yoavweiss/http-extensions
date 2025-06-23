@@ -1060,16 +1060,14 @@ Table of Contents
    To determine the *Cookie Default Path*, given a URL path _path_, run
    these steps.  They return a URL path.
 
-   1.  Assert: _path_ is non-empty and starts with 0x2f (/).
+   1.  Assert: _path_ is a non-empty list.
 
-   2.  Let _splitPath_ be _path_ split on 0x2F (/).
+   2.  If _path_'s size is greater than 1, then remove _path_'s last
+       item.
 
-   3.  If _splitPath_'s size is greater than 1, then remove
-       _splitPath_'s last item.
+   3.  Otherwise, set _path_[0] to the empty string.
 
-   4.  Otherwise, set _splitPath_[0] to the empty string.
-
-   5.  Return _splitPath_.
+   4.  Return _path_.
 
 5.3.4.  Path Matching
 
